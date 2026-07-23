@@ -2,34 +2,55 @@ using UnityEngine;
 
 public class CameraRecoil : MonoBehaviour
 {
-    [Header("Rotation")]
-    [SerializeField] private float returnSpeed = 12f;
-    [SerializeField] private float snappiness = 20f;
+    [Header("Recoil")]
+    [SerializeField] private float returnSpeed = 14f;
+    [SerializeField] private float recoilSpeed = 25f;
 
-    private Vector3 currentRotation;
-    private Vector3 targetRotation;
+    [Header("Limits")]
+    [SerializeField] private float maxVerticalRecoil = 12f;
+    [SerializeField] private float maxHorizontalRecoil = 5f;
 
-    void Update()
+    private Vector3 currentRecoil;
+    private Vector3 targetRecoil;
+
+    private void LateUpdate()
     {
-        targetRotation = Vector3.Lerp(
-            targetRotation,
+        targetRecoil = Vector3.Lerp(
+            targetRecoil,
             Vector3.zero,
-            returnSpeed * Time.deltaTime);
+            returnSpeed * Time.deltaTime
+        );
 
-        currentRotation = Vector3.Slerp(
-            currentRotation,
-            targetRotation,
-            snappiness * Time.deltaTime);
+        currentRecoil = Vector3.Lerp(
+            currentRecoil,
+            targetRecoil,
+            recoilSpeed * Time.deltaTime
+        );
 
-        transform.localRotation =
-            Quaternion.Euler(currentRotation);
+        transform.localRotation = 
+    Quaternion.Euler(currentRecoil);
     }
 
-    public void Recoil(float x, float y)
+    public void AddRecoil(float vertical, float horizontal)
     {
-        targetRotation += new Vector3(
-            -x,
-            Random.Range(-y, y),
-            0);
+        float randomHorizontal = Random.Range(-horizontal, horizontal);
+
+        targetRecoil += new Vector3(
+            -vertical,
+            randomHorizontal,
+            0f
+        );
+
+        targetRecoil.x = Mathf.Clamp(
+            targetRecoil.x,
+            -maxVerticalRecoil,
+            0f
+        );
+
+        targetRecoil.y = Mathf.Clamp(
+            targetRecoil.y,
+            -maxHorizontalRecoil,
+            maxHorizontalRecoil
+        );
     }
 }

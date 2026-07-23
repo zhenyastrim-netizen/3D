@@ -14,9 +14,15 @@ public class HitscanWeapon : MonoBehaviour
     [SerializeField] private float fireRate = 8f;
     [SerializeField] private float range = 100f;
     [SerializeField] private LayerMask hitMask = ~0;
+    [SerializeField] private WeaponRecoil weaponRecoil;
+    [SerializeField] private MuzzleFlash muzzleFlash;
+    [SerializeField] private Tracer tracerPrefab;
+[SerializeField] private Transform muzzlePoint;
+[SerializeField] private ImpactEffect impactPrefab;
 
     [Header("Debug")]
     [SerializeField] private bool drawShotRay = true;
+    
 
     private float nextFireTime;
     [SerializeField]private CameraRecoil recoil;
@@ -48,47 +54,90 @@ public class HitscanWeapon : MonoBehaviour
     }
 
     private void Shoot()
+{
+    Vector3 endPoint;
+    muzzleFlash?.Play();
+    
+    nextFireTime = Time.time + 1f / fireRate;
+
+    if (recoil != null)
     {
-        nextFireTime = Time.time + 1f / fireRate;
-
-        Vector3 origin = playerCamera.transform.position;
-        Vector3 direction = playerCamera.transform.forward;
-        recoil.Recoil(2f, 1f);
-
-        if (Physics.Raycast(
-                origin,
-                direction,
-                out RaycastHit hit,
-                range,
-                hitMask,
-                QueryTriggerInteraction.Ignore))
-        {
-            IDamageable damageable =
-                hit.collider.GetComponentInParent<IDamageable>();
-
-            damageable?.TakeDamage(damage);
-            
-
-            Debug.Log($"Попадание: {hit.collider.name}");
-
-            if (drawShotRay)
-            {
-                Debug.DrawLine(
-                    origin,
-                    hit.point,
-                    Color.red,
-                    1f
-                );
-            }
-        }
-        else if (drawShotRay)
-        {
-            Debug.DrawRay(
-                origin,
-                direction * range,
-                Color.green,
-                1f
-            );
-        }
+        recoil.AddRecoil(2f, 0.5f);
     }
+    if (weaponRecoil != null)
+{
+    weaponRecoil.AddRecoil();
+}
+
+    Ray aimRay = playerCamera.ViewportPointToRay(
+        new Vector3(0.5f, 0.5f, 0f)
+    );
+
+    if (Physics.Raycast(
+    aimRay,
+    out RaycastHit hit,
+    range,
+    hitMask,
+    QueryTriggerInteraction.Ignore))
+{
+    endPoint = hit.point;
+
+    IDamageable damageable =
+        hit.collider.GetComponentInParent<IDamageable>();
+
+    damageable?.TakeDamage(damage);
+    damageable?.TakeDamage(damage);
+
+if(impactPrefab != null)
+{
+    ImpactEffect impact = Instantiate(
+        impactPrefab,
+        hit.point,
+        Quaternion.identity
+    );
+
+    impact.Play(
+        hit.point,
+        hit.normal
+    );
+}
+}
+
+
+    else
+{
+    endPoint = aimRay.origin + aimRay.direction * range;
+}
+
+
+if (tracerPrefab != null && muzzlePoint != null)
+{
+    Tracer tracer = Instantiate(
+        tracerPrefab,
+        muzzlePoint.position,
+        Quaternion.identity
+    );
+
+    tracer.Setup(
+        muzzlePoint.position,
+        endPoint
+    );
+}
+Debug.Log("Tracer created");
+
+
+if (drawShotRay)
+{
+    Debug.DrawRay(
+        aimRay.origin,
+        aimRay.direction * range,
+        Color.green,
+        1f
+    );
+}
+    {
+       
+    
+}
+}
 }
