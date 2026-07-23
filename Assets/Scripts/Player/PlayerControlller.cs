@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private InputAction sprintAction;
     [SerializeField] private PlayerMotor motor;
     [SerializeField] private PlayerDash playerDash;
+    [SerializeField] private PlayerSlide playerSlide;
     private Vector3 currentVelocity;
     public Vector3 MoveDirection { get; private set; }
     
@@ -48,6 +49,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
+        if (playerSlide != null && playerSlide.IsSliding)
+{
+    motor.HorizontalVelocity = Vector3.zero;
+    return;
+}
         if (playerDash.IsDashing)
 {
     motor.HorizontalVelocity = Vector3.zero;
