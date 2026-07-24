@@ -322,7 +322,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player
   moveSpeed: 8
   acceleration: 18
-  deceleration: 22
+  deceleration: 19
   sprintSpeed: 20
   moveAction:
     m_Name: Move
@@ -548,7 +548,7 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   sensitivity: 0.15
-  maxLookAngle: 85
+  maxLookAngle: 90
 --- !u!114 &423475946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -579,9 +579,9 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   jumpHeight: 2
-  gravity: -30
+  gravity: -35
   fallMultiplier: 2.5
-  maxFallSpeed: -50
+  maxFallSpeed: -100
   coyoteTime: 0.2
   jumpBuffer: 0.15
   motor: {fileID: 423475947}
@@ -629,8 +629,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCameraEffects
   playerCamera: {fileID: 508092451}
   normalFOV: 90
-  sprintFOV: 120
-  fovSpeed: 8
+  sprintFOV: 105
+  fovSpeed: 6
 --- !u!114 &423475950
 MonoBehaviour:
   m_ObjectHideFlags: 0
