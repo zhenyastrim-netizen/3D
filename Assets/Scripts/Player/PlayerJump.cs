@@ -6,6 +6,7 @@ public class PlayerJump : MonoBehaviour
 {
     [Header("Input")]
     [SerializeField] private InputAction jumpAction;
+    private bool jumpConsumed;
 
     [Header("Jump")]
     [SerializeField] private float jumpHeight = 2f;
@@ -57,46 +58,55 @@ public class PlayerJump : MonoBehaviour
     }
 
     private void UpdateTimers()
+{
+    bool isGrounded =
+        playerGround != null &&
+        playerGround.IsGrounded;
+
+    // Сбрасываем блокировку только когда персонаж
+    // действительно стоит или падает на землю.
+    if (isGrounded && verticalVelocity <= 0f)
     {
-        // Coyote time: небольшой запас после схода с края.
-        if (playerGround != null && playerGround.IsGrounded)
-        {
-            coyoteCounter = coyoteTime;
-        }
-        else
-        {
-            coyoteCounter -= Time.deltaTime;
-        }
-
-        // Jump buffer: запоминаем нажатие немного заранее.
-        if (jumpAction.WasPressedThisFrame())
-        {
-            jumpBufferCounter = jumpBuffer;
-        }
-        else
-        {
-            jumpBufferCounter -= Time.deltaTime;
-        }
-
-        coyoteCounter = Mathf.Max(coyoteCounter, 0f);
-        jumpBufferCounter = Mathf.Max(jumpBufferCounter, 0f);
+        coyoteCounter = coyoteTime;
+        jumpConsumed = false;
     }
+    else
+    {
+        coyoteCounter -= Time.deltaTime;
+    }
+
+    if (jumpAction.WasPressedThisFrame())
+    {
+        jumpBufferCounter = jumpBuffer;
+    }
+    else
+    {
+        jumpBufferCounter -= Time.deltaTime;
+    }
+
+    coyoteCounter = Mathf.Max(coyoteCounter, 0f);
+    jumpBufferCounter = Mathf.Max(jumpBufferCounter, 0f);
+}
 
     private void TryJump()
-    {
-        if (jumpBufferCounter <= 0f)
-            return;
+{
+    if (jumpConsumed)
+        return;
 
-        if (coyoteCounter <= 0f)
-            return;
+    if (jumpBufferCounter <= 0f)
+        return;
 
-        verticalVelocity = Mathf.Sqrt(
-            jumpHeight * -2f * gravity
-        );
+    if (coyoteCounter <= 0f)
+        return;
 
-        jumpBufferCounter = 0f;
-        coyoteCounter = 0f;
-    }
+    verticalVelocity = Mathf.Sqrt(
+        jumpHeight * -2f * gravity
+    );
+
+    jumpConsumed = true;
+    jumpBufferCounter = 0f;
+    coyoteCounter = 0f;
+}
 
     private void UpdateGravity()
 {
