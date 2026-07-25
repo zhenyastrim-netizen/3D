@@ -19,6 +19,8 @@ public class HitscanWeapon : MonoBehaviour
     [SerializeField] private Tracer tracerPrefab;
 [SerializeField] private Transform muzzlePoint;
 [SerializeField] private ImpactEffect impactPrefab;
+[SerializeField] private WeaponAmmo ammo;
+[SerializeField] private WeaponReload reload;
 
     [Header("Debug")]
     [SerializeField] private bool drawShotRay = true;
@@ -55,6 +57,16 @@ public class HitscanWeapon : MonoBehaviour
 
     private void Shoot()
 {
+    if (reload.IsReloading)
+    return;
+
+if (!ammo.CanShoot())
+{
+    Debug.Log("Нет патронов");
+    return;
+}
+
+ammo.UseAmmo();
     Vector3 endPoint;
     muzzleFlash?.Play();
     
