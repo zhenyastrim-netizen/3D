@@ -42,6 +42,6 @@ public class PlayerLook : MonoBehaviour
         cameraHolder.localRotation = Quaternion.Euler(xRotation, 0, 0);
 
         transform.Rotate(Vector3.up * mouseX);
-        Debug.Log(xRotation);
+        
     }
 }

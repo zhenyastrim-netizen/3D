@@ -28,6 +28,15 @@ public class HitscanWeapon : MonoBehaviour
 
     private float nextFireTime;
     [SerializeField]private CameraRecoil recoil;
+    
+
+public void Initialize(
+    Camera newPlayerCamera,
+    CameraRecoil newCameraRecoil)
+{
+    playerCamera = newPlayerCamera;
+    recoil = newCameraRecoil;
+}
 
     private void Awake()
     {
@@ -54,6 +63,7 @@ public class HitscanWeapon : MonoBehaviour
             Shoot();
         }
     }
+    
 
     private void Shoot()
 {

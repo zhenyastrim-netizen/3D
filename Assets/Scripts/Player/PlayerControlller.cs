@@ -48,59 +48,60 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void Move()
+{
+    if (playerSlide != null && playerSlide.IsSliding)
     {
-        if (playerSlide != null && playerSlide.IsSliding)
-{
-    motor.HorizontalVelocity = Vector3.zero;
-    return;
-}
-        if (playerDash.IsDashing)
-{
-    motor.HorizontalVelocity = Vector3.zero;
-    return;
-}
-        Vector2 input = moveAction.ReadValue<Vector2>();
+        currentVelocity = Vector3.zero;
+        motor.HorizontalVelocity = Vector3.zero;
+        return;
+    }
 
-        Vector3 direction =
-            transform.forward * input.y +
-            transform.right * input.x;
+    if (playerDash != null && playerDash.IsDashing)
+    {
+        currentVelocity = Vector3.zero;
+        motor.HorizontalVelocity = Vector3.zero;
+        return;
+    }
 
+    Vector2 input = moveAction.ReadValue<Vector2>();
+
+    Vector3 direction =
+        transform.forward * input.y +
+        transform.right * input.x;
+
+    direction.y = 0f;
+
+    if (direction.sqrMagnitude > 1f)
         direction.Normalize();
-       
 
-MoveDirection = direction;
-        bool isSprinting =
-    sprintAction.IsPressed() &&
-    input != Vector2.zero;
+    MoveDirection = direction;
 
-float currentSpeed = isSprinting
-    ? sprintSpeed
-    : moveSpeed;
+    bool isSprinting =
+        sprintAction.IsPressed() &&
+        input.sqrMagnitude > 0.01f;
 
-cameraEffects.IsSprinting = isSprinting;
+    float currentSpeed = isSprinting
+        ? sprintSpeed
+        : moveSpeed;
 
-Vector3 targetVelocity = direction * currentSpeed;
+    if (cameraEffects != null)
+        cameraEffects.IsSprinting = isSprinting;
 
-        float speed =
-            direction.magnitude > 0
+    Vector3 targetVelocity =
+        direction * currentSpeed;
+
+    float changeSpeed =
+        direction.sqrMagnitude > 0.01f
             ? acceleration
             : deceleration;
 
-        currentVelocity = Vector3.MoveTowards(
-            currentVelocity,
-            targetVelocity,
-            speed * Time.deltaTime);
-        
+    currentVelocity = Vector3.MoveTowards(
+        currentVelocity,
+        targetVelocity,
+        changeSpeed * Time.deltaTime
+    );
 
-       
-       
+    motor.HorizontalVelocity = currentVelocity;
+}
 
-    
-
-        motor.HorizontalVelocity = currentVelocity;
-
-        
-
-        
-    }
 }

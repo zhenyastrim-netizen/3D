@@ -7,23 +7,37 @@ public class PlayerJump : MonoBehaviour
     [Header("Input")]
     [SerializeField] private InputAction jumpAction;
 
-    [Header("Settings")]
+    [Header("Jump")]
     [SerializeField] private float jumpHeight = 2f;
-    [SerializeField] private float gravity = -25f;
+
+    [Header("Gravity")]
+    [SerializeField] private float gravity = -30f;
     [SerializeField] private float fallMultiplier = 2.5f;
-    [SerializeField] private float maxFallSpeed = -50f;
+    [SerializeField] private float lowJumpMultiplier = 2f;
+    [SerializeField] private float maxFallSpeed = -60f;
+    [SerializeField] private float groundedForce = -2f;
+    [Header("Apex")]
+[SerializeField] private float apexThreshold = 2f;
+[SerializeField] private float apexGravityMultiplier = 2f;
 
     [Header("Assist")]
     [SerializeField] private float coyoteTime = 0.15f;
     [SerializeField] private float jumpBuffer = 0.15f;
 
     [Header("References")]
-    [SerializeField] private PlayerMotor motor;
     [SerializeField] private PlayerGround playerGround;
 
     private float coyoteCounter;
     private float jumpBufferCounter;
     private float verticalVelocity;
+
+    public float VerticalVelocity => verticalVelocity;
+
+    private void Awake()
+    {
+        if (playerGround == null)
+            playerGround = GetComponent<PlayerGround>();
+    }
 
     private void OnEnable()
     {
@@ -37,17 +51,15 @@ public class PlayerJump : MonoBehaviour
 
     private void Update()
     {
-        UpdateCoyoteTime();
-        UpdateJumpBuffer();
+        UpdateTimers();
         TryJump();
-        ApplyGravity();
-
-        motor.VerticalVelocity = verticalVelocity;
+        UpdateGravity();
     }
 
-    private void UpdateCoyoteTime()
+    private void UpdateTimers()
     {
-        if (playerGround.IsGrounded)
+        // Coyote time: небольшой запас после схода с края.
+        if (playerGround != null && playerGround.IsGrounded)
         {
             coyoteCounter = coyoteTime;
         }
@@ -55,10 +67,8 @@ public class PlayerJump : MonoBehaviour
         {
             coyoteCounter -= Time.deltaTime;
         }
-    }
 
-    private void UpdateJumpBuffer()
-    {
+        // Jump buffer: запоминаем нажатие немного заранее.
         if (jumpAction.WasPressedThisFrame())
         {
             jumpBufferCounter = jumpBuffer;
@@ -67,32 +77,66 @@ public class PlayerJump : MonoBehaviour
         {
             jumpBufferCounter -= Time.deltaTime;
         }
+
+        coyoteCounter = Mathf.Max(coyoteCounter, 0f);
+        jumpBufferCounter = Mathf.Max(jumpBufferCounter, 0f);
     }
 
     private void TryJump()
     {
-        if (jumpBufferCounter <= 0f || coyoteCounter <= 0f)
+        if (jumpBufferCounter <= 0f)
             return;
 
-        verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        if (coyoteCounter <= 0f)
+            return;
+
+        verticalVelocity = Mathf.Sqrt(
+            jumpHeight * -2f * gravity
+        );
 
         jumpBufferCounter = 0f;
         coyoteCounter = 0f;
     }
 
-    private void ApplyGravity()
+    private void UpdateGravity()
+{
+    bool isGrounded =
+        playerGround != null &&
+        playerGround.IsGrounded;
+
+    if (isGrounded && verticalVelocity < 0f)
     {
-        if (playerGround.IsGrounded && verticalVelocity < 0f)
-        {
-            verticalVelocity = -2f;
-            return;
-        }
+        verticalVelocity = groundedForce;
+        return;
+    }
 
-        float currentGravity = verticalVelocity < 0f
-            ? gravity * fallMultiplier
-            : gravity;
+    float gravityMultiplier = 1f;
 
-        verticalVelocity += currentGravity * Time.deltaTime;
-        verticalVelocity = Mathf.Max(verticalVelocity, maxFallSpeed);
+    // Уже падаем.
+    if (verticalVelocity < 0f)
+    {
+        gravityMultiplier = fallMultiplier;
+    }
+    // Игрок отпустил прыжок во время подъёма.
+    else if (!jumpAction.IsPressed())
+    {
+        gravityMultiplier = lowJumpMultiplier;
+    }
+    // Скорость около нуля — вершина прыжка.
+    else if (Mathf.Abs(verticalVelocity) < apexThreshold)
+    {
+        gravityMultiplier = apexGravityMultiplier;
+    }
+
+    verticalVelocity +=
+        gravity *
+        gravityMultiplier *
+        Time.deltaTime;
+
+    verticalVelocity = Mathf.Max(
+        verticalVelocity,
+        maxFallSpeed
+    );
+
     }
 }

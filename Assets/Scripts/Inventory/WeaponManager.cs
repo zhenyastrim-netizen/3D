@@ -1,71 +1,123 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class WeaponManager : MonoBehaviour
 {
-    [Header("Input")]
-    [SerializeField] private InputAction slot1Action;
-    [SerializeField] private InputAction slot2Action;
-    [SerializeField] private InputAction slot3Action;
-    [SerializeField] private InputAction slot4Action;
+    [Header("References")]
+    [SerializeField] private Inventory inventory;
+    [SerializeField] private HotbarController hotbarController;
+    [SerializeField] private Transform weaponHolder;
 
-    [Header("Weapons")]
-    [SerializeField] private GameObject[] weapons;
-
-    private int currentWeapon = -1;
-
-    private void OnEnable()
-    {
-        slot1Action.Enable();
-        slot2Action.Enable();
-        slot3Action.Enable();
-        slot4Action.Enable();
-    }
-
-    private void OnDisable()
-    {
-        slot1Action.Disable();
-        slot2Action.Disable();
-        slot3Action.Disable();
-        slot4Action.Disable();
-    }
+    private GameObject currentWeaponObject;
+    private WeaponData currentWeaponData;
+    private int equippedSlotIndex = -1;
+[SerializeField] private Camera playerCamera;
+[SerializeField] private CameraRecoil cameraRecoil;
+    public WeaponData CurrentWeaponData => currentWeaponData;
+    public GameObject CurrentWeaponObject => currentWeaponObject;
 
     private void Start()
+{
+    hotbarController.OnSelectedSlotChanged += HandleSelectedSlotChanged;
+    inventory.OnInventoryChanged += HandleInventoryChanged;
+
+    Invoke(nameof(EquipCurrentSlot), 0f);
+}
+
+private void EquipCurrentSlot()
+{
+    EquipFromSlot(hotbarController.SelectedIndex);
+}
+
+    private void OnDestroy()
     {
-        EquipWeapon(0);
+        if (hotbarController != null)
+            hotbarController.OnSelectedSlotChanged -= HandleSelectedSlotChanged;
+
+        if (inventory != null)
+            inventory.OnInventoryChanged -= HandleInventoryChanged;
     }
 
-    private void Update()
+    private void HandleSelectedSlotChanged(int slotIndex)
     {
-        if (slot1Action.WasPressedThisFrame())
-            EquipWeapon(0);
-
-        if (slot2Action.WasPressedThisFrame())
-            EquipWeapon(1);
-
-        if (slot3Action.WasPressedThisFrame())
-            EquipWeapon(2);
-
-        if (slot4Action.WasPressedThisFrame())
-            EquipWeapon(3);
+        EquipFromSlot(slotIndex);
     }
 
-    public void EquipWeapon(int index)
+    private void HandleInventoryChanged()
     {
-        if (index < 0 || index >= weapons.Length)
+        EquipFromSlot(hotbarController.SelectedIndex);
+    }
+
+    private void EquipFromSlot(int slotIndex)
+    {
+        if (inventory == null || inventory.Slots == null)
             return;
 
-        if (currentWeapon == index)
-            return;
-
-        for (int i = 0; i < weapons.Length; i++)
+        if (slotIndex < 0 || slotIndex >= inventory.Slots.Length)
         {
-            if (weapons[i] != null)
-                weapons[i].SetActive(i == index);
+            UnequipWeapon();
+            return;
         }
 
-        currentWeapon = index;
+        InventorySlot slot = inventory.Slots[slotIndex];
 
-        Debug.Log("Equipped: " + weapons[index].name);
+        if (slot.IsEmpty)
+        {
+            UnequipWeapon();
+            return;
+        }
+
+        WeaponData weaponData = slot.Item.Item as WeaponData;
+
+        if (weaponData == null)
+        {
+            UnequipWeapon();
+            return;
+        }
+
+        if (equippedSlotIndex == slotIndex &&
+            currentWeaponData == weaponData &&
+            currentWeaponObject != null)
+        {
+            return;
+        }
+
+        EquipWeapon(weaponData, slotIndex);
     }
+
+    private void EquipWeapon(WeaponData weaponData, int slotIndex)
+{
+    UnequipWeapon();
+
+    if (weaponData == null || weaponData.WeaponPrefab == null)
+        return;
+
+    currentWeaponObject = Instantiate(
+        weaponData.WeaponPrefab,
+        weaponHolder
+    );
+    Debug.Log(
+    $"WeaponManager создал {currentWeaponObject.name} " +
+    $"в объекте {weaponHolder.name}",
+    currentWeaponObject
+);
+
+    currentWeaponObject.transform.localPosition = Vector3.zero;
+    currentWeaponObject.transform.localRotation = Quaternion.identity;
+
+    currentWeaponData = weaponData;
+    equippedSlotIndex = slotIndex;
+}
+
+
+    private void UnequipWeapon()
+{
+    if (currentWeaponObject != null)
+    {
+        Destroy(currentWeaponObject);
+        currentWeaponObject = null;
+    }
+
+    currentWeaponData = null;
+    equippedSlotIndex = -1;
+}
 }

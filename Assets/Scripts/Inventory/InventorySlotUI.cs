@@ -12,6 +12,7 @@ public class InventorySlotUI : MonoBehaviour,
     [Header("UI")]
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text amountText;
+    [SerializeField] private GameObject selectionFrame;
 
     private InventorySlot slot;
     private Inventory inventory;
@@ -30,6 +31,7 @@ public class InventorySlotUI : MonoBehaviour,
         slotIndex = index;
         inventory = ownerInventory;
 
+        SetSelected(false);
         Refresh();
     }
 
@@ -60,9 +62,18 @@ public class InventorySlotUI : MonoBehaviour,
         }
     }
 
+    public void SetSelected(bool selected)
+    {
+        if (selectionFrame != null)
+            selectionFrame.SetActive(selected);
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (slot == null || slot.IsEmpty)
+            return;
+
+        if (InventoryDragManager.Instance == null)
             return;
 
         InventoryDragManager.Instance.BeginDrag(this);
@@ -75,25 +86,25 @@ public class InventorySlotUI : MonoBehaviour,
 
     public void OnDrag(PointerEventData eventData)
     {
-        // Сам DragIcon двигается внутри InventoryDragManager.
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        InventoryDragManager.Instance.EndDrag();
+        if (InventoryDragManager.Instance != null)
+            InventoryDragManager.Instance.EndDrag();
 
         Refresh();
     }
 
     public void OnDrop(PointerEventData eventData)
     {
+        if (InventoryDragManager.Instance == null)
+            return;
+
         InventorySlotUI draggedSlot =
             InventoryDragManager.Instance.DraggedSlot;
 
-        if (draggedSlot == null)
-            return;
-
-        if (draggedSlot == this)
+        if (draggedSlot == null || draggedSlot == this)
             return;
 
         if (draggedSlot.Inventory != inventory)

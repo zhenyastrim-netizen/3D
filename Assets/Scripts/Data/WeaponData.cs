@@ -3,16 +3,13 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Inventory/Weapon")]
 public class WeaponData : ItemData
 {
-    [Header("Weapon")]
+    [Header("Combat")]
+    [SerializeField] private float damage = 10f;
+    [SerializeField] private float fireRate = 5f;
+    [SerializeField] private int magazineSize = 12;
+    [SerializeField] private float reloadTime = 1.5f;
 
-    [SerializeField] private float damage;
-
-    [SerializeField] private float fireRate;
-
-    [SerializeField] private int magazineSize;
-
-    [SerializeField] private float reloadTime;
-
+    [Header("Prefabs")]
     [SerializeField] private GameObject weaponPrefab;
 
     public float Damage => damage;

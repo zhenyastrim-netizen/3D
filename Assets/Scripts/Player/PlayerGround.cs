@@ -12,12 +12,20 @@ public class PlayerGround : MonoBehaviour
 
     public bool IsGrounded { get; private set; }
 
-    private void FixedUpdate()
+    private void Update()
 {
+    if (groundCheck == null)
+    {
+        IsGrounded = false;
+        return;
+    }
+
     IsGrounded = Physics.CheckSphere(
         groundCheck.position,
         groundRadius,
-        groundMask);
+        groundMask,
+        QueryTriggerInteraction.Ignore
+    );
 }
 
 #if UNITY_EDITOR

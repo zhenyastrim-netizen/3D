@@ -5032,6 +5032,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7010164edfdbc1d46829c3869aab6214, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2951180106947310859}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7010164edfdbc1d46829c3869aab6214, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2026320514143037215}
   m_SourcePrefab: {fileID: 100100000, guid: 7010164edfdbc1d46829c3869aab6214, type: 3}
 --- !u!4 &4924974907446042909 stripped
 Transform:
@@ -5079,7 +5082,7 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  weaponRecoil: {fileID: 0}
+  weaponRecoil: {fileID: 2026320514143037215}
   muzzleFlash: {fileID: 986730275425442835}
   tracerPrefab: {fileID: 7223411841943916865, guid: 7ba31beebcec95d4ca4971095d33a14f, type: 3}
   muzzlePoint: {fileID: 6501003796499669411}
@@ -5133,3 +5136,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponAmmo
   magazineSize: 12
   reserveAmmo: 60
+--- !u!114 &2026320514143037215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5697852019763116967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6ae235e64970454e969e24d80a5be14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponRecoil
+  kickBack: 0.15
+  kickRotation: 10
+  returnSpeed: 15
