@@ -593,7 +593,6 @@ GameObject:
   - component: {fileID: 423475952}
   - component: {fileID: 423475953}
   - component: {fileID: 423475954}
-  - component: {fileID: 423475955}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -873,11 +872,14 @@ MonoBehaviour:
     m_Flags: 0
   jumpHeight: 2
   gravity: -35
-  fallMultiplier: 2.5
+  fallMultiplier: 4
+  lowJumpMultiplier: 2
   maxFallSpeed: -100
+  groundedForce: -2
+  apexThreshold: 2
+  apexGravityMultiplier: 2
   coyoteTime: 0.2
   jumpBuffer: 0.15
-  motor: {fileID: 423475947}
   playerGround: {fileID: 423475948}
 --- !u!114 &423475947
 MonoBehaviour:
@@ -891,6 +893,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9586bcafdd7d0934a9ce1db9bb4a2397, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMotor
+  playerJump: {fileID: 0}
 --- !u!114 &423475948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1055,23 +1058,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HotbarController
   inventory: {fileID: 423475952}
   hotbarSize: 5
---- !u!114 &423475955
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 423475938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13f70a9b849e7154f9ddfd1ccbd77165, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponManager
-  inventory: {fileID: 423475952}
-  hotbarController: {fileID: 423475954}
-  weaponHolder: {fileID: 1449617006}
-  playerCamera: {fileID: 0}
-  cameraRecoil: {fileID: 0}
 --- !u!1001 &485643430
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1639,83 +1625,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1c7137ece94e9f34b8bf5168f39c5b9c, type: 3}
   m_PrefabInstance: {fileID: 1414034646}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &753103869
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 753103870}
-  - component: {fileID: 753103871}
-  m_Layer: 0
-  m_Name: TestGun
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &753103870
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 753103869}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1449617006}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &753103871
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 753103869}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8327c3be9385583488e7d205e4e6991e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HitscanWeapon
-  fireAction:
-    m_Name: Fire
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: e2b5a980-aae5-42fc-bd2b-ab6d15e906a1
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: bae8c60a-f72a-4807-8afb-f4b6c7a0d454
-      m_Path: <Mouse>/leftButton
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Fire
-      m_Flags: 0
-    m_Flags: 0
-  playerCamera: {fileID: 508092451}
-  damage: 25
-  fireRate: 8
-  range: 100
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  weaponRecoil: {fileID: 0}
-  muzzleFlash: {fileID: 0}
-  tracerPrefab: {fileID: 0}
-  muzzlePoint: {fileID: 0}
-  impactPrefab: {fileID: 0}
-  ammo: {fileID: 0}
-  reload: {fileID: 0}
-  drawShotRay: 1
-  recoil: {fileID: 1543052475}
 --- !u!4 &860710424 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a911a5e2ef225b149b6eb775a52b1cdc, type: 3}
@@ -1824,6 +1733,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1008005123}
+  - component: {fileID: 1008005124}
   m_Layer: 0
   m_Name: BobHolder
   m_TagString: Untagged
@@ -1839,13 +1749,33 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1008005122}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1449617006}
+  m_Father: {fileID: 1573244247}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1008005124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1008005122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d26fe714f16c73a459a9eb3657858dc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponBob
+  controller: {fileID: 423475940}
+  moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  walkFrequency: 7
+  walkHorizontalAmplitude: 0.025
+  walkVerticalAmplitude: 0.035
+  airTilt: 2
+  positionSmoothSpeed: 12
+  rotationSmoothSpeed: 10
 --- !u!1001 &1036267390
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2235,9 +2165,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 753103870}
   - {fileID: 411739001}
-  - {fileID: 1008005123}
+  - {fileID: 1573244247}
   m_Father: {fileID: 508092448}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1449617007
@@ -2367,6 +2296,58 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 78c8dcd146df7a84fa58b96ac7802f06, type: 3}
   m_PrefabInstance: {fileID: 1485779723}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1573244246
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1573244247}
+  - component: {fileID: 1573244248}
+  m_Layer: 0
+  m_Name: SwayHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1573244247
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573244246}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1008005123}
+  m_Father: {fileID: 1449617006}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1573244248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573244246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84d83f4dbfa53524f913feefa6f58a82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponSway
+  lookAction: {fileID: 7349966049969378402, guid: e3cccc90cc714504284dc73a27483b3a, type: 3}
+  positionAmount: 0.0025
+  maxPositionAmount: 0.05
+  rotationAmount: 0.12
+  maxRotationAmount: 5
+  positionSmoothSpeed: 12
+  rotationSmoothSpeed: 12
 --- !u!1001 &1772543683
 PrefabInstance:
   m_ObjectHideFlags: 0
