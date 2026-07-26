@@ -57,11 +57,10 @@ public class PlayerMovement : MonoBehaviour
     }
 
     if (playerDash != null && playerDash.IsDashing)
-    {
-        currentVelocity = Vector3.zero;
-        motor.HorizontalVelocity = Vector3.zero;
-        return;
-    }
+{
+    motor.HorizontalVelocity = Vector3.zero;
+    return;
+}
 
     Vector2 input = moveAction.ReadValue<Vector2>();
 

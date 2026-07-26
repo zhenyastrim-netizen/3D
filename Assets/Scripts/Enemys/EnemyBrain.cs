@@ -61,10 +61,16 @@ public class EnemyBrain : MonoBehaviour
 
     private void UpdateState()
     {
-        float distanceToTarget = Vector3.Distance(
-            transform.position,
-            target.position
-        );
+        Vector3 enemyPosition = transform.position;
+Vector3 targetPosition = target.position;
+
+enemyPosition.y = 0f;
+targetPosition.y = 0f;
+
+float distanceToTarget = Vector3.Distance(
+    enemyPosition,
+    targetPosition
+);
 
         switch (currentState)
         {

@@ -7,15 +7,20 @@ public class PlayerSlide : MonoBehaviour
     [Header("Input")]
     [SerializeField] private InputAction slideAction;
 
-    [Header("Settings")]
-    [SerializeField] private float slideSpeed = 14f;
+    [Header("Slide")]
+    [SerializeField] private float minimumSlideSpeed = 8f;
+    [SerializeField] private float slideSpeedMultiplier = 1f;
     [SerializeField] private float slideDuration = 0.8f;
-    [SerializeField] private float slideDeceleration = 12f;
+    [SerializeField] private float slideDeceleration = 4f;
     [SerializeField] private float slideCooldown = 0.2f;
 
     [Header("Character Height")]
-    [SerializeField] private float standingHeight = 2f;
     [SerializeField] private float slidingHeight = 1f;
+
+    [Header("Camera")]
+    [SerializeField] private float cameraSlideOffset = 0.65f;
+    [SerializeField] private float cameraDownSpeed = 18f;
+    [SerializeField] private float cameraUpSpeed = 12f;
 
     [Header("References")]
     [SerializeField] private CharacterController controller;
@@ -24,60 +29,41 @@ public class PlayerSlide : MonoBehaviour
     [SerializeField] private PlayerGround playerGround;
     [SerializeField] private PlayerDash playerDash;
     [SerializeField] private Transform cameraHolder;
-    [Header("Camera")]
-[SerializeField] private float cameraSlideOffset = 0.65f;
-[SerializeField] private float cameraDownSpeed = 18f;
-[SerializeField] private float cameraUpSpeed = 12f;
-private Vector3 cameraStartLocalPosition;
+
+    private Vector3 slideVelocity;
+    private Vector3 cameraStartLocalPosition;
+
     private float originalHeight;
-private Vector3 originalCenter;
+    private Vector3 originalCenter;
+
+    private bool canSlide = true;
+    private Coroutine slideCoroutine;
 
     public bool IsSliding { get; private set; }
 
-    private bool canSlide = true;
-    private Vector3 slideDirection;
-    private float currentSlideSpeed;
-
     private void Awake()
-{
-    if (controller == null)
-        controller = GetComponent<CharacterController>();
-
-    if (motor == null)
-        motor = GetComponent<PlayerMotor>();
-
-    if (playerMovement == null)
-        playerMovement = GetComponent<PlayerMovement>();
-
-    if (playerGround == null)
-        playerGround = GetComponent<PlayerGround>();
-
-    if (playerDash == null)
-        playerDash = GetComponent<PlayerDash>();
-
-    originalHeight = controller.height;
-    originalCenter = controller.center;
-    cameraStartLocalPosition = cameraHolder.localPosition;
-}
-private void UpdateCameraHeight()
-{
-    Vector3 targetPosition = cameraStartLocalPosition;
-
-    if (IsSliding)
     {
-        targetPosition.y -= cameraSlideOffset;
+        if (controller == null)
+            controller = GetComponent<CharacterController>();
+
+        if (motor == null)
+            motor = GetComponent<PlayerMotor>();
+
+        if (playerMovement == null)
+            playerMovement = GetComponent<PlayerMovement>();
+
+        if (playerGround == null)
+            playerGround = GetComponent<PlayerGround>();
+
+        if (playerDash == null)
+            playerDash = GetComponent<PlayerDash>();
+
+        originalHeight = controller.height;
+        originalCenter = controller.center;
+
+        if (cameraHolder != null)
+            cameraStartLocalPosition = cameraHolder.localPosition;
     }
-
-    float speed = IsSliding
-        ? cameraDownSpeed
-        : cameraUpSpeed;
-
-    cameraHolder.localPosition = Vector3.MoveTowards(
-        cameraHolder.localPosition,
-        targetPosition,
-        speed * Time.deltaTime
-    );
-}
 
     private void OnEnable()
     {
@@ -88,35 +74,36 @@ private void UpdateCameraHeight()
     {
         slideAction.Disable();
 
+        if (slideCoroutine != null)
+        {
+            StopCoroutine(slideCoroutine);
+            slideCoroutine = null;
+        }
+
         if (IsSliding)
-            StopSlide();
+            StopSlide(false);
     }
 
     private void Update()
-{
-    if (slideAction.WasPressedThisFrame())
     {
-        TryStartSlide();
-    }
+        if (slideAction.WasPressedThisFrame())
+            TryStartSlide();
 
-    UpdateCameraHeight();
-}
+        UpdateCameraHeight();
+    }
 
     private void TryStartSlide()
     {
-        if (!canSlide)
+        if (!canSlide || IsSliding)
             return;
 
-        if (IsSliding)
-            return;
-
-        if (!playerGround.IsGrounded)
+        if (playerGround == null || !playerGround.IsGrounded)
             return;
 
         if (playerDash != null && playerDash.IsDashing)
             return;
 
-        StartCoroutine(SlideRoutine());
+        slideCoroutine = StartCoroutine(SlideRoutine());
     }
 
     private IEnumerator SlideRoutine()
@@ -124,9 +111,25 @@ private void UpdateCameraHeight()
         canSlide = false;
         IsSliding = true;
 
-        slideDirection = playerMovement.MoveDirection;
+        Vector3 currentVelocity =
+            motor.HorizontalVelocity +
+            motor.ExternalVelocity +
+            motor.MomentumVelocity;
 
-        if (slideDirection.sqrMagnitude < 0.01f)
+        currentVelocity.y = 0f;
+
+        Vector3 slideDirection;
+
+        if (currentVelocity.sqrMagnitude > 0.01f)
+        {
+            slideDirection = currentVelocity.normalized;
+        }
+        else if (playerMovement != null &&
+                 playerMovement.MoveDirection.sqrMagnitude > 0.01f)
+        {
+            slideDirection = playerMovement.MoveDirection.normalized;
+        }
+        else
         {
             slideDirection = transform.forward;
         }
@@ -134,56 +137,117 @@ private void UpdateCameraHeight()
         slideDirection.y = 0f;
         slideDirection.Normalize();
 
-        currentSlideSpeed = slideSpeed;
+        float startingSpeed = currentVelocity.magnitude;
+
+        startingSpeed = Mathf.Max(
+            startingSpeed,
+            minimumSlideSpeed
+        );
+
+        slideVelocity =
+            slideDirection *
+            startingSpeed *
+            slideSpeedMultiplier;
+
+        // Переносим всю скорость под управление слайда.
+        motor.HorizontalVelocity = Vector3.zero;
+        motor.ExternalVelocity = Vector3.zero;
+        motor.ClearMomentum();
 
         SetControllerHeight(slidingHeight);
 
         float timer = 0f;
 
-        while (timer < slideDuration && playerGround.IsGrounded)
+        while (
+            IsSliding &&
+            timer < slideDuration &&
+            playerGround.IsGrounded
+        )
         {
-            motor.ExternalVelocity = slideDirection * currentSlideSpeed;
+            motor.ExternalVelocity = slideVelocity;
 
-            currentSlideSpeed = Mathf.MoveTowards(
-                currentSlideSpeed,
-                0f,
+            slideVelocity = Vector3.MoveTowards(
+                slideVelocity,
+                Vector3.zero,
                 slideDeceleration * Time.deltaTime
             );
 
-            timer += Time.deltaTime;
-
-            if (currentSlideSpeed <= 0.1f)
+            if (slideVelocity.sqrMagnitude <= 0.01f)
                 break;
 
+            timer += Time.deltaTime;
             yield return null;
         }
 
-        StopSlide();
+        if (IsSliding)
+            StopSlide(true);
+
+        slideCoroutine = null;
 
         yield return new WaitForSeconds(slideCooldown);
 
         canSlide = true;
     }
 
-    private void StopSlide()
-{
-    motor.ExternalVelocity = Vector3.zero;
+    public void ExitSlideForJump()
+    {
+        if (!IsSliding)
+            return;
 
-    controller.height = originalHeight;
-    controller.center = originalCenter;
+        StopSlide(true);
+    }
 
-    IsSliding = false;
-}
+    private void StopSlide(bool preserveMomentum)
+    {
+        if (!IsSliding)
+            return;
+
+        if (preserveMomentum)
+            motor.SetMomentum(slideVelocity);
+
+        motor.ExternalVelocity = Vector3.zero;
+
+        controller.height = originalHeight;
+        controller.center = originalCenter;
+
+        IsSliding = false;
+    }
 
     private void SetControllerHeight(float newHeight)
-{
-    float heightDifference = originalHeight - newHeight;
+    {
+        float heightDifference =
+            originalHeight - newHeight;
 
-    controller.height = newHeight;
+        controller.height = newHeight;
 
-    Vector3 newCenter = originalCenter;
-    newCenter.y = originalCenter.y - heightDifference * 0.5f;
+        Vector3 newCenter = originalCenter;
+        newCenter.y =
+            originalCenter.y -
+            heightDifference * 0.5f;
 
-    controller.center = newCenter;
-}
+        controller.center = newCenter;
+    }
+
+    private void UpdateCameraHeight()
+    {
+        if (cameraHolder == null)
+            return;
+
+        Vector3 targetPosition =
+            cameraStartLocalPosition;
+
+        if (IsSliding)
+            targetPosition.y -= cameraSlideOffset;
+
+        float speed = IsSliding
+            ? cameraDownSpeed
+            : cameraUpSpeed;
+
+        cameraHolder.localPosition =
+            Vector3.MoveTowards(
+                cameraHolder.localPosition,
+                targetPosition,
+                speed * Time.deltaTime
+            );
+    }
 }

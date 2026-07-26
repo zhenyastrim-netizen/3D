@@ -119,6 +119,63 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &45833976
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 45833977}
+  - component: {fileID: 45833978}
+  m_Layer: 3
+  m_Name: GroundCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &45833977
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45833976}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.051, y: -0.983, z: 0.031}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2136296544}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!143 &45833978
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45833976}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &95677901
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,7 +332,7 @@ GameObject:
   m_Component:
   - component: {fileID: 239375320}
   - component: {fileID: 239375322}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -593,6 +650,9 @@ GameObject:
   - component: {fileID: 423475952}
   - component: {fileID: 423475953}
   - component: {fileID: 423475954}
+  - component: {fileID: 423475955}
+  - component: {fileID: 423475956}
+  - component: {fileID: 423475957}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -872,7 +932,7 @@ MonoBehaviour:
     m_Flags: 0
   jumpHeight: 2
   gravity: -30
-  fallMultiplier: 2.5
+  fallMultiplier: 3
   lowJumpMultiplier: 2
   maxFallSpeed: -100
   groundedForce: -7
@@ -881,6 +941,8 @@ MonoBehaviour:
   coyoteTime: 0.2
   jumpBuffer: 0.15
   playerGround: {fileID: 423475948}
+  motor: {fileID: 423475947}
+  playerSlide: {fileID: 423475951}
 --- !u!114 &423475947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -893,7 +955,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9586bcafdd7d0934a9ce1db9bb4a2397, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMotor
-  playerJump: {fileID: 0}
+  playerJump: {fileID: 423475946}
+  groundCheck: {fileID: 423475957}
+  groundMomentumDeceleration: 30
+  airMomentumDeceleration: 5
+  momentumStopThreshold: 0.1
 --- !u!114 &423475948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -956,21 +1022,13 @@ MonoBehaviour:
       m_Action: Dash
       m_Flags: 0
     m_Flags: 0
-  moveAction:
-    m_Name: Move
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 40e21246-6df4-4a6e-8b53-42f600695189
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
   dashSpeed: 30
   dashDuration: 0.18
   dashCooldown: 0.4
+  exitMomentumPercent: 0.65
+  momentumDeceleration: 35
+  momentumStopThreshold: 0.1
   motor: {fileID: 423475947}
-  playerLook: {fileID: 423475945}
-  MoveDirection: {fileID: 423475939}
   playerMovement: {fileID: 423475939}
 --- !u!114 &423475951
 MonoBehaviour:
@@ -1001,21 +1059,21 @@ MonoBehaviour:
       m_Action: Slide
       m_Flags: 0
     m_Flags: 0
-  slideSpeed: 14
+  minimumSlideSpeed: 8
+  slideSpeedMultiplier: 1
   slideDuration: 0.8
   slideDeceleration: 12
   slideCooldown: 0.2
-  standingHeight: 2
   slidingHeight: 1
+  cameraSlideOffset: 0.65
+  cameraDownSpeed: 18
+  cameraUpSpeed: 12
   controller: {fileID: 423475940}
   motor: {fileID: 423475947}
   playerMovement: {fileID: 423475939}
   playerGround: {fileID: 423475948}
   playerDash: {fileID: 423475950}
   cameraHolder: {fileID: 1543052474}
-  cameraSlideOffset: 0.65
-  cameraDownSpeed: 18
-  cameraUpSpeed: 12
 --- !u!114 &423475952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1058,6 +1116,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HotbarController
   inventory: {fileID: 423475952}
   hotbarSize: 5
+--- !u!114 &423475955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423475938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4b5dad2f109cfe4fb2ff44321e9d780, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 100
+--- !u!114 &423475956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423475938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bcfe5078ebbc5a4fbceb792820cd3ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerKnockback
+  horizontalDecay: 14
+  verticalDecay: 20
+  motor: {fileID: 423475947}
+--- !u!114 &423475957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423475938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd897f9d40e612a4c91b62373dc19b6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GroundCheck
+  checkPoint: {fileID: 239375320}
+  checkRadius: 0.25
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1001 &485643430
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1984,7 +2087,7 @@ Transform:
   m_GameObject: {fileID: 1155460208}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.69}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3079,6 +3182,9 @@ GameObject:
   - component: {fileID: 2136296540}
   - component: {fileID: 2136296539}
   - component: {fileID: 2136296538}
+  - component: {fileID: 2136296545}
+  - component: {fileID: 2136296546}
+  - component: {fileID: 2136296547}
   m_Layer: 7
   m_Name: Enemy
   m_TagString: Enemy
@@ -3116,7 +3222,7 @@ MonoBehaviour:
   currentState: 0
   detectionRange: 15
   loseTargetRange: 25
-  attackRange: 1.8
+  attackRange: 2.3
   target: {fileID: 423475944}
   enemyHealth: {fileID: 2136296538}
 --- !u!143 &2136296540
@@ -3140,9 +3246,9 @@ CharacterController:
   m_Height: 2
   m_Radius: 0.5000001
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
+  m_StepOffset: 0.15
+  m_SkinWidth: 0.05
+  m_MinMoveDistance: 0
   m_Center: {x: 0, y: 1, z: 0}
 --- !u!136 &2136296541
 CapsuleCollider:
@@ -3233,14 +3339,87 @@ Transform:
   m_GameObject: {fileID: 2136296537}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.59, y: 1.08, z: 7.78294}
+  m_LocalPosition: {x: -6.59, y: 1.09, z: 7.92}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1301651108}
   - {fileID: 1155460209}
+  - {fileID: 45833977}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2136296545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2136296537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 375bdf3b9ed21c240a15256e32b80f87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  moveSpeed: 5
+  acceleration: 18
+  deceleration: 24
+  rotationSpeed: 12
+  stoppingDistance: 2.2
+  gravity: -30
+  groundedForce: -0.01
+  maxFallSpeed: -50
+  brain: {fileID: 2136296539}
+  groundCheck: {fileID: 2136296546}
+  attackLungeForce: 4
+  movement: {fileID: 0}
+--- !u!114 &2136296546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2136296537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd897f9d40e612a4c91b62373dc19b6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GroundCheck
+  checkPoint: {fileID: 45833977}
+  checkRadius: 0.25
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 8
+--- !u!114 &2136296547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2136296537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21fb387cb4b27134998bf752262e1378, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
+  damage: 20
+  attackRange: 2.3
+  attackRadius: 0.65
+  windupTime: 0.35
+  recoveryTime: 0.25
+  attackCooldown: 1
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 64
+  brain: {fileID: 2136296539}
+  enemyHealth: {fileID: 2136296538}
+  attackPoint: {fileID: 1155460209}
+  knockbackForce: 12
+  knockbackUpwardForce: 3
+  enemyRenderer: {fileID: 2136296542}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  warningColor: {r: 1, g: 0, b: 0, a: 1}
+  attackLungeForce: 4
+  movement: {fileID: 0}
 --- !u!1001 &4108081822647418613
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -27,7 +27,8 @@ public class PlayerJump : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PlayerGround playerGround;
-
+    [SerializeField] private PlayerMotor motor;
+    [SerializeField] private PlayerSlide playerSlide;
     private float coyoteCounter;
     private float jumpBufferCounter;
     private float verticalVelocity;
@@ -36,6 +37,8 @@ public class PlayerJump : MonoBehaviour
 
     private void Awake()
     {
+        if (motor == null)
+        motor = GetComponent<PlayerMotor>();
         if (playerGround == null)
             playerGround = GetComponent<PlayerGround>();
     }
@@ -88,6 +91,7 @@ public class PlayerJump : MonoBehaviour
     jumpBufferCounter = Mathf.Max(jumpBufferCounter, 0f);
 }
 
+
     private void TryJump()
 {
     if (jumpConsumed)
@@ -98,7 +102,14 @@ public class PlayerJump : MonoBehaviour
 
     if (coyoteCounter <= 0f)
         return;
-
+    if (motor != null)
+    motor.PreserveVelocityForJump();
+    
+    if (playerSlide != null &&
+    playerSlide.IsSliding)
+{
+    playerSlide.ExitSlideForJump();
+}
     verticalVelocity = Mathf.Sqrt(
         jumpHeight * -2f * gravity
     );
