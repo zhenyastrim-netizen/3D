@@ -48,14 +48,13 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         );
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(DamageInfo damageInfo)
 {
-    if (damage <= 0f || IsDead)
+    if (damageInfo.Amount <= 0f || IsDead)
         return;
 
-    float armor = playerStats.GetValue(StatType.Armor);
-    float damageReduction = armor / (armor + 100f);
-    float finalDamage = damage * (1f - damageReduction);
+    float finalDamage =
+        CalculateIncomingDamage(damageInfo.Amount);
 
     currentHealth = Mathf.Max(
         currentHealth - finalDamage,
@@ -63,8 +62,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     );
 
     Debug.Log(
-        $"Получено урона: {finalDamage:F1} " +
-        $"(исходный: {damage:F1}, броня: {armor:F1}). " +
+        $"Урон: {finalDamage:F1} | " +
+        $"Тип: {damageInfo.Type} | " +
+        $"Крит: {damageInfo.IsCritical} | " +
         $"HP: {currentHealth:F1}/{maxHealth:F1}"
     );
 

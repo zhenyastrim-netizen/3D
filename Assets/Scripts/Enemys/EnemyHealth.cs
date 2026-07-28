@@ -5,6 +5,16 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
 
+    [Header("Damage multipliers")]
+    [SerializeField, Min(0f)]
+    private float rangedDamageMultiplier = 1f;
+
+    [SerializeField, Min(0f)]
+    private float meleeDamageMultiplier = 1f;
+
+    [SerializeField, Min(0f)]
+    private float magicDamageMultiplier = 1f;
+
     [Header("Death")]
     [SerializeField] private bool destroyOnDeath = true;
     [SerializeField] private float destroyDelay = 0f;
@@ -21,26 +31,42 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         currentHealth = maxHealth;
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(DamageInfo damageInfo)
     {
-        if (isDead)
+        if (isDead || damageInfo.Amount <= 0f)
             return;
 
-        if (damage <= 0f)
-            return;
+        float multiplier =
+            GetDamageMultiplier(damageInfo.Type);
 
-        currentHealth -= damage;
-        currentHealth = Mathf.Max(currentHealth, 0f);
+        float finalDamage =
+            damageInfo.Amount * multiplier;
+
+        currentHealth = Mathf.Max(
+            currentHealth - finalDamage,
+            0f
+        );
 
         Debug.Log(
-            $"{gameObject.name} получил {damage} урона. " +
-            $"Осталось здоровья: {currentHealth}"
+            $"{gameObject.name} получил {finalDamage:F1} урона. " +
+            $"Тип: {damageInfo.Type}. " +
+            $"Крит: {damageInfo.IsCritical}. " +
+            $"HP: {currentHealth:F1}/{maxHealth:F1}"
         );
 
         if (currentHealth <= 0f)
-        {
             Die();
-        }
+    }
+
+    private float GetDamageMultiplier(DamageType damageType)
+    {
+        return damageType switch
+        {
+            DamageType.Ranged => rangedDamageMultiplier,
+            DamageType.Melee => meleeDamageMultiplier,
+            DamageType.Magic => magicDamageMultiplier,
+            _ => 1f
+        };
     }
 
     public void Heal(float amount)
@@ -48,8 +74,10 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         if (isDead || amount <= 0f)
             return;
 
-        currentHealth += amount;
-        currentHealth = Mathf.Min(currentHealth, maxHealth);
+        currentHealth = Mathf.Min(
+            currentHealth + amount,
+            maxHealth
+        );
     }
 
     private void Die()
@@ -62,13 +90,9 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         Debug.Log($"{gameObject.name} умер");
 
         EnemyBrain brain = GetComponent<EnemyBrain>();
-
-        if (brain != null)
-            brain.SetDead();
+        brain?.SetDead();
 
         if (destroyOnDeath)
-        {
             Destroy(gameObject, destroyDelay);
-        }
     }
 }

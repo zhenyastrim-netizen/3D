@@ -31,6 +31,8 @@ public class PlayerStats : MonoBehaviour
     [Header("Combat speed")]
     [SerializeField, Min(0f)]
     private float baseAttackSpeed = 1f;
+    [SerializeField, Min(0f)]
+private float baseMagazineSizeBonus = 0f;
 
     [SerializeField, Min(0f)]
     private float baseReloadSpeed = 1f;
@@ -95,6 +97,10 @@ public class PlayerStats : MonoBehaviour
             StatType.MagicDamage,
             new PlayerStat(baseMagicDamage)
         );
+        stats.Add(
+    StatType.MagazineSize,
+    new PlayerStat(baseMagazineSizeBonus)
+);
 
         stats.Add(
             StatType.AttackSpeed,

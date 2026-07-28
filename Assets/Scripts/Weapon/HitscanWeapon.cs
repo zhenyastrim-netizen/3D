@@ -130,11 +130,14 @@ if (isCritical)
 {
     endPoint = hit.point;
 
-    IDamageable damageable =
-        hit.collider.GetComponentInParent<IDamageable>();
+    DamageInfo damageInfo = new DamageInfo(
+    finalDamage,
+    DamageType.Ranged,
+    isCritical,
+    gameObject
+);
 
-    damageable?.TakeDamage(damage);
-    damageable?.TakeDamage(damage);
+damageable?.TakeDamage(damageInfo);
 
 if(impactPrefab != null)
 {

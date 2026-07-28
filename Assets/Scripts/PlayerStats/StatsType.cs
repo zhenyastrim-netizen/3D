@@ -10,6 +10,7 @@ public enum StatType
 
     AttackSpeed,
     ReloadSpeed,
+    MagazineSize,
 
     CriticalChance,
     CriticalDamage,
