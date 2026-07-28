@@ -71,6 +71,15 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     if (IsDead)
         Die();
 }
+private float CalculateIncomingDamage(float damage)
+{
+    float armor = Mathf.Max(
+        0f,
+        playerStats.GetValue(StatType.Armor)
+    );
+
+    return damage * (100f / (100f + armor));
+}
 
     public void Heal(float amount)
     {

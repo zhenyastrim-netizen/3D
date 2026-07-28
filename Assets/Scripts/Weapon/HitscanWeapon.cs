@@ -129,6 +129,8 @@ if (isCritical)
     QueryTriggerInteraction.Ignore))
 {
     endPoint = hit.point;
+    IDamageable damageable =
+    hit.collider.GetComponentInParent<IDamageable>();
 
     DamageInfo damageInfo = new DamageInfo(
     finalDamage,
