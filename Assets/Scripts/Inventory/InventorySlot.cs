@@ -6,7 +6,6 @@ public class InventorySlot
     private InventoryItem item;
 
     public InventoryItem Item => item;
-
     public bool IsEmpty => item == null;
 
     public void SetItem(InventoryItem inventoryItem)
@@ -25,12 +24,15 @@ public class InventorySlot
                item.CanStackWith(other) &&
                !item.IsFull();
     }
+
     public void Swap(InventorySlot other)
-{
-    InventoryItem temp = item;
+    {
+        if (other == null)
+            return;
 
-    item = other.item;
+        InventoryItem temp = item;
 
-    other.item = temp;
-}
+        item = other.item;
+        other.item = temp;
+    }
 }

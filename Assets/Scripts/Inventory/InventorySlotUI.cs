@@ -39,26 +39,39 @@ public class InventorySlotUI : MonoBehaviour,
     {
         if (slot == null || slot.IsEmpty)
         {
-            icon.enabled = false;
-            icon.sprite = null;
+            if (icon != null)
+            {
+                icon.enabled = false;
+                icon.sprite = null;
+            }
 
             if (amountText != null)
+            {
                 amountText.gameObject.SetActive(false);
+                amountText.text = string.Empty;
+            }
 
             return;
         }
 
-        icon.enabled = true;
-        icon.sprite = slot.Item.Item.icon;
+        ItemData itemData = slot.Item.Item;
+
+        if (icon != null)
+        {
+            icon.enabled = true;
+            icon.sprite = itemData.icon;
+        }
 
         bool showAmount =
-            slot.Item.Item.stackable &&
+            itemData.stackable &&
             slot.Item.Amount > 1;
 
         if (amountText != null)
         {
             amountText.gameObject.SetActive(showAmount);
-            amountText.text = slot.Item.Amount.ToString();
+            amountText.text = showAmount
+                ? slot.Item.Amount.ToString()
+                : string.Empty;
         }
     }
 
@@ -78,7 +91,8 @@ public class InventorySlotUI : MonoBehaviour,
 
         InventoryDragManager.Instance.BeginDrag(this);
 
-        icon.enabled = false;
+        if (icon != null)
+            icon.enabled = false;
 
         if (amountText != null)
             amountText.gameObject.SetActive(false);
@@ -86,6 +100,7 @@ public class InventorySlotUI : MonoBehaviour,
 
     public void OnDrag(PointerEventData eventData)
     {
+        // Перетаскиваемая иконка двигается через InventoryDragManager.
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -104,14 +119,18 @@ public class InventorySlotUI : MonoBehaviour,
         InventorySlotUI draggedSlot =
             InventoryDragManager.Instance.DraggedSlot;
 
-        if (draggedSlot == null || draggedSlot == this)
+        if (draggedSlot == null)
             return;
 
-        if (draggedSlot.Inventory != inventory)
+        if (draggedSlot == this)
             return;
 
-        inventory.MoveItem(
+        if (draggedSlot.Inventory == null || inventory == null)
+            return;
+
+        draggedSlot.Inventory.TransferItemTo(
             draggedSlot.SlotIndex,
+            inventory,
             slotIndex
         );
     }

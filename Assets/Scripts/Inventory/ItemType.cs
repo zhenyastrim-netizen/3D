@@ -1,10 +1,22 @@
 public enum ItemType
 {
     Weapon,
-    Ammo,
     Consumable,
-    Key,
-    Quest,
-    Armor,
-    Misc
+    HealingFlask,
+    Passive,
+    PathEffect,
+    Quest
+}
+
+public enum WeaponType
+{
+    Melee,
+    Ranged,
+    Magic
+}
+
+public enum PathEffectType
+{
+    Curse,
+    Blessing
 }

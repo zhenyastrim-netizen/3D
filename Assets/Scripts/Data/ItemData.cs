@@ -18,6 +18,28 @@ public class ItemData : ScriptableObject
 
     [Header("Inventory")]
     public bool stackable;
-
     public int maxStack = 1;
+
+    [Header("Weapon")]
+    public WeaponType weaponType;
+    public GameObject weaponPrefab;
+
+    [Header("Consumable")]
+    public float effectDuration = 10f;
+
+    [Header("Healing Flask")]
+    public int healAmount = 40;
+    public int maxCharges = 3;
+
+    [Header("Passive")]
+    public bool passiveCanStack = true;
+
+    [Header("Path Effect")]
+    public PathEffectType pathEffectType;
+
+    [Header("Quest")]
+    public string questItemId;
+    [Header("Effects")]
+public StatEffect[] effects;
+    
 }
