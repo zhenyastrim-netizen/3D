@@ -19,14 +19,13 @@ public class PlayerStats : MonoBehaviour
     private float baseMoveSpeed = 8f;
 
     [Header("Damage")]
+    
     [SerializeField, Min(0f)]
-    private float baseMeleeDamage = 10f;
+    private float baseMeleeDamage = 1f;
+private float baseRangedDamage = 1f;
+private float baseMagicDamage = 1f;
 
-    [SerializeField, Min(0f)]
-    private float baseRangedDamage = 1f;
-
-    [SerializeField, Min(0f)]
-    private float baseMagicDamage = 10f;
+    
 
     [Header("Combat speed")]
     [SerializeField, Min(0f)]

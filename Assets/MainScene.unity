@@ -689,6 +689,7 @@ GameObject:
   - component: {fileID: 423475957}
   - component: {fileID: 423475959}
   - component: {fileID: 423475958}
+  - component: {fileID: 423475960}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -898,13 +899,14 @@ Transform:
   m_GameObject: {fileID: 423475938}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.38, z: 0}
+  m_LocalPosition: {x: 0.025, y: 1.38, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 239375320}
   - {fileID: 1543052474}
   - {fileID: 182792118}
+  - {fileID: 2087726645}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &423475945
@@ -1152,7 +1154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4b5dad2f109cfe4fb2ff44321e9d780, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHealth: 100
 --- !u!114 &423475956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1216,13 +1217,24 @@ MonoBehaviour:
   baseHealingPower: 1
   baseMoveSpeed: 8
   baseMeleeDamage: 10
-  baseRangedDamage: 10
-  baseMagicDamage: 10
   baseAttackSpeed: 1
+  baseMagazineSizeBonus: 0
   baseReloadSpeed: 1
   baseCriticalChance: 0.05
   baseCriticalDamage: 2
   baseLuck: 0
+--- !u!114 &423475960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423475938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc68cd07f0b0de6479cdefe839cbd317, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageCalculator
 --- !u!1001 &485643430
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3292,6 +3304,100 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &2087726644
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2087726645}
+  - component: {fileID: 2087726646}
+  - component: {fileID: 2087726647}
+  m_Layer: 6
+  m_Name: WeaponMelee
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2087726645
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2087726644}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.536, y: 0.128, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 423475944}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2087726646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2087726644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c99f73278e29b38468b2547313536755, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeleeWeapon
+  attackAction:
+    m_Name: Attack
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 7888702a-3f43-44e4-b9c6-5bbf49367394
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 9293cf74-4ae1-4724-bb5f-cc0d959e9636
+      m_Path: <Keyboard>/f
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Attack
+      m_Flags: 0
+    m_Flags: 0
+  playerCamera: {fileID: 508092451}
+  playerStats: {fileID: 423475959}
+  damageCalculator: {fileID: 423475960}
+  damage: 35
+  range: 3
+  hitRadius: 0.6
+  attacksPerSecond: 2
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  drawAttackRay: 1
+  weaponVisual: {fileID: 2087726647}
+  cameraRecoil: {fileID: 0}
+--- !u!114 &2087726647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2087726644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5695f68c758e8a64daaf4546f439f3c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeleeWeaponVisual
+  weaponModel: {fileID: -8679921383154817045, guid: 62f96c763a8a8644286af67480b8bbed, type: 3}
+  windupTime: 0.07
+  swingTime: 0.1
+  returnTime: 0.15
+  windupRotation: {x: 10, y: -25, z: -15}
+  attackRotation: {x: -15, y: 70, z: 35}
+  attackOffset: {x: 0, y: 0, z: 0.15}
 --- !u!1 &2117250793
 GameObject:
   m_ObjectHideFlags: 0
@@ -3451,6 +3557,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
+  rangedDamageMultiplier: 1
+  meleeDamageMultiplier: 1
+  magicDamageMultiplier: 1
   destroyOnDeath: 1
   destroyDelay: 0
 --- !u!114 &2136296539

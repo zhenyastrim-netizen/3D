@@ -156,7 +156,14 @@ private Material enemyMaterial;
             if (hits[i].transform.root == transform.root)
                 continue;
 
-            damageable.TakeDamage(damage);
+            DamageInfo damageInfo = new DamageInfo(
+    damage,
+    DamageType.Melee,
+    false,
+    gameObject
+);
+
+damageable.TakeDamage(damageInfo);
             PlayerKnockback knockback =
     hits[i].GetComponentInParent<PlayerKnockback>();
 
