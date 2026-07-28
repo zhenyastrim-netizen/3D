@@ -21,6 +21,8 @@ public class StatEffect : ScriptableObject
 
     public string EffectName => effectName;
     public string Description => description;
+    public IReadOnlyList<StatEffectEntry> Modifications =>
+    modifications;
 
     public StatEffectInstance Apply(PlayerStats targetStats)
     {

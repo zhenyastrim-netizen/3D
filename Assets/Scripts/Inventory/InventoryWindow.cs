@@ -3,37 +3,70 @@ using UnityEngine.InputSystem;
 
 public class InventoryWindow : MonoBehaviour
 {
-    [SerializeField] private GameObject inventoryPanel;
-    [SerializeField] private InputAction toggleInventory;
+    [Header("UI")]
+    [SerializeField] private GameObject playerMenu;
 
-    private bool isOpen;
+    [Header("Input")]
+    [SerializeField] private InputAction toggleMenu;
+
+    [Header("Player")]
+    [SerializeField] private PlayerLook playerLook;
+
+    [Header("Settings")]
+    [SerializeField] private bool pauseGame = true;
+
+    public bool IsOpen { get; private set; }
+
+    private void Awake()
+    {
+        if (playerLook == null)
+        {
+            playerLook =
+                FindFirstObjectByType<PlayerLook>();
+        }
+    }
 
     private void OnEnable()
     {
-        toggleInventory.Enable();
-        toggleInventory.performed += Toggle;
+        toggleMenu.Enable();
+        toggleMenu.performed += Toggle;
     }
 
     private void OnDisable()
     {
-        toggleInventory.performed -= Toggle;
-        toggleInventory.Disable();
+        toggleMenu.performed -= Toggle;
+        toggleMenu.Disable();
+
+        SetOpen(false);
     }
 
     private void Start()
     {
-        inventoryPanel.SetActive(false);
-        isOpen = false;
+        SetOpen(false);
     }
 
-    private void Toggle(InputAction.CallbackContext context)
+    private void Toggle(
+        InputAction.CallbackContext context)
     {
-        isOpen = !isOpen;
-        inventoryPanel.SetActive(isOpen);
+        SetOpen(!IsOpen);
+    }
 
-        Cursor.visible = isOpen;
-        Cursor.lockState = isOpen
+    public void SetOpen(bool open)
+    {
+        IsOpen = open;
+
+        if (playerMenu != null)
+            playerMenu.SetActive(open);
+
+        Cursor.visible = open;
+        Cursor.lockState = open
             ? CursorLockMode.None
             : CursorLockMode.Locked;
+
+        if (playerLook != null)
+            playerLook.CanLook = !open;
+
+        if (pauseGame)
+            Time.timeScale = open ? 0f : 1f;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,8 +8,11 @@ public class InventorySlotUI : MonoBehaviour,
     IBeginDragHandler,
     IDragHandler,
     IEndDragHandler,
-    IDropHandler
+    IDropHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler
 {
+    public static event Action<ItemData> OnItemHovered;
     [Header("UI")]
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text amountText;
@@ -17,6 +21,7 @@ public class InventorySlotUI : MonoBehaviour,
     private InventorySlot slot;
     private Inventory inventory;
     private int slotIndex;
+    
 
     public int SlotIndex => slotIndex;
     public Inventory Inventory => inventory;
@@ -34,7 +39,18 @@ public class InventorySlotUI : MonoBehaviour,
         SetSelected(false);
         Refresh();
     }
+public void OnPointerEnter(PointerEventData eventData)
+{
+    if (slot == null || slot.IsEmpty)
+        return;
 
+    OnItemHovered?.Invoke(slot.Item.Item);
+}
+
+public void OnPointerExit(PointerEventData eventData)
+{
+    OnItemHovered?.Invoke(null);
+}
     public void Refresh()
     {
         if (slot == null || slot.IsEmpty)
@@ -83,6 +99,7 @@ public class InventorySlotUI : MonoBehaviour,
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        OnItemHovered?.Invoke(null);
         if (slot == null || slot.IsEmpty)
             return;
 
