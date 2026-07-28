@@ -23,7 +23,7 @@ public class PlayerStats : MonoBehaviour
     private float baseMeleeDamage = 10f;
 
     [SerializeField, Min(0f)]
-    private float baseRangedDamage = 10f;
+    private float baseRangedDamage = 1f;
 
     [SerializeField, Min(0f)]
     private float baseMagicDamage = 10f;

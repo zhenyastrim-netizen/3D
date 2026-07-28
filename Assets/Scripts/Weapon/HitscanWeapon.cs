@@ -28,7 +28,7 @@ public class HitscanWeapon : MonoBehaviour
 
     private float nextFireTime;
     [SerializeField]private CameraRecoil recoil;
-    
+    [SerializeField] private PlayerStats playerStats;
 
 public void Initialize(
     Camera newPlayerCamera,
@@ -39,12 +39,13 @@ public void Initialize(
 }
 
     private void Awake()
-    {
-        if (playerCamera == null)
-        {
-            playerCamera = Camera.main;
-        }
-    }
+{
+    if (playerCamera == null)
+        playerCamera = Camera.main;
+
+    if (playerStats == null)
+        playerStats = GetComponentInParent<PlayerStats>();
+}
 
     private void OnEnable()
     {
@@ -57,13 +58,19 @@ public void Initialize(
     }
 
     private void Update()
+{
+    float attackSpeed = playerStats != null
+        ? playerStats.GetValue(StatType.AttackSpeed)
+        : 1f;
+
+    float finalFireRate = fireRate * Mathf.Max(0.01f, attackSpeed);
+
+    if (fireAction.IsPressed() && Time.time >= nextFireTime)
     {
-        if (fireAction.IsPressed() && Time.time >= nextFireTime)
-        {
-            Shoot();
-        }
+        nextFireTime = Time.time + 1f / finalFireRate;
+        Shoot();
     }
-    
+}
 
     private void Shoot()
 {
@@ -80,7 +87,7 @@ ammo.UseAmmo();
     Vector3 endPoint;
     muzzleFlash?.Play();
     
-    nextFireTime = Time.time + 1f / fireRate;
+    
 
     if (recoil != null)
     {
@@ -94,7 +101,26 @@ ammo.UseAmmo();
     Ray aimRay = playerCamera.ViewportPointToRay(
         new Vector3(0.5f, 0.5f, 0f)
     );
+float damageMultiplier = playerStats != null
+    ? playerStats.GetValue(StatType.RangedDamage)
+    : 1f;
 
+float finalDamage = damage * damageMultiplier;
+
+float criticalChance = playerStats != null
+    ? playerStats.GetValue(StatType.CriticalChance)
+    : 0f;
+
+bool isCritical = Random.value < criticalChance;
+
+if (isCritical)
+{
+    float criticalDamage = playerStats.GetValue(
+        StatType.CriticalDamage
+    );
+
+    finalDamage *= criticalDamage;
+}
     if (Physics.Raycast(
     aimRay,
     out RaycastHit hit,
