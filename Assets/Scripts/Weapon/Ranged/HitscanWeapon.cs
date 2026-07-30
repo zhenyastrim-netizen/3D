@@ -20,7 +20,10 @@ public class HitscanWeapon : MonoBehaviour
     [SerializeField] private PlayerDamageCalculator damageCalculator;
 
     [Header("Weapon Settings")]
-    [SerializeField] private float damage = 25f;
+    [SerializeField] private DamagePart[] damageParts =
+{
+    new DamagePart(DamageType.Kinetic, 25f)
+};
     [SerializeField] private float fireRate = 8f;
     [SerializeField] private float range = 100f;
     [SerializeField] private LayerMask hitMask = ~0;
@@ -120,13 +123,15 @@ public class HitscanWeapon : MonoBehaviour
             if (damageable != null)
             {
                 DamageInfo damageInfo =
-                    damageCalculator.CreateDamage(
-                        damage,
-                        DamageType.Ranged,
-                        gameObject
-                    );
+    damageCalculator.CreateDamage(
+        damageParts,
+        AttackType.Ranged,
+        gameObject
+    );
 
-                damageable.TakeDamage(damageInfo);
+damageable.TakeDamage(damageInfo);
+
+                
             }
 
             if (impactPrefab != null)

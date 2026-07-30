@@ -2,19 +2,35 @@ using UnityEngine;
 
 public readonly struct DamageInfo
 {
-    public float Amount { get; }
-    public DamageType Type { get; }
+    public DamagePart[] Parts { get; }
+    public AttackType AttackType { get; }
     public bool IsCritical { get; }
     public GameObject Source { get; }
 
+    public float TotalDamage
+    {
+        get
+        {
+            if (Parts == null)
+                return 0f;
+
+            float total = 0f;
+
+            foreach (DamagePart part in Parts)
+                total += part.damage;
+
+            return total;
+        }
+    }
+
     public DamageInfo(
-        float amount,
-        DamageType type,
+        DamagePart[] parts,
+        AttackType attackType,
         bool isCritical,
         GameObject source)
     {
-        Amount = amount;
-        Type = type;
+        Parts = parts;
+        AttackType = attackType;
         IsCritical = isCritical;
         Source = source;
     }

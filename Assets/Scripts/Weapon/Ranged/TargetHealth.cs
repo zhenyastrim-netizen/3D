@@ -13,15 +13,15 @@ public class TargetHealth : MonoBehaviour, IDamageable
 
     public void TakeDamage(DamageInfo damageInfo)
 {
-    if (damageInfo.Amount <= 0f)
+    if (damageInfo.TotalDamage <= 0f)
         return;
 
-    currentHealth -= damageInfo.Amount;
+    currentHealth -= damageInfo.TotalDamage;
     currentHealth = Mathf.Max(currentHealth, 0f);
 
     Debug.Log(
-        $"Цель получила {damageInfo.Amount:F1} урона. " +
-        $"Тип: {damageInfo.Type}. " +
+        $"Цель получила {damageInfo.TotalDamage:F1} урона. " +
+        $"Тип: {damageInfo.TotalDamage}. " +
         $"Крит: {damageInfo.IsCritical}"
     );
 

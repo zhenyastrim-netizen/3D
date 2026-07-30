@@ -146,24 +146,23 @@ private Material enemyMaterial;
 
         for (int i = 0; i < hits.Length; i++)
         {
-            IDamageable damageable =
-                hits[i].GetComponentInParent<IDamageable>();
+            DamagePart[] damageParts =
+{
+    new DamagePart(
+        DamageType.Kinetic,
+        damage
+    )
+};
 
-            if (damageable == null)
-                continue;
-
-            // Не даём врагу ударить самого себя.
-            if (hits[i].transform.root == transform.root)
-                continue;
-
-            DamageInfo damageInfo = new DamageInfo(
-    damage,
-    DamageType.Melee,
+DamageInfo damageInfo = new DamageInfo(
+    damageParts,
+    AttackType.Melee,
     false,
     gameObject
 );
 
 damageable.TakeDamage(damageInfo);
+
             PlayerKnockback knockback =
     hits[i].GetComponentInParent<PlayerKnockback>();
 

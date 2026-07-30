@@ -1,6 +1,11 @@
 public enum DamageType
 {
-    Ranged,
-    Melee,
-    Magic
+    Kinetic,
+    Spiritual,
+    Fire,
+    Lightning,
+    Frost,
+    Decay,
+    Holy,
+    Cursed
 }

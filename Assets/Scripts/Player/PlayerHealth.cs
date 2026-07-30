@@ -50,11 +50,18 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void TakeDamage(DamageInfo damageInfo)
 {
-    if (damageInfo.Amount <= 0f || IsDead)
+    if (IsDead || damageInfo.Parts == null)
         return;
 
-    float finalDamage =
-        CalculateIncomingDamage(damageInfo.Amount);
+    float finalDamage = 0f;
+
+    foreach (DamagePart part in damageInfo.Parts)
+    {
+        finalDamage += CalculateDamage(part);
+    }
+
+    if (finalDamage <= 0f)
+        return;
 
     currentHealth = Mathf.Max(
         currentHealth - finalDamage,
@@ -62,14 +69,49 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     );
 
     Debug.Log(
-        $"Урон: {finalDamage:F1} | " +
-        $"Тип: {damageInfo.Type} | " +
-        $"Крит: {damageInfo.IsCritical} | " +
+        $"Игрок получил {finalDamage:F1} урона. " +
         $"HP: {currentHealth:F1}/{maxHealth:F1}"
     );
 
     if (IsDead)
         Die();
+}
+private float CalculateDamage(DamagePart part)
+{
+    float kineticDefense =
+        playerStats.GetValue(StatType.Armor);
+
+    float spiritualDefense =
+        playerStats.GetValue(
+            StatType.SpiritualDefense
+        );
+
+    return part.damageType switch
+    {
+        DamageType.Kinetic =>
+            ApplyDefense(part.damage, kineticDefense),
+
+        DamageType.Spiritual or
+        DamageType.Fire or
+        DamageType.Lightning or
+        DamageType.Frost or
+        DamageType.Decay =>
+            ApplyDefense(part.damage, spiritualDefense),
+
+        DamageType.Holy => part.damage,
+        DamageType.Cursed => part.damage,
+
+        _ => part.damage
+    };
+}
+
+private float ApplyDefense(
+    float damage,
+    float defense)
+{
+    defense = Mathf.Max(0f, defense);
+
+    return damage * (100f / (100f + defense));
 }
 private float CalculateIncomingDamage(float damage)
 {

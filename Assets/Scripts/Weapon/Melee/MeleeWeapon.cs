@@ -90,12 +90,17 @@ public class MeleeWeapon : MonoBehaviour
 
             if (damageable != null)
             {
-                DamageInfo damageInfo =
-                    damageCalculator.CreateDamage(
-                        damage,
-                        DamageType.Melee,
-                        gameObject
-                    );
+                DamagePart[] parts =
+{
+    new DamagePart(DamageType.Kinetic, damage)
+};
+
+DamageInfo damageInfo =
+    damageCalculator.CreateDamage(
+        parts,
+        AttackType.Melee,
+        gameObject
+    );
 
                 damageable.TakeDamage(damageInfo);
             }

@@ -24,6 +24,8 @@ public class PlayerStats : MonoBehaviour
     private float baseMeleeDamage = 1f;
 private float baseRangedDamage = 1f;
 private float baseMagicDamage = 1f;
+[SerializeField, Min(0f)]
+private float baseSpiritualDefense = 0f;
 
     
 
@@ -71,6 +73,10 @@ private float baseMagazineSizeBonus = 0f;
             StatType.Armor,
             new PlayerStat(baseArmor)
         );
+        stats.Add(
+    StatType.SpiritualDefense,
+    new PlayerStat(baseSpiritualDefense)
+);
 
         stats.Add(
             StatType.HealingPower,

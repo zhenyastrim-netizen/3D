@@ -18,5 +18,6 @@ public enum StatType
     Armor,
     Luck,
 
-    HealingPower
+    HealingPower,
+    SpiritualDefense,
 }

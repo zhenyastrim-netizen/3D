@@ -6,18 +6,17 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     [SerializeField] private float maxHealth = 100f;
 
     [Header("Damage multipliers")]
-    [SerializeField, Min(0f)]
-    private float rangedDamageMultiplier = 1f;
+    [Header("Defense")]
+[SerializeField, Min(0f)]
+private float kineticDefense;
 
-    [SerializeField, Min(0f)]
-    private float meleeDamageMultiplier = 1f;
-
-    [SerializeField, Min(0f)]
-    private float magicDamageMultiplier = 1f;
+[SerializeField, Min(0f)]
+private float spiritualDefense;
 
     [Header("Death")]
     [SerializeField] private bool destroyOnDeath = true;
     [SerializeField] private float destroyDelay = 0f;
+    
 
     private float currentHealth;
     private bool isDead;
@@ -32,32 +31,67 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     }
 
     public void TakeDamage(DamageInfo damageInfo)
+{
+    if (isDead || damageInfo.Parts == null)
+        return;
+
+    float finalDamage = 0f;
+
+    foreach (DamagePart part in damageInfo.Parts)
     {
-        if (isDead || damageInfo.Amount <= 0f)
-            return;
-
-        float multiplier =
-            GetDamageMultiplier(damageInfo.Type);
-
-        float finalDamage =
-            damageInfo.Amount * multiplier;
-
-        currentHealth = Mathf.Max(
-            currentHealth - finalDamage,
-            0f
-        );
-
-        Debug.Log(
-            $"{gameObject.name} получил {finalDamage:F1} урона. " +
-            $"Тип: {damageInfo.Type}. " +
-            $"Крит: {damageInfo.IsCritical}. " +
-            $"HP: {currentHealth:F1}/{maxHealth:F1}"
-        );
-
-        if (currentHealth <= 0f)
-            Die();
+        finalDamage += CalculateDamage(part);
     }
 
+    if (finalDamage <= 0f)
+        return;
+
+    currentHealth = Mathf.Max(
+        currentHealth - finalDamage,
+        0f
+    );
+
+    Debug.Log(
+        $"{gameObject.name} получил {finalDamage:F1} урона. " +
+        $"Атака: {damageInfo.AttackType}. " +
+        $"Крит: {damageInfo.IsCritical}. " +
+        $"HP: {currentHealth:F1}/{maxHealth:F1}"
+    );
+
+    if (currentHealth <= 0f)
+        Die();
+}
+private float CalculateDamage(DamagePart part)
+{
+    return part.damageType switch
+    {
+        DamageType.Kinetic =>
+            ApplyDefense(part.damage, kineticDefense),
+
+        DamageType.Spiritual or
+        DamageType.Fire or
+        DamageType.Lightning or
+        DamageType.Frost or
+        DamageType.Decay =>
+            ApplyDefense(part.damage, spiritualDefense),
+
+        DamageType.Holy =>
+            part.damage,
+
+        DamageType.Cursed =>
+            part.damage,
+
+        _ => part.damage
+    };
+}
+
+private float ApplyDefense(
+    float damage,
+    float defense)
+{
+    defense = Mathf.Max(0f, defense);
+
+    return damage * (100f / (100f + defense));
+}
     private float GetDamageMultiplier(DamageType damageType)
     {
         return damageType switch
