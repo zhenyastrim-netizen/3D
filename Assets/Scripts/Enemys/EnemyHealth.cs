@@ -62,26 +62,29 @@ private float spiritualDefense;
 }
 private float CalculateDamage(DamagePart part)
 {
-    return part.damageType switch
+    switch (part.damageType)
     {
-        DamageType.Kinetic =>
-            ApplyDefense(part.damage, kineticDefense),
+        case DamageType.Kinetic:
+            return ApplyDefense(
+                part.damage,
+                kineticDefense
+            );
 
-        DamageType.Spiritual or
-        DamageType.Fire or
-        DamageType.Lightning or
-        DamageType.Frost or
-        DamageType.Decay =>
-            ApplyDefense(part.damage, spiritualDefense),
+        case DamageType.Spiritual:
+        case DamageType.Fire:
+        case DamageType.Lightning:
+        case DamageType.Frost:
+        case DamageType.Decay:
+            return ApplyDefense(
+                part.damage,
+                spiritualDefense
+            );
 
-        DamageType.Holy =>
-            part.damage,
-
-        DamageType.Cursed =>
-            part.damage,
-
-        _ => part.damage
-    };
+        case DamageType.Holy:
+        case DamageType.Cursed:
+        default:
+            return part.damage;
+    }
 }
 
 private float ApplyDefense(
@@ -92,16 +95,7 @@ private float ApplyDefense(
 
     return damage * (100f / (100f + defense));
 }
-    private float GetDamageMultiplier(DamageType damageType)
-    {
-        return damageType switch
-        {
-            DamageType.Ranged => rangedDamageMultiplier,
-            DamageType.Melee => meleeDamageMultiplier,
-            DamageType.Magic => magicDamageMultiplier,
-            _ => 1f
-        };
-    }
+   
 
     public void Heal(float amount)
     {

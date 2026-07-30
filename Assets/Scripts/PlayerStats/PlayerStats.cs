@@ -44,6 +44,7 @@ private float baseMagazineSizeBonus = 0f;
 
     [SerializeField, Min(1f)]
     private float baseCriticalDamage = 2f;
+    
 
     [Header("Other")]
     [SerializeField, Min(0f)]

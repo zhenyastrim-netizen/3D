@@ -145,53 +145,59 @@ private Material enemyMaterial;
         );
 
         for (int i = 0; i < hits.Length; i++)
-        {
-            DamagePart[] damageParts =
 {
-    new DamagePart(
-        DamageType.Kinetic,
-        damage
-    )
-};
+    IDamageable damageable =
+        hits[i].GetComponentInParent<IDamageable>();
 
-DamageInfo damageInfo = new DamageInfo(
-    damageParts,
-    AttackType.Melee,
-    false,
-    gameObject
-);
+    if (damageable == null)
+        continue;
 
-damageable.TakeDamage(damageInfo);
+    DamagePart[] damageParts =
+    {
+        new DamagePart(
+            DamageType.Kinetic,
+            damage
+        )
+    };
 
-            PlayerKnockback knockback =
-    hits[i].GetComponentInParent<PlayerKnockback>();
+    DamageInfo damageInfo = new DamageInfo(
+        damageParts,
+        AttackType.Melee,
+        false,
+        gameObject
+    );
 
-if (knockback != null)
-{
-    Vector3 knockbackDirection =
-        hits[i].transform.position - transform.position;
+    damageable.TakeDamage(damageInfo);
 
-    knockbackDirection.y = 0f;
+    PlayerKnockback knockback =
+        hits[i].GetComponentInParent<PlayerKnockback>();
 
-    if (knockbackDirection.sqrMagnitude < 0.001f)
-        knockbackDirection = transform.forward;
+    if (knockback != null)
+    {
+        Vector3 direction =
+            hits[i].transform.position -
+            transform.position;
 
-    knockbackDirection.Normalize();
+        direction.y = 0f;
 
-    Vector3 knockbackVelocity =
-        knockbackDirection * knockbackForce +
-        Vector3.up * knockbackUpwardForce;
+        if (direction.sqrMagnitude < 0.001f)
+            direction = transform.forward;
 
-    knockback.ApplyKnockback(knockbackVelocity);
+        direction.Normalize();
+
+        Vector3 velocity =
+            direction * knockbackForce +
+            Vector3.up * knockbackUpwardForce;
+
+        knockback.ApplyKnockback(velocity);
+    }
+
+    Debug.Log(
+        $"{gameObject.name} нанёс {damage} урона"
+    );
+
+    break;
 }
-
-            Debug.Log(
-                $"{gameObject.name} нанёс {damage} урона"
-            );
-
-            // Один удар должен задеть игрока только один раз.
-            break;
-        }
     }
 
     private void OnDisable()
