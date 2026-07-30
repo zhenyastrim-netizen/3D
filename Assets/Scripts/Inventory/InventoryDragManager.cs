@@ -1,3 +1,5 @@
+
+using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +31,7 @@ public class InventoryDragManager : MonoBehaviour
         if (dragRoot == null || !dragRoot.gameObject.activeSelf)
             return;
 
-        dragRoot.position = Input.mousePosition;
+        dragRoot.position = Mouse.current.position.ReadValue();
     }
 
     public void BeginDrag(InventorySlotUI slot)
@@ -44,7 +46,7 @@ public class InventoryDragManager : MonoBehaviour
 
         dragRoot.gameObject.SetActive(true);
         dragRoot.SetAsLastSibling();
-        dragRoot.position = Input.mousePosition;
+        dragRoot.position = Mouse.current.position.ReadValue();
     }
 
     public void EndDrag()

@@ -24,6 +24,8 @@ public class EnemyStatusController : MonoBehaviour
     private EnemyHealth enemyHealth;
     private float fireBuildup;
     private Coroutine burnRoutine;
+    [Header("Visual")]
+[SerializeField] private ParticleSystem burningEffect;
 
     public float FireBuildup => fireBuildup;
     public bool IsBurning => burnRoutine != null;
@@ -84,6 +86,22 @@ public class EnemyStatusController : MonoBehaviour
 
     private void StartBurning(GameObject source)
     {
+        if (burningEffect != null)
+{
+    burningEffect.Stop(
+        true,
+        ParticleSystemStopBehavior.StopEmittingAndClear
+    );
+
+    burningEffect.Play();
+}
+if (burningEffect != null)
+{
+    burningEffect.Stop(
+        true,
+        ParticleSystemStopBehavior.StopEmitting
+    );
+}
         if (burnRoutine != null)
             StopCoroutine(burnRoutine);
 
@@ -155,6 +173,13 @@ public class EnemyStatusController : MonoBehaviour
 
     private void OnDisable()
     {
+        if (burningEffect != null)
+{
+    burningEffect.Stop(
+        true,
+        ParticleSystemStopBehavior.StopEmittingAndClear
+    );
+}
         if (burnRoutine != null)
             StopCoroutine(burnRoutine);
 

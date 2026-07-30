@@ -20,15 +20,13 @@ public class ItemData : ScriptableObject
     public bool stackable;
     public int maxStack = 1;
 
-    [Header("Weapon")]
-    public WeaponType weaponType;
-    public GameObject weaponPrefab;
+    
 
     [Header("Consumable")]
     public float effectDuration = 10f;
 
     [Header("Healing Flask")]
-    public int healAmount = 40;
+   
     public int maxCharges = 3;
 
     [Header("Passive")]

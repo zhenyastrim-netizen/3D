@@ -19,10 +19,7 @@ MonoBehaviour:
   worldPrefab: {fileID: 5697852019763116967, guid: 5fbaa2102a5ffe84cb6f2e6dfb03df15, type: 3}
   stackable: 0
   maxStack: 1
-  weaponType: 1
-  weaponPrefab: {fileID: 5697852019763116967, guid: 5fbaa2102a5ffe84cb6f2e6dfb03df15, type: 3}
   effectDuration: 10
-  healAmount: 40
   maxCharges: 3
   passiveCanStack: 0
   pathEffectType: 0
@@ -33,4 +30,4 @@ MonoBehaviour:
   fireRate: 5
   magazineSize: 12
   reloadTime: 1.5
-  weaponPrefab: {fileID: 0}
+  weaponPrefab: {fileID: 5697852019763116967, guid: 5fbaa2102a5ffe84cb6f2e6dfb03df15, type: 3}

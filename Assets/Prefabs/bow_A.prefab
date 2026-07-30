@@ -5088,8 +5088,8 @@ MonoBehaviour:
   damageCalculator: {fileID: 0}
   damageParts:
   - damageType: 2
-    damage: 25
-    buildup: 5
+    damage: 300
+    buildup: 30
   fireRate: 8
   range: 100
   hitMask:
