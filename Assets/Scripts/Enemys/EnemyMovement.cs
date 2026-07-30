@@ -23,7 +23,7 @@ public class EnemyMovement : MonoBehaviour
     
     [SerializeField] private float attackLungeForce = 4f;
 [SerializeField] private EnemyMovement movement;
-
+private float statusSpeedMultiplier = 1f;
     private CharacterController controller;
     private Vector3 horizontalVelocity;
     private float verticalVelocity;
@@ -113,7 +113,8 @@ public class EnemyMovement : MonoBehaviour
     }
 
     Vector3 direction = toTarget.normalized;
-    Vector3 targetVelocity = direction * moveSpeed;
+    Vector3 targetVelocity =
+    direction * moveSpeed * statusSpeedMultiplier;
 
     horizontalVelocity = Vector3.MoveTowards(
         horizontalVelocity,
@@ -136,7 +137,11 @@ private void Decelerate()
 
     horizontalVelocity.y = 0f;
 }
-
+public void SetStatusSpeedMultiplier(float multiplier)
+{
+    statusSpeedMultiplier =
+        Mathf.Clamp(multiplier, 0.1f, 1f);
+}
     private void RotateTowards(Vector3 direction)
     {
         if (direction.sqrMagnitude < 0.001f)

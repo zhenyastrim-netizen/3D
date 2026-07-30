@@ -29,6 +29,7 @@ public class EnemyCombat : MonoBehaviour
 [SerializeField] private Color warningColor = Color.red;
 [SerializeField] private float attackLungeForce = 4f;
 [SerializeField] private EnemyMovement movement;
+private float statusDamageMultiplier = 1f;
 private Material enemyMaterial;
 
     private bool isAttacking;
@@ -151,14 +152,15 @@ private Material enemyMaterial;
 
     if (damageable == null)
         continue;
-
+float finalDamage =
+    damage * statusDamageMultiplier;
     DamagePart[] damageParts =
-    {
-        new DamagePart(
-            DamageType.Kinetic,
-            damage
-        )
-    };
+{
+    new DamagePart(
+        DamageType.Kinetic,
+        finalDamage
+    )
+};
 
     DamageInfo damageInfo = new DamageInfo(
         damageParts,
@@ -198,7 +200,14 @@ private Material enemyMaterial;
 
     break;
 }
+
     }
+    public void SetStatusDamageMultiplier(
+    float multiplier)
+{
+    statusDamageMultiplier =
+        Mathf.Clamp(multiplier, 0.1f, 1f);
+}
 
     private void OnDisable()
 {

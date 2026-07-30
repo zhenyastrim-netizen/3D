@@ -5087,7 +5087,7 @@ MonoBehaviour:
   playerStats: {fileID: 0}
   damageCalculator: {fileID: 0}
   damageParts:
-  - damageType: 2
+  - damageType: 3
     damage: 300
     buildup: 30
   fireRate: 8

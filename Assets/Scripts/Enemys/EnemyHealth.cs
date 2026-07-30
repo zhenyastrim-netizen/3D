@@ -20,13 +20,17 @@ private float spiritualDefense;
 
     private float currentHealth;
     private bool isDead;
+    private float kineticDefenseMultiplier = 1f;
 
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
     public bool IsDead => isDead;
+    private LightningChainController lightningChain;
 
     private void Awake()
     {
+        lightningChain =
+    GetComponent<LightningChainController>();
         statusController =
     GetComponent<EnemyStatusController>();
         currentHealth = maxHealth;
@@ -47,6 +51,15 @@ private float spiritualDefense;
         part,
         damageInfo.Source
     );
+
+    if (part.damageType == DamageType.Lightning &&
+        !damageInfo.IsSecondary)
+    {
+        lightningChain?.TriggerChain(
+            part,
+            damageInfo
+        );
+    }
 }
 
     if (finalDamage <= 0f)
@@ -83,15 +96,21 @@ private float CalculateDamage(DamagePart part)
         case DamageType.Frost:
         case DamageType.Decay:
             return ApplyDefense(
-                part.damage,
-                spiritualDefense
-            );
+    part.damage,
+    kineticDefense * kineticDefenseMultiplier
+);
 
         case DamageType.Holy:
         case DamageType.Cursed:
         default:
             return part.damage;
     }
+}
+public void SetKineticDefenseMultiplier(
+    float multiplier)
+{
+    kineticDefenseMultiplier =
+        Mathf.Clamp01(multiplier);
 }
 
 private float ApplyDefense(

@@ -6,6 +6,7 @@ public readonly struct DamageInfo
     public AttackType AttackType { get; }
     public bool IsCritical { get; }
     public GameObject Source { get; }
+    public bool IsSecondary { get; }
 
     public float TotalDamage
     {
@@ -24,14 +25,16 @@ public readonly struct DamageInfo
     }
 
     public DamageInfo(
-        DamagePart[] parts,
-        AttackType attackType,
-        bool isCritical,
-        GameObject source)
-    {
-        Parts = parts;
-        AttackType = attackType;
-        IsCritical = isCritical;
-        Source = source;
-    }
+    DamagePart[] parts,
+    AttackType attackType,
+    bool isCritical,
+    GameObject source,
+    bool isSecondary = false)
+{
+    Parts = parts;
+    AttackType = attackType;
+    IsCritical = isCritical;
+    Source = source;
+    IsSecondary = isSecondary;
+}
 }
