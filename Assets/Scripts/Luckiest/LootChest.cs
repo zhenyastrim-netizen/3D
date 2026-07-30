@@ -16,6 +16,11 @@ public class LootChest : MonoBehaviour
     [SerializeField, Min(1)]
     private int maximumDrops = 1;
 
+    [Header("Drop")]
+    [SerializeField] private WorldWeaponDrop dropPrefab;
+    [SerializeField] private Transform dropPoint;
+    [SerializeField] private float dropForce = 4f;
+
     [Header("Visual")]
     [SerializeField] private Animator animator;
     [SerializeField] private string openTrigger = "Open";
@@ -56,6 +61,7 @@ public class LootChest : MonoBehaviour
     {
         if (generator == null ||
             playerInventories == null ||
+            dropPrefab == null ||
             possibleWeapons == null ||
             possibleWeapons.Length == 0)
         {
@@ -72,7 +78,7 @@ public class LootChest : MonoBehaviour
             maximumDrops + 1
         );
 
-        int addedCount = 0;
+        int spawnedCount = 0;
 
         for (int i = 0; i < dropCount; i++)
         {
@@ -92,26 +98,56 @@ public class LootChest : MonoBehaviour
                     selectedWeapon
                 );
 
-            bool added =
-                playerInventories.Main.AddWeapon(
-                    generatedWeapon
-                );
+            if (generatedWeapon == null)
+                continue;
 
-            if (!added)
-                break;
+            Vector3 spawnPosition =
+                dropPoint != null
+                    ? dropPoint.position
+                    : transform.position +
+                      Vector3.up;
 
-            addedCount++;
+            WorldWeaponDrop drop = Instantiate(
+                dropPrefab,
+                spawnPosition,
+                Quaternion.identity
+            );
+
+            drop.Initialize(generatedWeapon);
+
+            Rigidbody body =
+                drop.GetComponent<Rigidbody>();
+
+            if (body != null)
+{
+    Vector2 random =
+        Random.insideUnitCircle * 0.35f;
+
+    Vector3 direction = new Vector3(
+        random.x,
+        0.8f,
+        random.y
+    );
+
+    body.AddForce(
+        direction * dropForce,
+        ForceMode.Impulse
+    );
+}
+
+            spawnedCount++;
 
             Debug.Log(
-                $"Получено оружие: " +
+                $"Выпало оружие: " +
                 $"{selectedWeapon.itemName} | " +
                 $"{generatedWeapon.Rarity} | " +
                 $"{generatedWeapon.Alignment} | " +
-                $"бонусов: {generatedWeapon.Affixes.Count}"
+                $"аффиксов: " +
+                $"{generatedWeapon.Affixes.Count}"
             );
         }
 
-        if (addedCount <= 0)
+        if (spawnedCount <= 0)
             return;
 
         isOpened = true;
@@ -145,5 +181,13 @@ public class LootChest : MonoBehaviour
 
         playerInRange = false;
         playerInventories = null;
+    }
+
+    private void OnValidate()
+    {
+        maximumDrops = Mathf.Max(
+            maximumDrops,
+            minimumDrops
+        );
     }
 }

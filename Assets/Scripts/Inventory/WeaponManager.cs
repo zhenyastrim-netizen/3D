@@ -6,67 +6,121 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] private Inventory inventory;
     [SerializeField] private HotbarController hotbarController;
     [SerializeField] private Transform weaponHolder;
+    [SerializeField] private PlayerStats playerStats;
+
+    [SerializeField] private Camera playerCamera;
+    [SerializeField] private CameraRecoil cameraRecoil;
 
     private GameObject currentWeaponObject;
     private WeaponData currentWeaponData;
+    private WeaponInstance currentWeaponInstance;
+
     private int equippedSlotIndex = -1;
-[SerializeField] private Camera playerCamera;
-[SerializeField] private CameraRecoil cameraRecoil;
-    public WeaponData CurrentWeaponData => currentWeaponData;
-    public GameObject CurrentWeaponObject => currentWeaponObject;
+
+    public WeaponData CurrentWeaponData =>
+        currentWeaponData;
+
+    public WeaponInstance CurrentWeaponInstance =>
+        currentWeaponInstance;
+
+    public GameObject CurrentWeaponObject =>
+        currentWeaponObject;
+
+    private void Awake()
+    {
+        if (playerStats == null)
+        {
+            playerStats =
+                GetComponentInParent<PlayerStats>();
+        }
+
+        if (playerCamera == null)
+            playerCamera = Camera.main;
+    }
 
     private void Start()
-{
-    hotbarController.OnSelectedSlotChanged += HandleSelectedSlotChanged;
-    inventory.OnInventoryChanged += HandleInventoryChanged;
+    {
+        if (hotbarController != null)
+        {
+            hotbarController.OnSelectedSlotChanged +=
+                HandleSelectedSlotChanged;
+        }
 
-    Invoke(nameof(EquipCurrentSlot), 0f);
-}
+        if (inventory != null)
+        {
+            inventory.OnInventoryChanged +=
+                HandleInventoryChanged;
+        }
 
-private void EquipCurrentSlot()
-{
-    EquipFromSlot(hotbarController.SelectedIndex);
-}
+        Invoke(nameof(EquipCurrentSlot), 0f);
+    }
 
     private void OnDestroy()
     {
         if (hotbarController != null)
-            hotbarController.OnSelectedSlotChanged -= HandleSelectedSlotChanged;
+        {
+            hotbarController.OnSelectedSlotChanged -=
+                HandleSelectedSlotChanged;
+        }
 
         if (inventory != null)
-            inventory.OnInventoryChanged -= HandleInventoryChanged;
+        {
+            inventory.OnInventoryChanged -=
+                HandleInventoryChanged;
+        }
+
+        RemoveWeaponModifiers();
     }
 
-    private void HandleSelectedSlotChanged(int slotIndex)
+    private void EquipCurrentSlot()
+    {
+        if (hotbarController == null)
+            return;
+
+        EquipFromSlot(
+            hotbarController.SelectedIndex
+        );
+    }
+
+    private void HandleSelectedSlotChanged(
+        int slotIndex)
     {
         EquipFromSlot(slotIndex);
     }
 
     private void HandleInventoryChanged()
     {
-        EquipFromSlot(hotbarController.SelectedIndex);
+        EquipCurrentSlot();
     }
 
     private void EquipFromSlot(int slotIndex)
     {
-        if (inventory == null || inventory.Slots == null)
+        if (inventory == null ||
+            inventory.Slots == null)
+        {
             return;
+        }
 
-        if (slotIndex < 0 || slotIndex >= inventory.Slots.Length)
+        if (slotIndex < 0 ||
+            slotIndex >= inventory.Slots.Length)
         {
             UnequipWeapon();
             return;
         }
 
-        InventorySlot slot = inventory.Slots[slotIndex];
+        InventorySlot slot =
+            inventory.Slots[slotIndex];
 
-        if (slot.IsEmpty)
+        if (slot == null || slot.IsEmpty)
         {
             UnequipWeapon();
             return;
         }
 
-        WeaponData weaponData = slot.Item.Item as WeaponData;
+        InventoryItem inventoryItem = slot.Item;
+
+        WeaponData weaponData =
+            inventoryItem.Item as WeaponData;
 
         if (weaponData == null)
         {
@@ -74,50 +128,128 @@ private void EquipCurrentSlot()
             return;
         }
 
+        WeaponInstance weaponInstance =
+            inventoryItem.WeaponInstance;
+
+        if (weaponInstance == null)
+        {
+            weaponInstance = new WeaponInstance(
+                weaponData,
+                ItemRarity.Common,
+                ItemAlignment.Neutral
+            );
+        }
+
         if (equippedSlotIndex == slotIndex &&
-            currentWeaponData == weaponData &&
+            currentWeaponInstance == weaponInstance &&
             currentWeaponObject != null)
         {
             return;
         }
 
-        EquipWeapon(weaponData, slotIndex);
+        EquipWeapon(
+            weaponInstance,
+            slotIndex
+        );
     }
 
-    private void EquipWeapon(WeaponData weaponData, int slotIndex)
-{
-    UnequipWeapon();
+    private void EquipWeapon(
+        WeaponInstance weapon,
+        int slotIndex)
+    {
+        UnequipWeapon();
 
-    if (weaponData == null || weaponData.WeaponPrefab == null)
-        return;
+        if (weapon == null ||
+            weapon.BaseData == null ||
+            weapon.BaseData.WeaponPrefab == null)
+        {
+            return;
+        }
 
-    currentWeaponObject = Instantiate(
-        weaponData.WeaponPrefab,
-        weaponHolder
-    );
-    Debug.Log(
-    $"WeaponManager создал {currentWeaponObject.name} " +
-    $"в объекте {weaponHolder.name}",
-    currentWeaponObject
-);
+        currentWeaponInstance = weapon;
+        currentWeaponData = weapon.BaseData;
+        equippedSlotIndex = slotIndex;
 
-    currentWeaponObject.transform.localPosition = Vector3.zero;
-    currentWeaponObject.transform.localRotation = Quaternion.identity;
+        currentWeaponObject = Instantiate(
+            currentWeaponData.WeaponPrefab,
+            weaponHolder
+        );
 
-    currentWeaponData = weaponData;
-    equippedSlotIndex = slotIndex;
-}
+        currentWeaponObject.transform.localPosition =
+            Vector3.zero;
 
+        currentWeaponObject.transform.localRotation =
+            Quaternion.identity;
+
+        HitscanWeapon hitscan =
+            currentWeaponObject
+                .GetComponentInChildren<HitscanWeapon>();
+
+        if (hitscan != null)
+        {
+            hitscan.Initialize(
+                playerCamera,
+                cameraRecoil
+            );
+        }
+
+        ApplyWeaponModifiers();
+
+        Debug.Log(
+            $"Экипировано: {currentWeaponData.itemName} | " +
+            $"{weapon.Rarity} | {weapon.Alignment} | " +
+            $"аффиксов: {weapon.Affixes.Count}"
+        );
+    }
+
+    private void ApplyWeaponModifiers()
+    {
+        if (playerStats == null ||
+            currentWeaponInstance == null)
+        {
+            return;
+        }
+
+        foreach (WeaponAffix affix
+                 in currentWeaponInstance.Affixes)
+        {
+            StatModifier modifier =
+                new StatModifier(
+                    affix.StatType,
+                    affix.ModifierType,
+                    affix.Value,
+                    currentWeaponInstance
+                );
+
+            playerStats.AddModifier(modifier);
+        }
+    }
+
+    private void RemoveWeaponModifiers()
+    {
+        if (playerStats == null ||
+            currentWeaponInstance == null)
+        {
+            return;
+        }
+
+        playerStats.RemoveModifiersFromSource(
+            currentWeaponInstance
+        );
+    }
 
     private void UnequipWeapon()
-{
-    if (currentWeaponObject != null)
     {
-        Destroy(currentWeaponObject);
-        currentWeaponObject = null;
-    }
+        RemoveWeaponModifiers();
 
-    currentWeaponData = null;
-    equippedSlotIndex = -1;
-}
+        if (currentWeaponObject != null)
+        {
+            Destroy(currentWeaponObject);
+            currentWeaponObject = null;
+        }
+
+        currentWeaponInstance = null;
+        currentWeaponData = null;
+        equippedSlotIndex = -1;
+    }
 }

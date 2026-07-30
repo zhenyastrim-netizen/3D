@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b816f9d76b5ab94fafbf0fb4000d8b5, type: 3}
   m_Name: New Weapon Data
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
-  itemName: 
-  description: 
+  itemName: Cannibal
+  description: prostonice
   icon: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
   itemType: 0
   worldPrefab: {fileID: 5697852019763116967, guid: 5fbaa2102a5ffe84cb6f2e6dfb03df15, type: 3}
@@ -31,3 +31,4 @@ MonoBehaviour:
   magazineSize: 12
   reloadTime: 1.5
   weaponPrefab: {fileID: 5697852019763116967, guid: 5fbaa2102a5ffe84cb6f2e6dfb03df15, type: 3}
+  weaponType: 1

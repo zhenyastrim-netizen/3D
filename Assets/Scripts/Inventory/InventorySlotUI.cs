@@ -12,11 +12,12 @@ public class InventorySlotUI : MonoBehaviour,
     IPointerEnterHandler,
     IPointerExitHandler
 {
-    public static event Action<ItemData> OnItemHovered;
+    public static event Action<InventoryItem> OnItemHovered;
     [Header("UI")]
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text amountText;
     [SerializeField] private GameObject selectionFrame;
+    
 
     private InventorySlot slot;
     private Inventory inventory;
@@ -44,7 +45,7 @@ public void OnPointerEnter(PointerEventData eventData)
     if (slot == null || slot.IsEmpty)
         return;
 
-    OnItemHovered?.Invoke(slot.Item.Item);
+    OnItemHovered?.Invoke(slot.Item);
 }
 
 public void OnPointerExit(PointerEventData eventData)

@@ -13,6 +13,8 @@ public class ItemDetailsUI : MonoBehaviour
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text itemNameText;
     [SerializeField] private TMP_Text itemTypeText;
+    [SerializeField] private TMP_Text rarityText;
+    [SerializeField] private TMP_Text alignmentText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text statsText;
 
@@ -27,8 +29,9 @@ public class ItemDetailsUI : MonoBehaviour
         InventorySlotUI.OnItemHovered -= ShowItem;
     }
 
-    private void ShowItem(ItemData item)
+    private void ShowItem(InventoryItem inventoryItem)
     {
+        ItemData item = inventoryItem?.Item;
         bool hasItem = item != null;
 
         contentRoot.SetActive(hasItem);
@@ -43,59 +46,112 @@ public class ItemDetailsUI : MonoBehaviour
         itemNameText.text = item.itemName;
         itemTypeText.text = item.itemType.ToString();
         descriptionText.text = item.description;
-        statsText.text = BuildStatsText(item);
+
+        WeaponInstance weapon =
+            inventoryItem.WeaponInstance;
+
+        bool isWeapon = weapon != null;
+
+        rarityText.gameObject.SetActive(isWeapon);
+        alignmentText.gameObject.SetActive(isWeapon);
+
+        if (isWeapon)
+        {
+            rarityText.text =
+                GetRarityText(weapon.Rarity);
+
+            alignmentText.text =
+                GetAlignmentText(weapon.Alignment);
+
+            statsText.text =
+                BuildWeaponStats(weapon);
+        }
+        else
+        {
+            statsText.text =
+                BuildItemStats(item);
+        }
     }
 
-    private string BuildStatsText(ItemData item)
+    private string BuildWeaponStats(
+        WeaponInstance weapon)
+    {
+        if (weapon.Affixes.Count == 0)
+            return "Нет дополнительных свойств";
+
+        StringBuilder builder = new StringBuilder();
+
+        foreach (WeaponAffix affix in weapon.Affixes)
+        {
+            float value = affix.Value;
+
+            string valueText =
+                affix.ModifierType ==
+                StatModifierType.Percent
+                    ? $"{value * 100f:+0.#;-0.#}%"
+                    : $"{value:+0.##;-0.##}";
+
+            builder.AppendLine(
+                $"{affix.Definition.AffixName}: " +
+                $"{valueText}"
+            );
+        }
+
+        return builder.ToString();
+    }
+
+    private string BuildItemStats(ItemData item)
     {
         if (item.effects == null ||
             item.effects.Length == 0)
         {
-            return "Нет модификаторов";
+            return "Нет дополнительных свойств";
         }
 
         StringBuilder builder = new StringBuilder();
 
         foreach (StatEffect effect in item.effects)
         {
-            if (effect == null ||
-                effect.Modifications == null)
-            {
+            if (effect == null)
                 continue;
-            }
 
-            foreach (StatEffectEntry entry
-                     in effect.Modifications)
-            {
-                if (entry == null)
-                    continue;
-
-                string valueText;
-
-                if (entry.modifierType ==
-                    StatModifierType.Percent)
-                {
-                    float percent = entry.value * 100f;
-
-                    valueText = percent >= 0f
-                        ? $"+{percent:0.#}%"
-                        : $"{percent:0.#}%";
-                }
-                else
-                {
-                    valueText = entry.value >= 0f
-                        ? $"+{entry.value:0.#}"
-                        : $"{entry.value:0.#}";
-                }
-
-                builder.AppendLine(
-                    $"{entry.statType}: {valueText}"
-                );
-            }
+            builder.AppendLine(effect.EffectName);
         }
 
-        return builder.Length > 0
-            ? builder.ToString()
-            : "Нет модификаторов";
+        return builder.ToString();
+    }
+
+    private string GetRarityText(ItemRarity rarity)
+    {
+        switch (rarity)
+        {
+            case ItemRarity.Rare:
+                return "<color=#4D9EFF>Редкое</color>";
+
+            case ItemRarity.Legendary:
+                return "<color=#FF9D32>Легендарное</color>";
+
+            case ItemRarity.Unique:
+                return "<color=#D45CFF>Уникальное</color>";
+
+            default:
+                return "<color=#B8B8B8>Обычное</color>";
+        }
+    }
+
+    private string GetAlignmentText(
+        ItemAlignment alignment)
+    {
+        switch (alignment)
+        {
+            case ItemAlignment.Sanctified:
+                return "<color=#FFE58A>Освящённое</color>";
+
+            case ItemAlignment.Cursed:
+                return "<color=#B866FF>Проклятое</color>";
+
+            default:
+                return "Нейтральное";
+        }
     }
 }
