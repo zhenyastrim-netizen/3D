@@ -4,9 +4,12 @@ using UnityEngine;
 public class PlayerDamageCalculator : MonoBehaviour
 {
     private PlayerStats playerStats;
+    private PlayerHumanity playerHumanity;
 
     private void Awake()
     {
+        playerHumanity =
+    GetComponent<PlayerHumanity>();
         playerStats = GetComponent<PlayerStats>();
     }
 
@@ -71,6 +74,15 @@ public class PlayerDamageCalculator : MonoBehaviour
     {
         switch (damageType)
         {
+            case DamageType.Holy:
+    return playerHumanity != null
+        ? playerHumanity.GetHolyDamageMultiplier()
+        : 1f;
+
+case DamageType.Cursed:
+    return playerHumanity != null
+        ? playerHumanity.GetCursedDamageMultiplier()
+        : 1f;
             case DamageType.Spiritual:
             case DamageType.Fire:
             case DamageType.Lightning:

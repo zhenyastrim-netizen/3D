@@ -41,7 +41,30 @@ public class Inventory : MonoBehaviour
 
         return false;
     }
+public bool AddWeapon(WeaponInstance weapon)
+{
+    if (weapon == null || weapon.BaseData == null)
+        return false;
 
+    if (!CanAcceptItem(weapon.BaseData))
+        return false;
+
+    foreach (InventorySlot slot in Slots)
+    {
+        if (!slot.IsEmpty)
+            continue;
+
+        slot.SetItem(
+            new InventoryItem(weapon)
+        );
+
+        NotifyChanged();
+        return true;
+    }
+
+    Debug.Log("В основном инвентаре нет места.");
+    return false;
+}
     public bool AddItem(ItemData item, int amount = 1)
     {
         if (item == null || amount <= 0)
@@ -235,6 +258,7 @@ public class Inventory : MonoBehaviour
 
     return true;
 }
+
 
     public bool SplitStack(int fromIndex, int toIndex)
     {

@@ -8,10 +8,25 @@ public class InventoryItem
 
     public ItemData Item => item;
     public int Amount => amount;
+    private WeaponInstance weaponInstance;
+
+public WeaponInstance WeaponInstance =>
+    weaponInstance;
+
+public bool IsWeapon =>
+    weaponInstance != null;
 
     public InventoryItem(ItemData item, int amount)
     {
         this.item = item;
+        if (item is WeaponData weaponData)
+{
+    weaponInstance = new WeaponInstance(
+        weaponData,
+        ItemRarity.Common,
+        ItemAlignment.Neutral
+    );
+}
 
         if (item == null)
         {
@@ -27,7 +42,16 @@ public class InventoryItem
 
         this.amount = Math.Min(amount, item.maxStack);
     }
+public InventoryItem(WeaponInstance weaponInstance)
+{
+    this.weaponInstance = weaponInstance;
 
+    item = weaponInstance != null
+        ? weaponInstance.BaseData
+        : null;
+
+    amount = item != null ? 1 : 0;
+}
     public bool CanStackWith(ItemData other)
     {
         if (item == null || other == null)

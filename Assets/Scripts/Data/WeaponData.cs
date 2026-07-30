@@ -11,6 +11,10 @@ public class WeaponData : ItemData
 
     [Header("Prefabs")]
     [SerializeField] private GameObject weaponPrefab;
+    [Header("Weapon type")]
+[SerializeField] private WeaponType weaponType;
+
+public WeaponType WeaponType => weaponType;
 
     public float Damage => damage;
     public float FireRate => fireRate;
