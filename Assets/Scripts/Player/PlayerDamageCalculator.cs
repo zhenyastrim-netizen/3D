@@ -22,14 +22,18 @@ public class PlayerDamageCalculator : MonoBehaviour
             GetAttackMultiplier(attackType);
 
         float criticalChance = Mathf.Clamp01(
-            playerStats.GetValue(StatType.CriticalChance)
+            playerStats.GetValue(
+                StatType.CriticalChance
+            )
         );
 
         bool isCritical =
             Random.value < criticalChance;
 
         float criticalMultiplier = isCritical
-            ? playerStats.GetValue(StatType.CriticalDamage)
+            ? playerStats.GetValue(
+                StatType.CriticalDamage
+            )
             : 1f;
 
         DamagePart[] finalParts =
@@ -39,9 +43,17 @@ public class PlayerDamageCalculator : MonoBehaviour
         {
             DamagePart part = baseParts[i];
 
+            float typeMultiplier =
+                GetDamageTypeMultiplier(
+                    part.damageType
+                );
+
             part.damage *=
                 attackMultiplier *
+                typeMultiplier *
                 criticalMultiplier;
+
+            part.buildup *= typeMultiplier;
 
             finalParts[i] = part;
         }
@@ -54,21 +66,47 @@ public class PlayerDamageCalculator : MonoBehaviour
         );
     }
 
+    private float GetDamageTypeMultiplier(
+        DamageType damageType)
+    {
+        switch (damageType)
+        {
+            case DamageType.Spiritual:
+            case DamageType.Fire:
+            case DamageType.Lightning:
+            case DamageType.Frost:
+            case DamageType.Decay:
+                return playerStats.GetValue(
+                    StatType.SpiritPower
+                );
+
+            default:
+                return 1f;
+        }
+    }
+
     private float GetAttackMultiplier(
         AttackType attackType)
     {
-        return attackType switch
+        switch (attackType)
         {
-            AttackType.Ranged =>
-                playerStats.GetValue(StatType.RangedDamage),
+            case AttackType.Ranged:
+                return playerStats.GetValue(
+                    StatType.RangedDamage
+                );
 
-            AttackType.Melee =>
-                playerStats.GetValue(StatType.MeleeDamage),
+            case AttackType.Melee:
+                return playerStats.GetValue(
+                    StatType.MeleeDamage
+                );
 
-            AttackType.Magic =>
-                playerStats.GetValue(StatType.MagicDamage),
+            case AttackType.Magic:
+                return playerStats.GetValue(
+                    StatType.MagicDamage
+                );
 
-            _ => 1f
-        };
+            default:
+                return 1f;
+        }
     }
 }

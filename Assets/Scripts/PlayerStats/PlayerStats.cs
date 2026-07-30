@@ -17,6 +17,9 @@ public class PlayerStats : MonoBehaviour
     [Header("Movement")]
     [SerializeField, Min(0f)]
     private float baseMoveSpeed = 8f;
+    [Header("Spirit")]
+[SerializeField, Min(0f)]
+private float baseSpiritPower = 1f;
 
     [Header("Damage")]
     
@@ -83,6 +86,10 @@ private float baseMagazineSizeBonus = 0f;
             StatType.HealingPower,
             new PlayerStat(baseHealingPower)
         );
+        stats.Add(
+    StatType.SpiritPower,
+    new PlayerStat(baseSpiritPower)
+);
 
         stats.Add(
             StatType.MoveSpeed,

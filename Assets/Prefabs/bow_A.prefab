@@ -5076,12 +5076,7 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   playerCamera: {fileID: 0}
-  damage: 25
-  fireRate: 8
-  range: 100
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
+  cameraRecoil: {fileID: 0}
   weaponRecoil: {fileID: 2026320514143037215}
   muzzleFlash: {fileID: 986730275425442835}
   tracerPrefab: {fileID: 7223411841943916865, guid: 7ba31beebcec95d4ca4971095d33a14f, type: 3}
@@ -5089,8 +5084,18 @@ MonoBehaviour:
   impactPrefab: {fileID: 7854982625524293689, guid: fb055f47e1b586647b58e6a8137d74a5, type: 3}
   ammo: {fileID: 2951180106947310859}
   reload: {fileID: 1830883144792430366}
+  playerStats: {fileID: 0}
+  damageCalculator: {fileID: 0}
+  damageParts:
+  - damageType: 2
+    damage: 25
+    buildup: 5
+  fireRate: 8
+  range: 100
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   drawShotRay: 1
-  recoil: {fileID: 0}
 --- !u!114 &1830883144792430366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5122,6 +5127,7 @@ MonoBehaviour:
     m_Flags: 0
   reloadTime: 1.5
   ammo: {fileID: 2951180106947310859}
+  playerStats: {fileID: 0}
 --- !u!114 &2951180106947310859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5136,6 +5142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponAmmo
   magazineSize: 12
   reserveAmmo: 60
+  playerStats: {fileID: 0}
 --- !u!114 &2026320514143037215
 MonoBehaviour:
   m_ObjectHideFlags: 0

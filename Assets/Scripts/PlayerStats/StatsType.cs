@@ -20,4 +20,5 @@ public enum StatType
 
     HealingPower,
     SpiritualDefense,
+    SpiritPower,
 }

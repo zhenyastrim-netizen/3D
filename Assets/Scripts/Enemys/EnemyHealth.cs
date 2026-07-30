@@ -16,7 +16,7 @@ private float spiritualDefense;
     [Header("Death")]
     [SerializeField] private bool destroyOnDeath = true;
     [SerializeField] private float destroyDelay = 0f;
-    
+    private EnemyStatusController statusController;
 
     private float currentHealth;
     private bool isDead;
@@ -27,6 +27,8 @@ private float spiritualDefense;
 
     private void Awake()
     {
+        statusController =
+    GetComponent<EnemyStatusController>();
         currentHealth = maxHealth;
     }
 
@@ -38,9 +40,14 @@ private float spiritualDefense;
     float finalDamage = 0f;
 
     foreach (DamagePart part in damageInfo.Parts)
-    {
-        finalDamage += CalculateDamage(part);
-    }
+{
+    finalDamage += CalculateDamage(part);
+
+    statusController?.ApplyBuildup(
+        part,
+        damageInfo.Source
+    );
+}
 
     if (finalDamage <= 0f)
         return;

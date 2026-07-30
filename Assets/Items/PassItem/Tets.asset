@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StatEffect
   effectName: 
   description: 
-  modifications: []
+  modifications:
+  - statType: 0
+    modifierType: 1
+    value: 40

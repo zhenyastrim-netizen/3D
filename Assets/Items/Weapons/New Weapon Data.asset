@@ -24,10 +24,11 @@ MonoBehaviour:
   effectDuration: 10
   healAmount: 40
   maxCharges: 3
-  passiveCanStack: 1
+  passiveCanStack: 0
   pathEffectType: 0
   questItemId: 
-  effects: []
+  effects:
+  - {fileID: 0}
   damage: 10
   fireRate: 5
   magazineSize: 12
