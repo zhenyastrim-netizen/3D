@@ -19630,10 +19630,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd5bf9c3af63f2144a03851f70120ae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBrain
-  currentState: 0
+  currentState: 2
   detectionRange: 15
   loseTargetRange: 25
   attackRange: 15
+  attackExitRange: 14
   target: {fileID: 0}
   enemyHealth: {fileID: 8463957514591749054}
 --- !u!114 &8463957514591749054
@@ -19789,7 +19790,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f4dc692869b074409332633775c9add, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyRangedCombat
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 2256513609543872248, guid: 6c22abd5275d0174f8dbd7a290cbbd96, type: 3}
   firePoint: {fileID: 5019290734800901927}
   damageParts:
   - damageType: 0

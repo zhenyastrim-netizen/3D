@@ -18,11 +18,13 @@ public class EnemyBrain : MonoBehaviour
     [SerializeField] private float loseTargetRange = 25f;
 
     [Header("Combat")]
-    [SerializeField] private float attackRange = 1.8f;
+    [SerializeField] private float attackRange = 12f;
+[SerializeField] private float attackExitRange = 14f;
 
     [Header("References")]
     [SerializeField] private Transform target;
     [SerializeField] private EnemyHealth enemyHealth;
+    
 
     public EnemyState CurrentState => currentState;
     public Transform Target => target;
@@ -93,11 +95,11 @@ float distanceToTarget = Vector3.Distance(
                 break;
 
             case EnemyState.Attack:
-                if (distanceToTarget > attackRange)
-                {
-                    ChangeState(EnemyState.Chase);
-                }
-                break;
+    if (distanceToTarget > attackExitRange)
+    {
+        ChangeState(EnemyState.Chase);
+    }
+    break;
         }
     }
 

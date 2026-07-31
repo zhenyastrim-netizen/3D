@@ -70,6 +70,7 @@ public class EnemyRangedCombat : MonoBehaviour
             return;
 
         StartCoroutine(ShootRoutine());
+        
     }
 
     private IEnumerator ShootRoutine()

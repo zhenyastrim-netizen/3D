@@ -7001,7 +7001,7 @@ PrefabInstance:
       objectReference: {fileID: 2256513609543872248, guid: 6c22abd5275d0174f8dbd7a290cbbd96, type: 3}
     - target: {fileID: 2304853242857609002, guid: 687ce6704296b9a4896143fd7c7e09df, type: 3}
       propertyPath: damageParts.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2304853242857609002, guid: 687ce6704296b9a4896143fd7c7e09df, type: 3}
       propertyPath: damageParts.Array.data[1].damage
@@ -7057,7 +7057,11 @@ PrefabInstance:
       objectReference: {fileID: 423475944}
     - target: {fileID: 8947139639112366027, guid: 687ce6704296b9a4896143fd7c7e09df, type: 3}
       propertyPath: attackRange
-      value: 12
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8947139639112366027, guid: 687ce6704296b9a4896143fd7c7e09df, type: 3}
+      propertyPath: loseTargetRange
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
