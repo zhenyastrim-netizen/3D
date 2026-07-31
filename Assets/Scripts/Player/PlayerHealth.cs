@@ -1,9 +1,11 @@
 using UnityEngine;
-
+using System;
+using System.Collections;
 [RequireComponent(typeof(PlayerStats))]
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
     private PlayerStats playerStats;
+    
 
     private float currentHealth;
     private float maxHealth;
@@ -11,7 +13,18 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
     public bool IsDead => currentHealth <= 0f;
+    public event Action<float, float> OnHealthChanged;
+    [Header("Health Gate")]
+[SerializeField, Range(0f, 1f)]
+private float healthGateThreshold = 0.5f;
 
+[SerializeField, Min(0f)]
+private float invulnerabilityDuration = 0.75f;
+
+private bool healthGateAvailable = true;
+private bool isInvulnerable;
+public event Action<float> OnDamaged;
+public event Action OnHealthGateTriggered;
     private void Awake()
     {
         playerStats = GetComponent<PlayerStats>();
@@ -26,6 +39,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         maxHealth = playerStats.GetValue(StatType.MaxHealth);
         currentHealth = maxHealth;
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
     private void OnDisable()
@@ -46,6 +60,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             0f,
             maxHealth
         );
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
     public void TakeDamage(DamageInfo damageInfo)
@@ -59,14 +74,49 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         finalDamage += CalculateDamage(part);
     }
+    OnDamaged?.Invoke(finalDamage);
+    
 
     if (finalDamage <= 0f)
         return;
+        if (isInvulnerable)
+    return;
+    
+    OnHealthGateTriggered?.Invoke();
+
+bool aboveThreshold =
+    currentHealth >= maxHealth * healthGateThreshold;
+
+bool wouldDie =
+    finalDamage >= currentHealth;
+
+bool canTriggerHealthGate =
+    healthGateAvailable &&
+    aboveThreshold &&
+    wouldDie &&
+    !damageInfo.IsSecondary;
+
+if (canTriggerHealthGate)
+{
+    currentHealth = 1f;
+    healthGateAvailable = false;
+
+    StartCoroutine(InvulnerabilityRoutine());
+
+    OnHealthChanged?.Invoke(
+        currentHealth,
+        maxHealth
+    );
+
+    Debug.Log("Health Gate сработал!", this);
+    return;
+}
 
     currentHealth = Mathf.Max(
         currentHealth - finalDamage,
         0f
     );
+    OnHealthChanged?.Invoke(currentHealth, maxHealth);
 
     Debug.Log(
         $"Игрок получил {finalDamage:F1} урона. " +
@@ -75,6 +125,16 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     if (IsDead)
         Die();
+}
+private IEnumerator InvulnerabilityRoutine()
+{
+    isInvulnerable = true;
+
+    yield return new WaitForSeconds(
+        invulnerabilityDuration
+    );
+
+    isInvulnerable = false;
 }
 private float CalculateDamage(DamagePart part)
 {
@@ -129,6 +189,17 @@ private float ApplyDefense(
             currentHealth + finalHealing,
             maxHealth
         );
+        
+        if (currentHealth >=
+    maxHealth * healthGateThreshold)
+{
+    healthGateAvailable = true;
+}
+
+OnHealthChanged?.Invoke(
+    currentHealth,
+    maxHealth
+);
     }
 
     private void Die()

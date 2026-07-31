@@ -73,30 +73,31 @@ public class EnemyRangedCombat : MonoBehaviour
         
     }
 
-    private IEnumerator ShootRoutine()
+   private IEnumerator ShootRoutine()
+{
+    isAttacking = true;
+
+    yield return new WaitForSeconds(windupTime);
+
+    if (brain == null ||
+        brain.Target == null ||
+        brain.CurrentState != EnemyBrain.EnemyState.Attack)
     {
-        isAttacking = true;
-
-        yield return new WaitForSeconds(
-            windupTime
-        );
-
-        if (brain == null ||
-            brain.Target == null ||
-            brain.CurrentState !=
-            EnemyBrain.EnemyState.Attack)
-        {
-            isAttacking = false;
-            yield break;
-        }
-
-        Shoot();
-
-        nextAttackTime =
-            Time.time + attackCooldown;
-
         isAttacking = false;
+        yield break;
     }
+
+    // Сначала разблокируем следующую атаку.
+    nextAttackTime = Time.time + attackCooldown;
+    isAttacking = false;
+
+    Shoot();
+
+    Debug.Log(
+        $"Выстрел завершён. Следующий: {nextAttackTime:F1}",
+        this
+    );
+}
 
     private void Shoot()
     {

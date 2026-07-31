@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System;
 public class EnemyHealth : MonoBehaviour, IDamageable
 {
     [Header("Health")]
@@ -12,6 +12,7 @@ private float kineticDefense;
 
 [SerializeField, Min(0f)]
 private float spiritualDefense;
+public event Action<float, DamageType, bool, bool> OnDamageReceived;
 
     [Header("Death")]
     [SerializeField] private bool destroyOnDeath = true;
@@ -26,6 +27,11 @@ private float spiritualDefense;
     public float MaxHealth => maxHealth;
     public bool IsDead => isDead;
     private LightningChainController lightningChain;
+    [Header("Experience")]
+[SerializeField, Min(0)]
+private int experienceReward = 25;
+
+private GameObject lastDamageSource;
 
     private void Awake()
     {
@@ -38,6 +44,8 @@ private float spiritualDefense;
 
     public void TakeDamage(DamageInfo damageInfo)
 {
+    if (damageInfo.Source != null)
+    lastDamageSource = damageInfo.Source;
     if (isDead || damageInfo.Parts == null)
         return;
 
@@ -45,19 +53,17 @@ private float spiritualDefense;
 
     foreach (DamagePart part in damageInfo.Parts)
 {
-    finalDamage += CalculateDamage(part);
+    float partDamage = CalculateDamage(part);
 
-    statusController?.ApplyBuildup(
-        part,
-        damageInfo.Source
-    );
+    finalDamage += partDamage;
 
-    if (part.damageType == DamageType.Lightning &&
-        !damageInfo.IsSecondary)
+    if (partDamage > 0f)
     {
-        lightningChain?.TriggerChain(
-            part,
-            damageInfo
+        OnDamageReceived?.Invoke(
+            partDamage,
+            part.damageType,
+            damageInfo.IsCritical,
+            damageInfo.IsSecondary
         );
     }
 }
@@ -136,6 +142,7 @@ private float ApplyDefense(
 
     private void Die()
     {
+        
         if (isDead)
             return;
 
@@ -145,8 +152,30 @@ private float ApplyDefense(
 
         EnemyBrain brain = GetComponent<EnemyBrain>();
         brain?.SetDead();
-
+GiveExperience();
         if (destroyOnDeath)
             Destroy(gameObject, destroyDelay);
+            
     }
+    private void GiveExperience()
+{
+    if (lastDamageSource == null ||
+        experienceReward <= 0)
+    {
+        return;
+    }
+
+    PlayerExperience experience =
+        lastDamageSource.GetComponentInParent<PlayerExperience>();
+
+    if (experience == null)
+        return;
+
+    experience.AddExperience(experienceReward);
+
+    Debug.Log(
+        $"Получено опыта: {experienceReward}",
+        this
+    );
+}
 }

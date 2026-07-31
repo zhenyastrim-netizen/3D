@@ -14628,6 +14628,37 @@ Transform:
   - {fileID: 2850110655384380147}
   m_Father: {fileID: 4847547021638595765}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6647388180199910377
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5543432414265396485}
+  m_Layer: 0
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5543432414265396485
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6647388180199910377}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.05664015, y: 1.14, z: -0.49468994}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4847547021638595765}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7074214029239156403
 GameObject:
   m_ObjectHideFlags: 0
@@ -14648,6 +14679,7 @@ GameObject:
   - component: {fileID: 4602879803506048861}
   - component: {fileID: 6464131957926711628}
   - component: {fileID: 6310779783605952446}
+  - component: {fileID: -4146214465401064326}
   m_Layer: 7
   m_Name: Enemy
   m_TagString: Enemy
@@ -14675,6 +14707,7 @@ Transform:
   - {fileID: 6064448749713449777}
   - {fileID: 1333105417588025785}
   - {fileID: 4118032382145949642}
+  - {fileID: 5543432414265396485}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3976642463605340400
@@ -14798,6 +14831,7 @@ MonoBehaviour:
   detectionRange: 15
   loseTargetRange: 25
   attackRange: 2.3
+  attackExitRange: 14
   target: {fileID: 0}
   enemyHealth: {fileID: 4277620528545096905}
 --- !u!114 &4277620528545096905
@@ -14817,6 +14851,7 @@ MonoBehaviour:
   spiritualDefense: 0
   destroyOnDeath: 1
   destroyDelay: 0
+  experienceReward: 100
 --- !u!114 &925673572063314472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14941,6 +14976,20 @@ MonoBehaviour:
     m_Bits: 128
   lightningArcPrefab: {fileID: 9039005059633172305, guid: 1672f176096913d4a943c13c6010f67e, type: 3}
   arcHeight: 1
+--- !u!114 &-4146214465401064326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7074214029239156403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f9de5af26053ea4cb5b717a1af114d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageNumberSpawner
+  prefab: {fileID: 6142744378474720587, guid: 05a549b14d2ab17459a99ef635dbe50e, type: 3}
+  spawnPoint: {fileID: 5543432414265396485}
 --- !u!1 &8357181933521371316
 GameObject:
   m_ObjectHideFlags: 0

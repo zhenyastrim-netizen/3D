@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System;
 public class WeaponManager : MonoBehaviour
 {
     [Header("References")]
@@ -7,6 +7,7 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] private HotbarController hotbarController;
     [SerializeField] private Transform weaponHolder;
     [SerializeField] private PlayerStats playerStats;
+    public event Action<GameObject> OnWeaponChanged;
 
     [SerializeField] private Camera playerCamera;
     [SerializeField] private CameraRecoil cameraRecoil;
@@ -200,6 +201,7 @@ public class WeaponManager : MonoBehaviour
             $"{weapon.Rarity} | {weapon.Alignment} | " +
             $"аффиксов: {weapon.Affixes.Count}"
         );
+        OnWeaponChanged?.Invoke(currentWeaponObject);
     }
 
     private void ApplyWeaponModifiers()
@@ -251,5 +253,6 @@ public class WeaponManager : MonoBehaviour
         currentWeaponInstance = null;
         currentWeaponData = null;
         equippedSlotIndex = -1;
+        OnWeaponChanged?.Invoke(null);
     }
 }

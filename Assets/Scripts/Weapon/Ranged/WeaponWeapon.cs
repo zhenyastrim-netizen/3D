@@ -1,10 +1,11 @@
 using UnityEngine;
-
+using System;
 public class WeaponAmmo : MonoBehaviour
 {
     [Header("Ammo")]
     [SerializeField] private int magazineSize = 12;
     [SerializeField] private int reserveAmmo = 60;
+    public event Action<int, int> OnAmmoChanged;
 
     [Header("References")]
     [SerializeField] private PlayerStats playerStats;
@@ -85,6 +86,7 @@ public class WeaponAmmo : MonoBehaviour
     {
         if (currentAmmo > 0)
             currentAmmo--;
+            OnAmmoChanged?.Invoke(currentAmmo, reserveAmmo);
     }
 
     public void Reload()
@@ -94,6 +96,7 @@ public class WeaponAmmo : MonoBehaviour
 
         currentAmmo += amount;
         reserveAmmo -= amount;
+        OnAmmoChanged?.Invoke(currentAmmo, reserveAmmo);
     }
 
     public bool CanReload()

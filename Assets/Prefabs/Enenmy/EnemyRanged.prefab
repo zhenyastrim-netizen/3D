@@ -19463,6 +19463,37 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8556985771227677904
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2903423898762316487}
+  m_Layer: 0
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2903423898762316487
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8556985771227677904}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.27416992, y: 1.19, z: 0.4144802}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7672703567003734231}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8906400433936931407
 GameObject:
   m_ObjectHideFlags: 0
@@ -19484,6 +19515,7 @@ GameObject:
   - component: {fileID: 944155797374526505}
   - component: {fileID: 7450784235385531557}
   - component: {fileID: 2304853242857609002}
+  - component: {fileID: -3440372025272314438}
   m_Layer: 7
   m_Name: EnemyRanged
   m_TagString: Enemy
@@ -19511,6 +19543,7 @@ Transform:
   - {fileID: 4584170275739202690}
   - {fileID: 3041761855900094}
   - {fileID: 2862631026570475113}
+  - {fileID: 2903423898762316487}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2750581712763261334
@@ -19654,6 +19687,7 @@ MonoBehaviour:
   spiritualDefense: 0
   destroyOnDeath: 1
   destroyDelay: 0
+  experienceReward: 25
 --- !u!114 &5962236665816489627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19804,6 +19838,20 @@ MonoBehaviour:
   muzzleFlash: {fileID: 0}
   brain: {fileID: 8947139639112366027}
   enemyHealth: {fileID: 8463957514591749054}
+--- !u!114 &-3440372025272314438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8906400433936931407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f9de5af26053ea4cb5b717a1af114d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageNumberSpawner
+  prefab: {fileID: 6142744378474720587, guid: 05a549b14d2ab17459a99ef635dbe50e, type: 3}
+  spawnPoint: {fileID: 2903423898762316487}
 --- !u!1 &9205663719575589245
 GameObject:
   m_ObjectHideFlags: 0
