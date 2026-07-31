@@ -107,16 +107,26 @@ public class PlayerMotor : MonoBehaviour
     }
     public void PreserveVelocityForJump()
 {
-    Vector3 preservedVelocity =
+    Vector3 controlledVelocity =
         HorizontalVelocity +
-        ExternalVelocity +
+        ExternalVelocity;
+
+    controlledVelocity.y = 0f;
+
+    Vector3 preservedVelocity =
         momentumVelocity;
 
-    preservedVelocity.y = 0f;
+    // Сохраняем более быструю скорость,
+    // но не складываем их бесконечно.
+    if (controlledVelocity.sqrMagnitude >
+        preservedVelocity.sqrMagnitude)
+    {
+        preservedVelocity =
+            controlledVelocity;
+    }
 
     momentumVelocity = preservedVelocity;
 
-    // Чтобы скорость не складывалась сама с собой.
     HorizontalVelocity = Vector3.zero;
     ExternalVelocity = Vector3.zero;
 }

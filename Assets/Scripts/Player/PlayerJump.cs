@@ -36,6 +36,20 @@ public class PlayerJump : MonoBehaviour
     [SerializeField] private PlayerGround playerGround;
     [SerializeField] private PlayerMotor motor;
     [SerializeField] private PlayerSlide playerSlide;
+    [Header("Source-like wall movement")]
+[SerializeField, Range(0f, 1.5f)]
+private float wallMomentumRetention = 1f;
+[Header("Bunny Hop")]
+[SerializeField] private bool automaticBunnyHop = true;
+
+[SerializeField, Min(0f)]
+private float wallLookBoost = 5f;
+
+[SerializeField, Min(1f)]
+private float maximumWallJumpSpeed = 22f;
+
+[SerializeField]
+private PlayerMovement playerMovement;
 
     private float verticalVelocity;
     private float coyoteCounter;
@@ -69,6 +83,11 @@ private bool IsGrounded =>
 
         if (playerSlide == null)
             playerSlide = GetComponent<PlayerSlide>();
+            if (playerMovement == null)
+{
+    playerMovement =
+        GetComponent<PlayerMovement>();
+}
     }
 
     private void OnEnable()
@@ -89,27 +108,52 @@ private bool IsGrounded =>
     }
 
     private void UpdateTimers()
-    {
-        bool isGrounded = IsGrounded;
-
-bool justLanded =
-    isGrounded &&
-    !wasGrounded &&
-    verticalVelocity <= 0f;
-
-if (justLanded)
 {
-    jumpsUsed = 0;
-    wallJumpsUsed = 0;
+    bool isGrounded = IsGrounded;
+
+    bool justLanded =
+        isGrounded &&
+        !wasGrounded &&
+        verticalVelocity <= 0f;
+
+    if (justLanded)
+    {
+        jumpsUsed = 0;
+        wallJumpsUsed = 0;
+    }
+
+    if (isGrounded && verticalVelocity <= 0f)
+        coyoteCounter = coyoteTime;
+    else
+        coyoteCounter -= Time.deltaTime;
+
+    bool wantsAutomaticJump =
+    automaticBunnyHop &&
+    jumpAction.IsPressed() &&
+    IsGrounded;
+
+if (jumpAction.WasPressedThisFrame() ||
+    wantsAutomaticJump)
+{
+    jumpBufferCounter = jumpBuffer;
+}
+else
+{
+    jumpBufferCounter -= Time.deltaTime;
 }
 
-if (isGrounded && verticalVelocity <= 0f)
-    coyoteCounter = coyoteTime;
-else
-    coyoteCounter -= Time.deltaTime;
+    coyoteCounter = Mathf.Max(
+        coyoteCounter,
+        0f
+    );
 
-wasGrounded = isGrounded;
-    }
+    jumpBufferCounter = Mathf.Max(
+        jumpBufferCounter,
+        0f
+    );
+
+    wasGrounded = isGrounded;
+}
 
     private void TryJump()
     {
@@ -163,26 +207,70 @@ wasGrounded = isGrounded;
     }
 
     private void PerformWallJump()
+{
+    // Переносит текущую скорость в MomentumVelocity.
+    PrepareForJump();
+
+    verticalVelocity = Mathf.Sqrt(
+        wallJumpHeight * -2f * gravity
+    );
+
+    if (motor != null)
     {
-        PrepareForJump();
+        Vector3 preservedVelocity =
+            motor.MomentumVelocity *
+            wallMomentumRetention;
 
-        verticalVelocity = Mathf.Sqrt(
-            wallJumpHeight * -2f * gravity
-        );
+        Vector3 lookDirection =
+            transform.forward;
 
-        if (motor != null)
+        lookDirection.y = 0f;
+        lookDirection.Normalize();
+
+        if (playerMovement != null &&
+            playerMovement.MoveDirection.sqrMagnitude > 0.01f)
         {
-            motor.SetMomentum(
-                lastWallNormal * wallPushForce
-            );
+            lookDirection =
+                playerMovement.MoveDirection.normalized;
         }
 
-        wallJumpsUsed++;
-        lastWallContactTime =
-            float.NegativeInfinity;
+        // Не позволяем направлению камеры
+        // толкать игрока обратно внутрь стены.
+        if (Vector3.Dot(
+                lookDirection,
+                lastWallNormal) < 0f)
+        {
+            lookDirection = Vector3.ProjectOnPlane(
+                lookDirection,
+                lastWallNormal
+            ).normalized;
+        }
 
-        ConsumeJumpInput();
+        Vector3 finalVelocity =
+            preservedVelocity +
+            lastWallNormal * wallPushForce +
+            lookDirection * wallLookBoost;
+
+        finalVelocity.y = 0f;
+
+        if (finalVelocity.magnitude >
+            maximumWallJumpSpeed)
+        {
+            finalVelocity =
+                finalVelocity.normalized *
+                maximumWallJumpSpeed;
+        }
+
+        motor.SetMomentum(finalVelocity);
     }
+
+    wallJumpsUsed++;
+
+    lastWallContactTime =
+        float.NegativeInfinity;
+
+    ConsumeJumpInput();
+}
 
     private void PrepareForJump()
     {

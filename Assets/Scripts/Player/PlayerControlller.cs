@@ -24,6 +24,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerMotor motor;
     [SerializeField] private PlayerDash playerDash;
     [SerializeField] private PlayerSlide playerSlide;
+    [Header("Air movement")]
+[SerializeField] private float airAcceleration = 8f;
+[SerializeField] private float maximumBunnyHopSpeed = 25f;
+[SerializeField] private PlayerGround playerGround;
+[Header("Ground momentum")]
+[SerializeField, Min(0f)]
+private float groundFriction = 20f;
 
     private Vector3 currentVelocity;
 
@@ -35,6 +42,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        if (playerGround == null)
+    playerGround = GetComponent<PlayerGround>();
         if (playerStats == null)
             playerStats = GetComponent<PlayerStats>();
 
@@ -79,63 +88,155 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void Move()
+{
+    if (playerSlide != null &&
+        playerSlide.IsSliding)
     {
-        if (playerSlide != null && playerSlide.IsSliding)
-        {
-            currentVelocity = Vector3.zero;
-            motor.HorizontalVelocity = Vector3.zero;
+        currentVelocity = Vector3.zero;
+        motor.HorizontalVelocity = Vector3.zero;
 
-            IsSprinting = false;
-            UpdateSprintCamera(false);
-
-            return;
-        }
-
-        if (playerDash != null && playerDash.IsDashing)
-        {
-            motor.HorizontalVelocity = Vector3.zero;
-
-            IsSprinting = false;
-            UpdateSprintCamera(false);
-
-            return;
-        }
-
-        Vector2 input = moveAction.ReadValue<Vector2>();
-
-        Vector3 direction =
-            transform.forward * input.y +
-            transform.right * input.x;
-
-        direction.y = 0f;
-
-        if (direction.sqrMagnitude > 1f)
-            direction.Normalize();
-
-        MoveDirection = direction;
-
-        bool hasMovementInput =
-            input.sqrMagnitude > 0.01f;
-
-        IsSprinting =
-            sprintAction.IsPressed() &&
-            hasMovementInput;
-
-        float baseSpeed = GetMoveSpeed();
-
-        CurrentMoveSpeed = IsSprinting
-            ? baseSpeed * sprintMultiplier
-            : baseSpeed;
-
-        UpdateSprintCamera(IsSprinting);
-
-        Vector3 targetVelocity =
-            direction * CurrentMoveSpeed;
-
-        currentVelocity = targetVelocity;
-
-        motor.HorizontalVelocity = currentVelocity;
+        IsSprinting = false;
+        UpdateSprintCamera(false);
+        return;
     }
+
+    if (playerDash != null &&
+        playerDash.IsDashing)
+    {
+        currentVelocity = Vector3.zero;
+        motor.HorizontalVelocity = Vector3.zero;
+
+        IsSprinting = false;
+        UpdateSprintCamera(false);
+        return;
+    }
+
+    Vector2 input =
+        moveAction.ReadValue<Vector2>();
+
+    Vector3 direction =
+        transform.forward * input.y +
+        transform.right * input.x;
+
+    direction.y = 0f;
+
+    if (direction.sqrMagnitude > 1f)
+        direction.Normalize();
+
+    MoveDirection = direction;
+
+    bool hasMovementInput =
+        input.sqrMagnitude > 0.01f;
+
+    IsSprinting =
+        sprintAction.IsPressed() &&
+        hasMovementInput;
+
+    float baseSpeed = GetMoveSpeed();
+
+    CurrentMoveSpeed = IsSprinting
+        ? baseSpeed * sprintMultiplier
+        : baseSpeed;
+
+    UpdateSprintCamera(IsSprinting);
+
+    bool isGrounded =
+        playerGround != null &&
+        playerGround.IsGrounded;
+
+    if (!isGrounded)
+    {
+        currentVelocity = Vector3.zero;
+        motor.HorizontalVelocity = Vector3.zero;
+
+        ApplyAirMovement(
+            direction,
+            hasMovementInput
+        );
+
+        return;
+    }
+
+    Vector3 momentum =
+    motor.MomentumVelocity;
+
+// На земле постепенно гасим накопленную инерцию.
+momentum = Vector3.MoveTowards(
+    momentum,
+    Vector3.zero,
+    groundFriction * Time.deltaTime
+);
+
+motor.SetMomentum(momentum);
+
+float momentumSpeed = momentum.magnitude;
+
+// Пока инерция быстрее обычного бега,
+// PlayerMotor продолжает двигать персонажа ею.
+if (momentumSpeed > CurrentMoveSpeed)
+{
+    currentVelocity = Vector3.zero;
+    motor.HorizontalVelocity = Vector3.zero;
+    return;
+}
+
+// Когда инерция стала достаточно маленькой,
+// передаём движение обычному управлению.
+motor.ClearMomentum();
+
+    Vector3 targetVelocity =
+        direction * CurrentMoveSpeed;
+
+    currentVelocity = targetVelocity;
+    motor.HorizontalVelocity = targetVelocity;
+}
+    private void ApplyAirMovement(
+    Vector3 direction,
+    bool hasInput)
+{
+    if (!hasInput)
+        return;
+
+    Vector3 velocity =
+        motor.MomentumVelocity;
+
+    Vector3 wishDirection =
+        direction.normalized;
+
+    float currentSpeed = Vector3.Dot(
+        velocity,
+        wishDirection
+    );
+
+    float speedToAdd =
+        CurrentMoveSpeed - currentSpeed;
+
+    if (speedToAdd <= 0f)
+        return;
+
+    float accelerationSpeed =
+        airAcceleration *
+        CurrentMoveSpeed *
+        Time.deltaTime;
+
+    accelerationSpeed = Mathf.Min(
+        accelerationSpeed,
+        speedToAdd
+    );
+
+    velocity +=
+        wishDirection * accelerationSpeed;
+
+    if (velocity.magnitude >
+        maximumBunnyHopSpeed)
+    {
+        velocity =
+            velocity.normalized *
+            maximumBunnyHopSpeed;
+    }
+
+    motor.SetMomentum(velocity);
+}
 
     private float GetMoveSpeed()
     {

@@ -6,52 +6,50 @@ public class PlayerGround : MonoBehaviour
     [SerializeField] private Transform groundCheck;
 
     [Header("Settings")]
-    [SerializeField] private float groundRadius = 0.3f;
-
+    [SerializeField] private float groundRadius = 0.25f;
     [SerializeField] private LayerMask groundMask;
+
+    private readonly Collider[] groundResults =
+        new Collider[8];
 
     public bool IsGrounded { get; private set; }
 
-    private readonly Collider[] groundResults =
-    new Collider[8];
-
-private void Update()
-{
-    if (groundCheck == null)
+    private void Update()
     {
-        IsGrounded = false;
-        return;
-    }
-
-    int count = Physics.OverlapSphereNonAlloc(
-        groundCheck.position,
-        groundRadius,
-        groundResults,
-        groundMask,
-        QueryTriggerInteraction.Ignore
-    );
-
-    IsGrounded = false;
-
-    for (int i = 0; i < count; i++)
-    {
-        Collider detectedCollider =
-            groundResults[i];
-
-        if (detectedCollider == null)
-            continue;
-
-        // Игнорируем собственные коллайдеры.
-        if (detectedCollider.transform.root ==
-            transform.root)
+        if (groundCheck == null)
         {
-            continue;
+            IsGrounded = false;
+            return;
         }
 
-        IsGrounded = true;
-        break;
+        int count = Physics.OverlapSphereNonAlloc(
+            groundCheck.position,
+            groundRadius,
+            groundResults,
+            groundMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        IsGrounded = false;
+
+        for (int i = 0; i < count; i++)
+        {
+            Collider detectedCollider =
+                groundResults[i];
+
+            if (detectedCollider == null)
+                continue;
+
+            if (detectedCollider.transform.root ==
+                transform.root)
+            {
+                continue;
+            }
+
+            IsGrounded = true;
+            break;
+        }
     }
-}
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
@@ -59,11 +57,14 @@ private void Update()
         if (groundCheck == null)
             return;
 
-        Gizmos.color = Color.green;
+        Gizmos.color = IsGrounded
+            ? Color.green
+            : Color.red;
 
         Gizmos.DrawWireSphere(
             groundCheck.position,
-            groundRadius);
+            groundRadius
+        );
     }
 #endif
 }
