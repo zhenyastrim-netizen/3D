@@ -13,6 +13,8 @@ public class PlayerSlide : MonoBehaviour
     [SerializeField] private float slideDuration = 0.8f;
     [SerializeField] private float slideDeceleration = 4f;
     [SerializeField] private float slideCooldown = 0.2f;
+    [SerializeField, Range(0f, 2f)]
+private float exitMomentumMultiplier = 0.9f;
 
     [Header("Character Height")]
     [SerializeField] private float slidingHeight = 1f;
@@ -203,7 +205,9 @@ public class PlayerSlide : MonoBehaviour
             return;
 
         if (preserveMomentum)
-            motor.SetMomentum(slideVelocity);
+           motor.SetMomentum(
+    slideVelocity * exitMomentumMultiplier
+);
 
         motor.ExternalVelocity = Vector3.zero;
 

@@ -12,7 +12,10 @@ public class PlayerGround : MonoBehaviour
 
     public bool IsGrounded { get; private set; }
 
-    private void Update()
+    private readonly Collider[] groundResults =
+    new Collider[8];
+
+private void Update()
 {
     if (groundCheck == null)
     {
@@ -20,12 +23,34 @@ public class PlayerGround : MonoBehaviour
         return;
     }
 
-    IsGrounded = Physics.CheckSphere(
+    int count = Physics.OverlapSphereNonAlloc(
         groundCheck.position,
         groundRadius,
+        groundResults,
         groundMask,
         QueryTriggerInteraction.Ignore
     );
+
+    IsGrounded = false;
+
+    for (int i = 0; i < count; i++)
+    {
+        Collider detectedCollider =
+            groundResults[i];
+
+        if (detectedCollider == null)
+            continue;
+
+        // Игнорируем собственные коллайдеры.
+        if (detectedCollider.transform.root ==
+            transform.root)
+        {
+            continue;
+        }
+
+        IsGrounded = true;
+        break;
+    }
 }
 
 #if UNITY_EDITOR

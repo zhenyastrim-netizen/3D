@@ -132,16 +132,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 targetVelocity =
             direction * CurrentMoveSpeed;
 
-        float changeSpeed =
-            hasMovementInput
-                ? acceleration
-                : deceleration;
-
-        currentVelocity = Vector3.MoveTowards(
-            currentVelocity,
-            targetVelocity,
-            changeSpeed * Time.deltaTime
-        );
+        currentVelocity = targetVelocity;
 
         motor.HorizontalVelocity = currentVelocity;
     }
