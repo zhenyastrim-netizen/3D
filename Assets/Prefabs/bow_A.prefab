@@ -5141,7 +5141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponAmmo
   magazineSize: 12
-  reserveAmmo: 60
+  reserveAmmo: 326
   playerStats: {fileID: 0}
 --- !u!114 &2026320514143037215
 MonoBehaviour:

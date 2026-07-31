@@ -19,20 +19,17 @@ public class PlayerInventories : MonoBehaviour
 
         switch (item.itemType)
         {
-            case ItemType.PathEffect:
-                return pathEffectInventory;
-
-            case ItemType.Quest:
-                return questInventory;
-
-            // Пассивка сначала попадает в сумку,
-            // затем игрок переносит её в активный слот.
             case ItemType.Passive:
-            case ItemType.Weapon:
-            case ItemType.Consumable:
-            case ItemType.HealingFlask:
-            default:
-                return mainInventory;
-        }
+    return passiveInventory;
+
+case ItemType.PathEffect:
+    return pathEffectInventory;
+
+case ItemType.Quest:
+    return questInventory;
+
+default:
+    return mainInventory;
     }
+}
 }

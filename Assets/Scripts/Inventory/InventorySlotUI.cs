@@ -10,7 +10,8 @@ public class InventorySlotUI : MonoBehaviour,
     IEndDragHandler,
     IDropHandler,
     IPointerEnterHandler,
-    IPointerExitHandler
+    IPointerExitHandler,
+    IPointerClickHandler
 {
     public static event Action<InventoryItem> OnItemHovered;
     [Header("UI")]
@@ -22,6 +23,7 @@ public class InventorySlotUI : MonoBehaviour,
     private InventorySlot slot;
     private Inventory inventory;
     private int slotIndex;
+    private ConsumableUser consumableUser;
     
 
     public int SlotIndex => slotIndex;
@@ -39,7 +41,33 @@ public class InventorySlotUI : MonoBehaviour,
 
         SetSelected(false);
         Refresh();
+        if (consumableUser == null)
+{
+    consumableUser =
+        FindFirstObjectByType<ConsumableUser>();
+}
     }
+    public void OnPointerClick(
+    PointerEventData eventData)
+{
+    if (eventData.button !=
+        PointerEventData.InputButton.Right)
+    {
+        return;
+    }
+
+    if (slot == null ||
+        slot.IsEmpty ||
+        consumableUser == null)
+    {
+        return;
+    }
+
+    consumableUser.Use(
+        inventory,
+        slotIndex
+    );
+}
 public void OnPointerEnter(PointerEventData eventData)
 {
     if (slot == null || slot.IsEmpty)

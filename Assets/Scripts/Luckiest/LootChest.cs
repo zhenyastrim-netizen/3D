@@ -6,34 +6,38 @@ public class LootChest : MonoBehaviour
     [Header("Input")]
     [SerializeField] private InputAction interactAction;
 
-    [Header("Loot")]
-    [SerializeField] private WeaponLootGenerator generator;
-    [SerializeField] private WeaponData[] possibleWeapons;
+    [Header("Loot pool")]
+    [SerializeField] private LootEntry[] possibleLoot;
 
     [SerializeField, Min(1)]
     private int minimumDrops = 1;
 
     [SerializeField, Min(1)]
-    private int maximumDrops = 1;
+    private int maximumDrops = 3;
+
+    [Header("Weapon")]
+    [SerializeField] private WeaponLootGenerator weaponGenerator;
+    [SerializeField] private WorldWeaponDrop weaponDropPrefab;
+
+    [Header("Other items")]
+    [SerializeField] private WorldItemDrop itemDropPrefab;
 
     [Header("Drop")]
-    [SerializeField] private WorldWeaponDrop dropPrefab;
     [SerializeField] private Transform dropPoint;
-    [SerializeField] private float dropForce = 4f;
+    [SerializeField] private float dropForce = 2f;
 
     [Header("Visual")]
     [SerializeField] private Animator animator;
     [SerializeField] private string openTrigger = "Open";
 
-    private PlayerInventories playerInventories;
     private bool playerInRange;
     private bool isOpened;
 
     private void Awake()
     {
-        if (generator == null)
+        if (weaponGenerator == null)
         {
-            generator =
+            weaponGenerator =
                 FindFirstObjectByType<WeaponLootGenerator>();
         }
     }
@@ -59,14 +63,11 @@ public class LootChest : MonoBehaviour
 
     private void OpenChest()
     {
-        if (generator == null ||
-            playerInventories == null ||
-            dropPrefab == null ||
-            possibleWeapons == null ||
-            possibleWeapons.Length == 0)
+        if (possibleLoot == null ||
+            possibleLoot.Length == 0)
         {
             Debug.LogWarning(
-                "Сундук настроен не полностью.",
+                "В сундуке отсутствует пул лута.",
                 this
             );
 
@@ -82,69 +83,17 @@ public class LootChest : MonoBehaviour
 
         for (int i = 0; i < dropCount; i++)
         {
-            WeaponData selectedWeapon =
-                possibleWeapons[
-                    Random.Range(
-                        0,
-                        possibleWeapons.Length
-                    )
-                ];
+            LootEntry entry = RollLoot();
 
-            if (selectedWeapon == null)
+            if (entry == null || entry.item == null)
                 continue;
 
-            WeaponInstance generatedWeapon =
-                generator.GenerateRandom(
-                    selectedWeapon
-                );
+            bool spawned = entry.item is WeaponData weapon
+                ? SpawnWeapon(weapon)
+                : SpawnItem(entry);
 
-            if (generatedWeapon == null)
-                continue;
-
-            Vector3 spawnPosition =
-                dropPoint != null
-                    ? dropPoint.position
-                    : transform.position +
-                      Vector3.up;
-
-            WorldWeaponDrop drop = Instantiate(
-                dropPrefab,
-                spawnPosition,
-                Quaternion.identity
-            );
-
-            drop.Initialize(generatedWeapon);
-
-            Rigidbody body =
-                drop.GetComponent<Rigidbody>();
-
-            if (body != null)
-{
-    Vector2 random =
-        Random.insideUnitCircle * 0.35f;
-
-    Vector3 direction = new Vector3(
-        random.x,
-        0.8f,
-        random.y
-    );
-
-    body.AddForce(
-        direction * dropForce,
-        ForceMode.Impulse
-    );
-}
-
-            spawnedCount++;
-
-            Debug.Log(
-                $"Выпало оружие: " +
-                $"{selectedWeapon.itemName} | " +
-                $"{generatedWeapon.Rarity} | " +
-                $"{generatedWeapon.Alignment} | " +
-                $"аффиксов: " +
-                $"{generatedWeapon.Affixes.Count}"
-            );
+            if (spawned)
+                spawnedCount++;
         }
 
         if (spawnedCount <= 0)
@@ -156,31 +105,131 @@ public class LootChest : MonoBehaviour
             animator.SetTrigger(openTrigger);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private LootEntry RollLoot()
     {
-        PlayerInventories inventories =
-            other.GetComponentInParent<PlayerInventories>();
+        float totalWeight = 0f;
 
-        if (inventories == null)
+        foreach (LootEntry entry in possibleLoot)
+        {
+            if (entry != null && entry.item != null)
+                totalWeight += Mathf.Max(0f, entry.weight);
+        }
+
+        if (totalWeight <= 0f)
+            return null;
+
+        float roll = Random.Range(0f, totalWeight);
+
+        foreach (LootEntry entry in possibleLoot)
+        {
+            if (entry == null || entry.item == null)
+                continue;
+
+            roll -= Mathf.Max(0f, entry.weight);
+
+            if (roll <= 0f)
+                return entry;
+        }
+
+        return null;
+    }
+
+    private bool SpawnWeapon(WeaponData weapon)
+    {
+        if (weaponGenerator == null ||
+            weaponDropPrefab == null)
+        {
+            return false;
+        }
+
+        WeaponInstance instance =
+            weaponGenerator.GenerateRandom(weapon);
+
+        if (instance == null)
+            return false;
+
+        WorldWeaponDrop drop = Instantiate(
+            weaponDropPrefab,
+            GetDropPosition(),
+            Quaternion.identity
+        );
+
+        drop.Initialize(instance);
+        ApplyDropForce(drop.GetComponent<Rigidbody>());
+
+        return true;
+    }
+
+    private bool SpawnItem(LootEntry entry)
+    {
+        if (itemDropPrefab == null)
+            return false;
+
+        int maximum = Mathf.Max(
+            entry.minimumAmount,
+            entry.maximumAmount
+        );
+
+        int amount = Random.Range(
+            entry.minimumAmount,
+            maximum + 1
+        );
+
+        WorldItemDrop drop = Instantiate(
+            itemDropPrefab,
+            GetDropPosition(),
+            Quaternion.identity
+        );
+
+        drop.Initialize(entry.item, amount);
+        ApplyDropForce(drop.GetComponent<Rigidbody>());
+
+        return true;
+    }
+
+    private Vector3 GetDropPosition()
+    {
+        Vector3 basePosition = dropPoint != null
+            ? dropPoint.position
+            : transform.position + Vector3.up;
+
+        Vector2 offset =
+            Random.insideUnitCircle * 0.25f;
+
+        return basePosition +
+            new Vector3(offset.x, 0f, offset.y);
+    }
+
+    private void ApplyDropForce(Rigidbody body)
+    {
+        if (body == null)
             return;
 
-        playerInventories = inventories;
-        playerInRange = true;
+        Vector2 random =
+            Random.insideUnitCircle * 0.3f;
+
+        Vector3 direction = new Vector3(
+            random.x,
+            0.65f,
+            random.y
+        );
+
+        body.AddForce(
+            direction.normalized * dropForce,
+            ForceMode.Impulse
+        );
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.GetComponentInParent<PlayerInventories>() != null)
+            playerInRange = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        PlayerInventories inventories =
-            other.GetComponentInParent<PlayerInventories>();
-
-        if (inventories == null ||
-            inventories != playerInventories)
-        {
-            return;
-        }
-
-        playerInRange = false;
-        playerInventories = null;
+        if (other.GetComponentInParent<PlayerInventories>() != null)
+            playerInRange = false;
     }
 
     private void OnValidate()

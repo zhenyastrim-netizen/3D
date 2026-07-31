@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b816f9d76b5ab94fafbf0fb4000d8b5, type: 3}
-  m_Name: New Weapon Data
+  m_Name: Ranged
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   itemName: Cannibal
   description: prostonice
@@ -32,3 +32,13 @@ MonoBehaviour:
   reloadTime: 1.5
   weaponPrefab: {fileID: 5697852019763116967, guid: 5fbaa2102a5ffe84cb6f2e6dfb03df15, type: 3}
   weaponType: 1
+  rangedWeaponType: 1
+  fireMode: 2
+  projectilesPerShot: 2
+  spreadAngle: 0
+  burstSize: 3
+  burstDelay: 0.08
+  penetrationCount: 0
+  ricochetCount: 5
+  ricochetRange: 10
+  ricochetDamageMultiplier: 0.75

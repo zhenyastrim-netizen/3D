@@ -189,9 +189,10 @@ public class WeaponManager : MonoBehaviour
         if (hitscan != null)
         {
             hitscan.Initialize(
-                playerCamera,
-                cameraRecoil
-            );
+    playerCamera,
+    cameraRecoil,
+    currentWeaponData
+);
         }
 
         ApplyWeaponModifiers();

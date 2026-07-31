@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
+using System.Collections.Generic;
 public class HitscanWeapon : MonoBehaviour
 {
     [Header("Input")]
@@ -18,6 +20,10 @@ public class HitscanWeapon : MonoBehaviour
     [SerializeField] private WeaponReload reload;
     [SerializeField] private PlayerStats playerStats;
     [SerializeField] private PlayerDamageCalculator damageCalculator;
+    
+    private WeaponData weaponData;
+private bool isBursting;
+    
 
     [Header("Weapon Settings")]
     [SerializeField] private DamagePart[] damageParts =
@@ -34,12 +40,17 @@ public class HitscanWeapon : MonoBehaviour
     private float nextFireTime;
 
     public void Initialize(
-        Camera newPlayerCamera,
-        CameraRecoil newCameraRecoil)
-    {
-        playerCamera = newPlayerCamera;
-        cameraRecoil = newCameraRecoil;
-    }
+    Camera newPlayerCamera,
+    CameraRecoil newCameraRecoil,
+    WeaponData newWeaponData)
+{
+    playerCamera = newPlayerCamera;
+    cameraRecoil = newCameraRecoil;
+    weaponData = newWeaponData;
+
+    if (weaponData != null)
+        fireRate = weaponData.FireRate;
+}
 
     private void Awake()
     {
@@ -62,117 +73,459 @@ public class HitscanWeapon : MonoBehaviour
     }
 
     private void OnDisable()
-    {
-        fireAction.Disable();
-    }
+{
+    fireAction.Disable();
+    StopAllCoroutines();
+    isBursting = false;
+}
 
     private void Update()
+{
+    if (weaponData == null || isBursting)
+        return;
+
+    float attackSpeed = playerStats != null
+        ? playerStats.GetValue(StatType.AttackSpeed)
+        : 1f;
+
+    float finalFireRate =
+        fireRate * Mathf.Max(0.01f, attackSpeed);
+
+    if (Time.time < nextFireTime)
+        return;
+
+    switch (weaponData.FireMode)
     {
-        float attackSpeed = playerStats != null
-            ? playerStats.GetValue(StatType.AttackSpeed)
-            : 1f;
+        case WeaponFireMode.SemiAutomatic:
+            if (fireAction.WasPressedThisFrame())
+                TrySingleShot(finalFireRate);
+            break;
 
-        float finalFireRate =
-            fireRate * Mathf.Max(0.01f, attackSpeed);
+        case WeaponFireMode.Automatic:
+            if (fireAction.IsPressed())
+                TrySingleShot(finalFireRate);
+            break;
 
-        if (fireAction.IsPressed() &&
-            Time.time >= nextFireTime)
+        case WeaponFireMode.Burst:
+            if (fireAction.WasPressedThisFrame())
+            {
+                StartCoroutine(
+                    BurstRoutine(finalFireRate)
+                );
+            }
+            break;
+    }
+}
+private void TrySingleShot(float finalFireRate)
+{
+    if (!Shoot())
+        return;
+
+    nextFireTime =
+        Time.time + 1f / finalFireRate;
+}
+
+private IEnumerator BurstRoutine(
+    float finalFireRate)
+{
+    isBursting = true;
+
+    int shots = Mathf.Max(
+        1,
+        weaponData.BurstSize
+    );
+
+    for (int i = 0; i < shots; i++)
+    {
+        if (!Shoot())
+            break;
+
+        if (i < shots - 1)
         {
-            Shoot();
-
-            nextFireTime =
-                Time.time + 1f / finalFireRate;
+            yield return new WaitForSeconds(
+                weaponData.BurstDelay
+            );
         }
     }
 
-    private void Shoot()
+    nextFireTime =
+        Time.time + 1f / finalFireRate;
+
+    isBursting = false;
+}
+
+    private bool Shoot()
+{
+    if (reload != null && reload.IsReloading)
+        return false;
+
+    if (ammo == null || !ammo.CanShoot())
     {
-        if (reload != null && reload.IsReloading)
-            return;
+        Debug.Log("Нет патронов");
+        return false;
+    }
 
-        if (ammo == null || !ammo.CanShoot())
-        {
-            Debug.Log("Нет патронов");
-            return;
-        }
+    ammo.UseAmmo();
 
-        ammo.UseAmmo();
-        muzzleFlash?.Play();
+    muzzleFlash?.Play();
+    cameraRecoil?.AddRecoil(2f, 0.5f);
+    weaponRecoil?.AddRecoil();
 
-        cameraRecoil?.AddRecoil(2f, 0.5f);
-        weaponRecoil?.AddRecoil();
+    int projectileCount = Mathf.Max(
+        1,
+        weaponData.ProjectilesPerShot
+    );
 
-        Ray aimRay = playerCamera.ViewportPointToRay(
-            new Vector3(0.5f, 0.5f, 0f)
+    for (int i = 0; i < projectileCount; i++)
+        FireProjectile();
+
+    return true;
+}
+private void FireProjectile()
+{
+    Ray aimRay = playerCamera.ViewportPointToRay(
+        new Vector3(0.5f, 0.5f, 0f)
+    );
+
+    Vector2 spread =
+        Random.insideUnitCircle *
+        weaponData.SpreadAngle;
+
+    Quaternion spreadRotation =
+        Quaternion.Euler(
+            -spread.y,
+            spread.x,
+            0f
         );
 
-        Vector3 endPoint;
+    Vector3 direction =
+        spreadRotation * aimRay.direction;
 
-        if (Physics.Raycast(
-            aimRay,
+    Ray shotRay = new Ray(
+        aimRay.origin,
+        direction
+    );
+    if (weaponData.PenetrationCount > 0)
+{
+    FirePenetratingProjectile(shotRay);
+    return;
+}
+
+    Vector3 endPoint;
+
+    if (Physics.Raycast(
+            shotRay,
             out RaycastHit hit,
             range,
             hitMask,
             QueryTriggerInteraction.Ignore))
+    {
+        endPoint = hit.point;
+
+        IDamageable damageable =
+            hit.collider
+                .GetComponentInParent<IDamageable>();
+
+        if (damageable != null)
         {
-            endPoint = hit.point;
-
-            IDamageable damageable =
-                hit.collider.GetComponentInParent<IDamageable>();
-
-            if (damageable != null)
-            {
-                DamageInfo damageInfo =
-    damageCalculator.CreateDamage(
-        damageParts,
-        AttackType.Ranged,
-        gameObject
-    );
-
-damageable.TakeDamage(damageInfo);
-
-                
-            }
-
-            if (impactPrefab != null)
-            {
-                ImpactEffect impact = Instantiate(
-                    impactPrefab,
-                    hit.point,
-                    Quaternion.identity
+            DamageInfo damageInfo =
+                damageCalculator.CreateDamage(
+                    damageParts,
+                    AttackType.Ranged,
+                    gameObject
                 );
 
-                impact.Play(hit.point, hit.normal);
-            }
+            damageable.TakeDamage(damageInfo);
+            if (weaponData.RicochetCount > 0)
+{
+    FireRicochets(
+        hit.point,
+        hit.collider.transform.root
+    );
+}
+            
         }
-        else
-        {
-            endPoint =
-                aimRay.origin + aimRay.direction * range;
-        }
+        
 
-        if (tracerPrefab != null && muzzlePoint != null)
+        if (impactPrefab != null)
         {
-            Tracer tracer = Instantiate(
-                tracerPrefab,
-                muzzlePoint.position,
+            ImpactEffect impact = Instantiate(
+                impactPrefab,
+                hit.point,
                 Quaternion.identity
             );
 
-            tracer.Setup(
-                muzzlePoint.position,
-                endPoint
-            );
-        }
-
-        if (drawShotRay)
-        {
-            Debug.DrawRay(
-                aimRay.origin,
-                aimRay.direction * range,
-                Color.green,
-                1f
-            );
+            impact.Play(hit.point, hit.normal);
         }
     }
+    else
+    {
+        endPoint =
+            shotRay.origin +
+            shotRay.direction * range;
+    }
+
+    if (tracerPrefab != null &&
+        muzzlePoint != null)
+    {
+        Tracer tracer = Instantiate(
+            tracerPrefab,
+            muzzlePoint.position,
+            Quaternion.identity
+        );
+
+        tracer.Setup(
+            muzzlePoint.position,
+            endPoint
+        );
+    }
+
+    if (drawShotRay)
+    {
+        Debug.DrawRay(
+            shotRay.origin,
+            shotRay.direction * range,
+            Color.green,
+            1f
+        );
+    }
+}
+private void FireRicochets(
+    Vector3 startPoint,
+    Transform firstTarget)
+{
+    HashSet<Transform> hitTargets =
+        new HashSet<Transform>();
+
+    if (firstTarget != null)
+        hitTargets.Add(firstTarget);
+
+    hitTargets.Add(transform.root);
+
+    Vector3 currentPoint = startPoint;
+    float damageMultiplier = 1f;
+
+    for (int i = 0;
+         i < weaponData.RicochetCount;
+         i++)
+    {
+        Collider nextTarget =
+            FindNearestRicochetTarget(
+                currentPoint,
+                hitTargets
+            );
+
+        if (nextTarget == null)
+            break;
+
+        IDamageable damageable =
+            nextTarget.GetComponentInParent<IDamageable>();
+
+        if (damageable == null)
+            break;
+
+        Vector3 targetPoint =
+            nextTarget.bounds.center;
+
+        damageMultiplier *=
+            weaponData.RicochetDamageMultiplier;
+
+        DamagePart[] ricochetParts =
+            CreateScaledDamageParts(
+                damageMultiplier
+            );
+
+        DamageInfo damageInfo =
+            damageCalculator.CreateDamage(
+                ricochetParts,
+                AttackType.Ranged,
+                gameObject
+            );
+
+        damageable.TakeDamage(damageInfo);
+
+        SpawnTracer(
+            currentPoint,
+            targetPoint
+        );
+
+        hitTargets.Add(
+            nextTarget.transform.root
+        );
+
+        currentPoint = targetPoint;
+    }
+}
+private Collider FindNearestRicochetTarget(
+    Vector3 origin,
+    HashSet<Transform> ignoredTargets)
+{
+    Collider[] colliders = Physics.OverlapSphere(
+        origin,
+        weaponData.RicochetRange,
+        hitMask,
+        QueryTriggerInteraction.Ignore
+    );
+
+    Collider nearest = null;
+    float nearestDistance = float.MaxValue;
+
+    foreach (Collider candidate in colliders)
+    {
+        Transform targetRoot =
+            candidate.transform.root;
+
+        if (ignoredTargets.Contains(targetRoot))
+            continue;
+
+        IDamageable damageable =
+            candidate.GetComponentInParent<IDamageable>();
+
+        if (damageable == null)
+            continue;
+
+        float distance =
+            (candidate.bounds.center - origin)
+            .sqrMagnitude;
+
+        if (distance >= nearestDistance)
+            continue;
+
+        nearest = candidate;
+        nearestDistance = distance;
+    }
+
+    return nearest;
+}
+private DamagePart[] CreateScaledDamageParts(
+    float multiplier)
+{
+    DamagePart[] scaledParts =
+        new DamagePart[damageParts.Length];
+
+    for (int i = 0; i < damageParts.Length; i++)
+    {
+        DamagePart part = damageParts[i];
+
+        part.damage *= multiplier;
+        part.buildup *= multiplier;
+
+        scaledParts[i] = part;
+    }
+
+    return scaledParts;
+}
+private void FirePenetratingProjectile(
+    Ray shotRay)
+{
+    RaycastHit[] hits = Physics.RaycastAll(
+        shotRay,
+        range,
+        hitMask,
+        QueryTriggerInteraction.Ignore
+    );
+
+    System.Array.Sort(
+        hits,
+        (first, second) =>
+            first.distance.CompareTo(second.distance)
+    );
+
+    Vector3 endPoint =
+        shotRay.origin +
+        shotRay.direction * range;
+
+    int penetrationsRemaining =
+        weaponData.PenetrationCount;
+
+    HashSet<IDamageable> damagedTargets =
+        new HashSet<IDamageable>();
+
+    foreach (RaycastHit hit in hits)
+    {
+        endPoint = hit.point;
+
+        IDamageable damageable =
+            hit.collider
+                .GetComponentInParent<IDamageable>();
+
+        // Стена или другой недоступный объект
+        // полностью останавливает пулю.
+        if (damageable == null)
+        {
+            SpawnImpact(hit);
+            break;
+        }
+
+        // Не наносим урон несколько раз,
+        // если у врага несколько коллайдеров.
+        if (!damagedTargets.Add(damageable))
+            continue;
+
+        DamageInfo damageInfo =
+            damageCalculator.CreateDamage(
+                damageParts,
+                AttackType.Ranged,
+                gameObject
+            );
+
+        damageable.TakeDamage(damageInfo);
+        
+        SpawnImpact(hit);
+
+        if (penetrationsRemaining <= 0)
+            break;
+
+        penetrationsRemaining--;
+    }
+
+    SpawnTracer(
+    muzzlePoint != null
+        ? muzzlePoint.position
+        : shotRay.origin,
+    endPoint
+);
+
+    if (drawShotRay)
+    {
+        Debug.DrawRay(
+            shotRay.origin,
+            shotRay.direction * range,
+            Color.cyan,
+            1f
+        );
+    }
+}
+private void SpawnImpact(RaycastHit hit)
+{
+    if (impactPrefab == null)
+        return;
+
+    ImpactEffect impact = Instantiate(
+        impactPrefab,
+        hit.point,
+        Quaternion.identity
+    );
+
+    impact.Play(hit.point, hit.normal);
+}
+
+private void SpawnTracer(
+    Vector3 startPoint,
+    Vector3 endPoint)
+{
+    if (tracerPrefab == null)
+        return;
+
+    Tracer tracer = Instantiate(
+        tracerPrefab,
+        startPoint,
+        Quaternion.identity
+    );
+
+    tracer.Setup(
+        startPoint,
+        endPoint
+    );
+}
 }

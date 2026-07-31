@@ -16,8 +16,8 @@ MonoBehaviour:
   description: 
   statType: 1
   modifierType: 1
-  minimumValue: 5
-  maximumValue: 100
+  minimumValue: 0.01
+  maximumValue: 1
   weight: 1
-  allowedWeaponTypes: 
+  allowedWeaponTypes: 01000000
   canBeNegative: 1

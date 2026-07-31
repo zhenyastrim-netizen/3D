@@ -21,6 +21,8 @@ private float pickupDelay = 0.5f;
 
 [Header("Light pulse")]
 [SerializeField] private float pulseSpeed = 3f;
+public WeaponInstance WeaponInstance =>
+    weaponInstance;
 
 private float baseLightIntensity;
 private float lightPulseAmount;

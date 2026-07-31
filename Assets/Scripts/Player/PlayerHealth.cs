@@ -63,10 +63,14 @@ public event Action OnHealthGateTriggered;
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
-    public void TakeDamage(DamageInfo damageInfo)
+   public void TakeDamage(DamageInfo damageInfo)
 {
-    if (IsDead || damageInfo.Parts == null)
+    if (IsDead ||
+        isInvulnerable ||
+        damageInfo.Parts == null)
+    {
         return;
+    }
 
     float finalDamage = 0f;
 
@@ -74,54 +78,52 @@ public event Action OnHealthGateTriggered;
     {
         finalDamage += CalculateDamage(part);
     }
-    OnDamaged?.Invoke(finalDamage);
-    
 
     if (finalDamage <= 0f)
         return;
-        if (isInvulnerable)
-    return;
-    
-    OnHealthGateTriggered?.Invoke();
 
-bool aboveThreshold =
-    currentHealth >= maxHealth * healthGateThreshold;
+    bool aboveThreshold =
+        currentHealth >=
+        maxHealth * healthGateThreshold;
 
-bool wouldDie =
-    finalDamage >= currentHealth;
+    bool wouldDie =
+        finalDamage >= currentHealth;
 
-bool canTriggerHealthGate =
-    healthGateAvailable &&
-    aboveThreshold &&
-    wouldDie &&
-    !damageInfo.IsSecondary;
+    bool canTriggerHealthGate =
+        healthGateAvailable &&
+        aboveThreshold &&
+        wouldDie &&
+        !damageInfo.IsSecondary;
 
-if (canTriggerHealthGate)
-{
-    currentHealth = 1f;
-    healthGateAvailable = false;
+    if (canTriggerHealthGate)
+    {
+        currentHealth = 1f;
+        healthGateAvailable = false;
 
-    StartCoroutine(InvulnerabilityRoutine());
+        StartCoroutine(InvulnerabilityRoutine());
+
+        OnHealthChanged?.Invoke(
+            currentHealth,
+            maxHealth
+        );
+
+        OnDamaged?.Invoke(finalDamage);
+        OnHealthGateTriggered?.Invoke();
+
+        return;
+    }
+
+    currentHealth = Mathf.Max(
+        currentHealth - finalDamage,
+        0f
+    );
 
     OnHealthChanged?.Invoke(
         currentHealth,
         maxHealth
     );
 
-    Debug.Log("Health Gate сработал!", this);
-    return;
-}
-
-    currentHealth = Mathf.Max(
-        currentHealth - finalDamage,
-        0f
-    );
-    OnHealthChanged?.Invoke(currentHealth, maxHealth);
-
-    Debug.Log(
-        $"Игрок получил {finalDamage:F1} урона. " +
-        $"HP: {currentHealth:F1}/{maxHealth:F1}"
-    );
+    OnDamaged?.Invoke(finalDamage);
 
     if (IsDead)
         Die();

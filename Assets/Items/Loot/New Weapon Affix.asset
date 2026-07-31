@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponAffixDefinition
   affixName: 
   description: 
-  statType: 0
+  statType: 3
   modifierType: 1
-  minimumValue: 10
-  maximumValue: 70
+  minimumValue: 0.01
+  maximumValue: 1
   weight: 1
   allowedWeaponTypes: 01000000
   canBeNegative: 1
