@@ -33,6 +33,15 @@ public class PlayerHealthUI : MonoBehaviour
             playerHealth.OnHealthChanged -= UpdateHealth;
     }
 
+    public void SetVisible(bool visible)
+    {
+        if (healthSlider != null)
+            healthSlider.gameObject.SetActive(visible);
+
+        if (healthText != null)
+            healthText.gameObject.SetActive(visible);
+    }
+
     private void UpdateHealth(float current, float maximum)
     {
         healthSlider.maxValue = maximum;

@@ -12,6 +12,12 @@ public class InventoryWindow : MonoBehaviour
     [Header("Player")]
     [SerializeField] private PlayerLook playerLook;
 
+    [Header("Gameplay HUD")]
+    [SerializeField] private PlayerExperienceUI experienceUI;
+    [SerializeField] private PlayerHealthUI healthUI;
+    [SerializeField] private WeaponAmmoUI ammoUI;
+    [SerializeField] private CrosshairReloadUI crosshairUI;
+
     [Header("Settings")]
     [SerializeField] private bool pauseGame = true;
 
@@ -24,6 +30,18 @@ public class InventoryWindow : MonoBehaviour
             playerLook =
                 FindFirstObjectByType<PlayerLook>();
         }
+
+        if (experienceUI == null)
+            experienceUI = FindFirstObjectByType<PlayerExperienceUI>();
+
+        if (healthUI == null)
+            healthUI = FindFirstObjectByType<PlayerHealthUI>();
+
+        if (ammoUI == null)
+            ammoUI = FindFirstObjectByType<WeaponAmmoUI>();
+
+        if (crosshairUI == null)
+            crosshairUI = FindFirstObjectByType<CrosshairReloadUI>();
     }
 
     private void OnEnable()
@@ -66,7 +84,24 @@ public class InventoryWindow : MonoBehaviour
         if (playerLook != null)
             playerLook.CanLook = !open;
 
+        SetGameplayHudVisible(!open);
+
         if (pauseGame)
             Time.timeScale = open ? 0f : 1f;
+    }
+
+    private void SetGameplayHudVisible(bool visible)
+    {
+        if (experienceUI != null)
+            experienceUI.SetVisible(visible);
+
+        if (healthUI != null)
+            healthUI.SetVisible(visible);
+
+        if (ammoUI != null)
+            ammoUI.SetVisible(visible);
+
+        if (crosshairUI != null)
+            crosshairUI.SetVisible(visible);
     }
 }

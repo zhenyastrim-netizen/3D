@@ -22,6 +22,11 @@ public class CrosshairReloadUI : MonoBehaviour
         weaponManager.OnWeaponChanged -= HandleWeaponChanged;
     }
 
+    public void SetVisible(bool visible)
+    {
+        gameObject.SetActive(visible);
+    }
+
     private void Update()
     {
         bool isReloading =
