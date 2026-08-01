@@ -17,25 +17,48 @@ public class ItemDetailsUI : MonoBehaviour
     [SerializeField] private TMP_Text alignmentText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text statsText;
+
     [Header("Rarity Background")]
-[SerializeField] private Image cardBackground;
+    [SerializeField] private Image cardBackground;
 
-[SerializeField] private Color commonBackground =
-    new Color32(23, 25, 31, 245);
+    [SerializeField] private Color commonBackground =
+        new Color32(23, 25, 31, 245);
 
-[SerializeField] private Color rareBackground =
-    new Color32(18, 35, 58, 245);
+    [SerializeField] private Color rareBackground =
+        new Color32(18, 35, 58, 245);
 
-[SerializeField] private Color legendaryBackground =
-    new Color32(56, 35, 15, 245);
+    [SerializeField] private Color legendaryBackground =
+        new Color32(56, 35, 15, 245);
 
-[SerializeField] private Color uniqueBackground =
-    new Color32(42, 21, 56, 245);
-private void Awake()
-{
-    if (cardBackground == null)
-        cardBackground = GetComponent<Image>();
-}
+    [SerializeField] private Color uniqueBackground =
+        new Color32(42, 21, 56, 245);
+
+    [Header("Layout")]
+    [SerializeField] private bool configureLayoutAutomatically = true;
+    [SerializeField] private Vector2 cardSize = new Vector2(480f, 460f);
+    [SerializeField, Min(0f)] private float cardPadding = 24f;
+
+    private void Awake()
+    {
+        Image ownBackground = GetComponent<Image>();
+
+        // Старые сцены могли ссылаться на случайный Image вне карточки.
+        if (ownBackground != null &&
+            (cardBackground == null ||
+             !cardBackground.transform.IsChildOf(transform)))
+        {
+            cardBackground = ownBackground;
+        }
+
+        if (configureLayoutAutomatically)
+            ConfigureLayout();
+
+        if (cardBackground != null)
+        {
+            cardBackground.raycastTarget = false;
+            SetRarityBackground(ItemRarity.Common);
+        }
+    }
     private void OnEnable()
     {
         InventorySlotUI.OnItemHovered += ShowItem;
@@ -80,11 +103,12 @@ private void Awake()
             inventoryItem.WeaponInstance;
 
         bool isWeapon = weapon != null;
+
         SetRarityBackground(
-    isWeapon
-        ? weapon.Rarity
-        : ItemRarity.Common
-);
+            isWeapon
+                ? weapon.Rarity
+                : ItemRarity.Common
+        );
 
         if (rarityText != null)
             rarityText.gameObject.SetActive(isWeapon);
@@ -116,30 +140,205 @@ private void Awake()
         }
     }
     private void SetRarityBackground(
-    ItemRarity rarity)
-{
-    if (cardBackground == null)
-        return;
-
-    switch (rarity)
+        ItemRarity rarity)
     {
-        case ItemRarity.Rare:
-            cardBackground.color = rareBackground;
-            break;
+        if (cardBackground == null)
+            return;
 
-        case ItemRarity.Legendary:
-            cardBackground.color = legendaryBackground;
-            break;
+        switch (rarity)
+        {
+            case ItemRarity.Rare:
+                cardBackground.color = rareBackground;
+                break;
 
-        case ItemRarity.Unique:
-            cardBackground.color = uniqueBackground;
-            break;
+            case ItemRarity.Legendary:
+                cardBackground.color = legendaryBackground;
+                break;
 
-        default:
-            cardBackground.color = commonBackground;
-            break;
+            case ItemRarity.Unique:
+                cardBackground.color = uniqueBackground;
+                break;
+
+            default:
+                cardBackground.color = commonBackground;
+                break;
+        }
     }
-}
+
+    private void ConfigureLayout()
+    {
+        RectTransform cardRect = transform as RectTransform;
+
+        if (cardRect != null)
+        {
+            cardRect.localScale = Vector3.one;
+            cardRect.sizeDelta = cardSize;
+        }
+
+        RectTransform contentRect = contentRoot != null
+            ? contentRoot.transform as RectTransform
+            : null;
+
+        if (contentRect != null)
+        {
+            VerticalLayoutGroup oldLayout =
+                contentRoot.GetComponent<VerticalLayoutGroup>();
+
+            ContentSizeFitter oldFitter =
+                contentRoot.GetComponent<ContentSizeFitter>();
+
+            if (oldLayout != null)
+                oldLayout.enabled = false;
+
+            if (oldFitter != null)
+                oldFitter.enabled = false;
+
+            contentRect.localScale = Vector3.one;
+            contentRect.anchorMin = Vector2.zero;
+            contentRect.anchorMax = Vector2.one;
+            contentRect.pivot = new Vector2(0.5f, 0.5f);
+            contentRect.offsetMin = new Vector2(cardPadding, cardPadding);
+            contentRect.offsetMax = new Vector2(-cardPadding, -cardPadding);
+        }
+
+        RectTransform emptyRect = emptyState != null
+            ? emptyState.transform as RectTransform
+            : null;
+
+        if (emptyRect != null)
+        {
+            emptyRect.localScale = Vector3.one;
+            emptyRect.anchorMin = Vector2.zero;
+            emptyRect.anchorMax = Vector2.one;
+            emptyRect.offsetMin = Vector2.zero;
+            emptyRect.offsetMax = Vector2.zero;
+        }
+
+        ConfigureIcon(icon);
+
+        SetTopStretch(itemNameText, 0f, 40f, 0f, 112f);
+        SetTopStretch(itemTypeText, 46f, 26f, 0f, 112f);
+        SetTopStretch(descriptionText, 92f, 70f, 0f, 0f);
+        SetTopStretch(statsText, 178f, 150f, 0f, 0f);
+
+        SetBottomLeft(rarityText, 30f, 210f, 25f);
+        SetBottomLeft(alignmentText, 0f, 210f, 25f);
+
+        ConfigureText(
+            itemNameText,
+            28f,
+            new Color32(242, 244, 248, 255),
+            TextAlignmentOptions.TopLeft
+        );
+
+        ConfigureText(
+            itemTypeText,
+            16f,
+            new Color32(145, 153, 168, 255),
+            TextAlignmentOptions.TopLeft
+        );
+
+        ConfigureText(
+            descriptionText,
+            17f,
+            new Color32(203, 208, 218, 255),
+            TextAlignmentOptions.TopLeft
+        );
+
+        ConfigureText(
+            statsText,
+            16f,
+            new Color32(225, 228, 235, 255),
+            TextAlignmentOptions.TopLeft
+        );
+
+        ConfigureText(
+            rarityText,
+            17f,
+            Color.white,
+            TextAlignmentOptions.BottomLeft
+        );
+
+        ConfigureText(
+            alignmentText,
+            17f,
+            new Color32(173, 179, 190, 255),
+            TextAlignmentOptions.BottomLeft
+        );
+    }
+
+    private static void ConfigureIcon(Image targetIcon)
+    {
+        if (targetIcon == null)
+            return;
+
+        RectTransform rect = targetIcon.rectTransform;
+        rect.localScale = Vector3.one;
+        rect.anchorMin = Vector2.one;
+        rect.anchorMax = Vector2.one;
+        rect.pivot = Vector2.one;
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = new Vector2(88f, 88f);
+
+        targetIcon.preserveAspect = true;
+        targetIcon.color = Color.white;
+        targetIcon.raycastTarget = false;
+    }
+
+    private static void ConfigureText(
+        TMP_Text text,
+        float fontSize,
+        Color color,
+        TextAlignmentOptions alignment)
+    {
+        if (text == null)
+            return;
+
+        text.rectTransform.localScale = Vector3.one;
+        text.enableAutoSizing = false;
+        text.fontSize = fontSize;
+        text.color = color;
+        text.alignment = alignment;
+        text.enableWordWrapping = true;
+        text.raycastTarget = false;
+    }
+
+    private static void SetTopStretch(
+        TMP_Text text,
+        float top,
+        float height,
+        float left,
+        float right)
+    {
+        if (text == null)
+            return;
+
+        RectTransform rect = text.rectTransform;
+        rect.localScale = Vector3.one;
+        rect.anchorMin = new Vector2(0f, 1f);
+        rect.anchorMax = Vector2.one;
+        rect.pivot = new Vector2(0.5f, 1f);
+        rect.offsetMin = new Vector2(left, -top - height);
+        rect.offsetMax = new Vector2(-right, -top);
+    }
+
+    private static void SetBottomLeft(
+        TMP_Text text,
+        float bottom,
+        float width,
+        float height)
+    {
+        if (text == null)
+            return;
+
+        RectTransform rect = text.rectTransform;
+        rect.localScale = Vector3.one;
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.zero;
+        rect.pivot = Vector2.zero;
+        rect.anchoredPosition = new Vector2(0f, bottom);
+        rect.sizeDelta = new Vector2(width, height);
+    }
 
     private string BuildWeaponStats(
     WeaponInstance weapon)

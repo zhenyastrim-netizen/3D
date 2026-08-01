@@ -19,6 +19,22 @@ public class SkillCardUI : MonoBehaviour
     [SerializeField] private TMP_Text costText;
     [SerializeField] private TMP_Text rankText;
 
+    [Header("Layout")]
+    [SerializeField] private bool configureLayoutAutomatically = true;
+    [SerializeField] private Vector2 cardSize = new Vector2(300f, 210f);
+
+    [Header("Colors")]
+    [SerializeField] private Color availableColor =
+        new Color32(26, 32, 48, 255);
+
+    [SerializeField] private Color lockedColor =
+        new Color32(35, 36, 42, 255);
+
+    [SerializeField] private Color purchasedColor =
+        new Color32(22, 55, 43, 255);
+
+    private Image cardBackground;
+
     private void Awake()
     {
         if (experience == null)
@@ -29,6 +45,11 @@ public class SkillCardUI : MonoBehaviour
 
         if (purchaseButton == null)
             purchaseButton = GetComponent<Button>();
+
+        cardBackground = GetComponent<Image>();
+
+        if (configureLayoutAutomatically)
+            ConfigureLayout();
 
         if (purchaseButton != null)
             purchaseButton.onClick.AddListener(TryPurchase);
@@ -108,26 +129,170 @@ public class SkillCardUI : MonoBehaviour
 
         bool isMaxRank = currentRank >= skill.MaxRank;
         bool requirementsMet =
-    skillTree != null &&
-    skillTree.MeetsRequirements(skill);
+            skillTree != null &&
+            skillTree.MeetsRequirements(skill);
 
         if (costText != null)
-{
-    if (isMaxRank)
-    {
-        costText.text = "Куплено";
+        {
+            if (isMaxRank)
+            {
+                costText.text = "Куплено";
+            }
+            else if (!requirementsMet &&
+                     skill.RequiredSkill != null)
+            {
+                costText.text =
+                    $"Требуется: {skill.RequiredSkill.SkillName} " +
+                    $"ранг {skill.RequiredSkillRank}";
+            }
+            else
+            {
+                costText.text = $"Цена: {skill.Cost}";
+            }
+        }
+
+        bool canAfford =
+            experience != null &&
+            experience.CanSpendSkillPoints(skill.Cost);
+
+        if (purchaseButton != null)
+        {
+            purchaseButton.interactable =
+                !isMaxRank &&
+                requirementsMet &&
+                canAfford;
+        }
+
+        if (cardBackground != null)
+        {
+            cardBackground.color = isMaxRank
+                ? purchasedColor
+                : requirementsMet
+                    ? availableColor
+                    : lockedColor;
+        }
     }
-    else if (!requirementsMet &&
-             skill.RequiredSkill != null)
+
+    private void ConfigureLayout()
     {
-        costText.text =
-            $"Требуется: {skill.RequiredSkill.SkillName} " +
-            $"ранг {skill.RequiredSkillRank}";
+        RectTransform cardRect = transform as RectTransform;
+
+        if (cardRect != null)
+        {
+            cardRect.localScale = Vector3.one;
+            cardRect.sizeDelta = cardSize;
+        }
+
+        SetFixedRect(icon, new Vector2(0f, 1f), new Vector2(0f, 1f),
+            new Vector2(16f, -16f), new Vector2(64f, 64f));
+
+        SetTopStretch(nameText, 16f, 34f, 92f, 80f);
+        SetTopRight(rankText, 16f, 64f, 28f);
+        SetTopStretch(descriptionText, 92f, 72f, 16f, 16f);
+        SetBottomStretch(costText, 14f, 28f, 16f, 16f);
+
+        if (icon != null)
+        {
+            icon.preserveAspect = true;
+            icon.color = Color.white;
+            icon.raycastTarget = false;
+        }
+
+        ConfigureText(nameText, 22f, TextAlignmentOptions.TopLeft);
+        ConfigureText(descriptionText, 15f, TextAlignmentOptions.TopLeft);
+        ConfigureText(costText, 14f, TextAlignmentOptions.BottomLeft);
+        ConfigureText(rankText, 14f, TextAlignmentOptions.TopRight);
     }
-    else
+
+    private static void ConfigureText(
+        TMP_Text text,
+        float fontSize,
+        TextAlignmentOptions alignment)
     {
-        costText.text = $"Цена: {skill.Cost}";
+        if (text == null)
+            return;
+
+        text.rectTransform.localScale = Vector3.one;
+        text.enableAutoSizing = false;
+        text.fontSize = fontSize;
+        text.color = new Color32(235, 238, 244, 255);
+        text.alignment = alignment;
+        text.enableWordWrapping = true;
+        text.raycastTarget = false;
     }
-}
+
+    private static void SetFixedRect(
+        Graphic graphic,
+        Vector2 anchor,
+        Vector2 pivot,
+        Vector2 position,
+        Vector2 size)
+    {
+        if (graphic == null)
+            return;
+
+        RectTransform rect = graphic.rectTransform;
+        rect.localScale = Vector3.one;
+        rect.anchorMin = anchor;
+        rect.anchorMax = anchor;
+        rect.pivot = pivot;
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+    }
+
+    private static void SetTopStretch(
+        TMP_Text text,
+        float top,
+        float height,
+        float left,
+        float right)
+    {
+        if (text == null)
+            return;
+
+        RectTransform rect = text.rectTransform;
+        rect.localScale = Vector3.one;
+        rect.anchorMin = new Vector2(0f, 1f);
+        rect.anchorMax = Vector2.one;
+        rect.pivot = new Vector2(0.5f, 1f);
+        rect.offsetMin = new Vector2(left, -top - height);
+        rect.offsetMax = new Vector2(-right, -top);
+    }
+
+    private static void SetTopRight(
+        TMP_Text text,
+        float top,
+        float width,
+        float height)
+    {
+        if (text == null)
+            return;
+
+        RectTransform rect = text.rectTransform;
+        rect.localScale = Vector3.one;
+        rect.anchorMin = Vector2.one;
+        rect.anchorMax = Vector2.one;
+        rect.pivot = Vector2.one;
+        rect.anchoredPosition = new Vector2(-16f, -top);
+        rect.sizeDelta = new Vector2(width, height);
+    }
+
+    private static void SetBottomStretch(
+        TMP_Text text,
+        float bottom,
+        float height,
+        float left,
+        float right)
+    {
+        if (text == null)
+            return;
+
+        RectTransform rect = text.rectTransform;
+        rect.localScale = Vector3.one;
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = new Vector2(1f, 0f);
+        rect.pivot = new Vector2(0.5f, 0f);
+        rect.offsetMin = new Vector2(left, bottom);
+        rect.offsetMax = new Vector2(-right, bottom + height);
     }
 }
