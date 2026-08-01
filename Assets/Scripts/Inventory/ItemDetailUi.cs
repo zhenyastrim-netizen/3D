@@ -17,7 +17,25 @@ public class ItemDetailsUI : MonoBehaviour
     [SerializeField] private TMP_Text alignmentText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text statsText;
+    [Header("Rarity Background")]
+[SerializeField] private Image cardBackground;
 
+[SerializeField] private Color commonBackground =
+    new Color32(23, 25, 31, 245);
+
+[SerializeField] private Color rareBackground =
+    new Color32(18, 35, 58, 245);
+
+[SerializeField] private Color legendaryBackground =
+    new Color32(56, 35, 15, 245);
+
+[SerializeField] private Color uniqueBackground =
+    new Color32(42, 21, 56, 245);
+private void Awake()
+{
+    if (cardBackground == null)
+        cardBackground = GetComponent<Image>();
+}
     private void OnEnable()
     {
         InventorySlotUI.OnItemHovered += ShowItem;
@@ -62,6 +80,11 @@ public class ItemDetailsUI : MonoBehaviour
             inventoryItem.WeaponInstance;
 
         bool isWeapon = weapon != null;
+        SetRarityBackground(
+    isWeapon
+        ? weapon.Rarity
+        : ItemRarity.Common
+);
 
         if (rarityText != null)
             rarityText.gameObject.SetActive(isWeapon);
@@ -92,14 +115,87 @@ public class ItemDetailsUI : MonoBehaviour
                 statsText.text = BuildItemStats(item);
         }
     }
+    private void SetRarityBackground(
+    ItemRarity rarity)
+{
+    if (cardBackground == null)
+        return;
+
+    switch (rarity)
+    {
+        case ItemRarity.Rare:
+            cardBackground.color = rareBackground;
+            break;
+
+        case ItemRarity.Legendary:
+            cardBackground.color = legendaryBackground;
+            break;
+
+        case ItemRarity.Unique:
+            cardBackground.color = uniqueBackground;
+            break;
+
+        default:
+            cardBackground.color = commonBackground;
+            break;
+    }
+}
 
     private string BuildWeaponStats(
-        WeaponInstance weapon)
-    {
-        if (weapon.Affixes.Count == 0)
-            return "Нет дополнительных свойств";
+    WeaponInstance weapon)
+{
+    if (weapon == null || weapon.BaseData == null)
+        return "";
 
-        StringBuilder builder = new StringBuilder();
+    WeaponData data = weapon.BaseData;
+    StringBuilder builder = new StringBuilder();
+
+    switch (data.WeaponType)
+    {
+        case WeaponType.Ranged:
+            builder.AppendLine(
+                $"Урон: {data.Damage:0.##}"
+            );
+
+            builder.AppendLine(
+                $"Скорострельность: {data.FireRate:0.##}/с"
+            );
+
+            builder.AppendLine(
+                $"Магазин: {data.MagazineSize}"
+            );
+
+            builder.AppendLine(
+                $"Перезарядка: {data.ReloadTime:0.##} сек."
+            );
+            break;
+
+        case WeaponType.Melee:
+            builder.AppendLine(
+                $"Урон: {data.Damage:0.##}"
+            );
+
+            builder.AppendLine(
+                $"Скорость атаки: " +
+                $"{data.MeleeAttacksPerSecond:0.##}/с"
+            );
+
+            builder.AppendLine(
+                $"Дальность: {data.MeleeRange:0.##}"
+            );
+            break;
+
+        case WeaponType.Magic:
+            builder.AppendLine("Магическое оружие");
+            break;
+    }
+
+    if (weapon.Affixes.Count > 0)
+    {
+        builder.AppendLine();
+        builder.AppendLine(
+            "<b>Дополнительные свойства</b>"
+        );
 
         foreach (WeaponAffix affix in weapon.Affixes)
         {
@@ -113,12 +209,20 @@ public class ItemDetailsUI : MonoBehaviour
 
             builder.AppendLine(
                 $"{affix.Definition.AffixName}: " +
-                $"{valueText}"
+                valueText
             );
         }
-
-        return builder.ToString();
     }
+    else
+    {
+        builder.AppendLine();
+        builder.AppendLine(
+            "<color=#78808F>Нет дополнительных свойств</color>"
+        );
+    }
+
+    return builder.ToString().TrimEnd();
+}
 
     private string BuildItemStats(ItemData item)
     {

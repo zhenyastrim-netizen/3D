@@ -10,35 +10,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b816f9d76b5ab94fafbf0fb4000d8b5, type: 3}
-  m_Name: Ranged
+  m_Name: GladTosee
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
-  itemName: Cannibal
-  description: prostonice
-  icon: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  itemName: 
+  description: 
+  icon: {fileID: 0}
   itemType: 0
-  worldPrefab: {fileID: 5697852019763116967, guid: 5fbaa2102a5ffe84cb6f2e6dfb03df15, type: 3}
+  worldPrefab: {fileID: 5697852019763116967, guid: b6014b024cefe564580b058b70029ae6, type: 3}
   stackable: 0
   maxStack: 1
   effectDuration: 10
   maxCharges: 3
-  passiveCanStack: 0
+  passiveCanStack: 1
   pathEffectType: 0
   questItemId: 
-  effects:
-  - {fileID: 0}
-  damage: 10
-  fireRate: 5
-  magazineSize: 12
-  reloadTime: 1.5
-  weaponPrefab: {fileID: 5697852019763116967, guid: 5fbaa2102a5ffe84cb6f2e6dfb03df15, type: 3}
-  weaponType: 1
+  effects: []
+  damage: 35
+  fireRate: 1
+  magazineSize: 6
+  reloadTime: 2
+  meleeRange: 3
+  meleeHitRadius: 0.6
+  meleeAttacksPerSecond: 2
+  weaponPrefab: {fileID: 5697852019763116967, guid: b6014b024cefe564580b058b70029ae6, type: 3}
+  weaponType: 0
   rangedWeaponType: 1
-  fireMode: 2
-  projectilesPerShot: 2
+  fireMode: 0
+  projectilesPerShot: 1
   spreadAngle: 0
   burstSize: 3
   burstDelay: 0.08
   penetrationCount: 0
-  ricochetCount: 5
+  ricochetCount: 4
   ricochetRange: 10
   ricochetDamageMultiplier: 0.75

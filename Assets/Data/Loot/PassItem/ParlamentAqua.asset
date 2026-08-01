@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2deb6bdf27c6b9e48bf57d7eefd64c9a, type: 3}
-  m_Name: New Item
+  m_Name: ParlamentAqua
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: 
   description: 
-  icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
-  itemType: 3
-  worldPrefab: {fileID: 919132149155446097, guid: 597e86fbdc4f6a549abd75f3e4f55e60, type: 3}
-  stackable: 1
+  icon: {fileID: 0}
+  itemType: 0
+  worldPrefab: {fileID: 919132149155446097, guid: a911a5e2ef225b149b6eb775a52b1cdc, type: 3}
+  stackable: 0
   maxStack: 1
   effectDuration: 10
   maxCharges: 3
@@ -25,4 +25,6 @@ MonoBehaviour:
   pathEffectType: 0
   questItemId: 
   effects:
-  - {fileID: 11400000, guid: 5f71f791050e8dc46ba4204de6d80e68, type: 2}
+  - {fileID: 11400000, guid: 554b16fe599dc8646abaa4551da7c06a, type: 2}
+  - {fileID: 11400000, guid: df11a3556abc25d44b608760ea5ef33e, type: 2}
+  - {fileID: 11400000, guid: 1718749328c20c74cbd1d1aab46c0bb9, type: 2}

@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e4d6d7d31d12834f8ad66b74341e028, type: 3}
-  m_Name: MoveSpeed
+  m_Name: LuckerCommon
   m_EditorClassIdentifier: Assembly-CSharp::WeaponAffixDefinition
   affixName: 
   description: 
-  statType: 1
+  statType: 15
   modifierType: 1
-  minimumValue: 0.01
-  maximumValue: 1
-  weight: 1
+  minimumValue: 0.05
+  maximumValue: 0.2
+  weight: 75
   allowedWeaponTypes: 01000000
   canBeNegative: 1

@@ -13,6 +13,7 @@ public class WeaponReload : MonoBehaviour
     [Header("References")]
     [SerializeField] private WeaponAmmo ammo;
     [SerializeField] private PlayerStats playerStats;
+    public float ReloadProgress { get; private set; }
 
     public bool IsReloading { get; private set; }
 
@@ -33,6 +34,7 @@ public class WeaponReload : MonoBehaviour
 
         StopAllCoroutines();
         IsReloading = false;
+        ReloadProgress = 0f;
     }
 
     private void Update()
@@ -50,26 +52,37 @@ public class WeaponReload : MonoBehaviour
     }
 
     private IEnumerator ReloadRoutine()
+{
+    IsReloading = true;
+    ReloadProgress = 0f;
+
+    float reloadSpeed = playerStats != null
+        ? playerStats.GetValue(StatType.ReloadSpeed)
+        : 1f;
+
+    reloadSpeed = Mathf.Max(0.01f, reloadSpeed);
+
+    float finalReloadTime =
+        reloadTime / reloadSpeed;
+
+    float elapsedTime = 0f;
+
+    while (elapsedTime < finalReloadTime)
     {
-        IsReloading = true;
+        elapsedTime += Time.deltaTime;
 
-        float reloadSpeed = playerStats != null
-            ? playerStats.GetValue(StatType.ReloadSpeed)
-            : 1f;
-
-        reloadSpeed = Mathf.Max(0.01f, reloadSpeed);
-
-        float finalReloadTime = reloadTime / reloadSpeed;
-
-        Debug.Log(
-            $"Перезарядка: {finalReloadTime:F2} сек."
+        ReloadProgress = Mathf.Clamp01(
+            elapsedTime / finalReloadTime
         );
 
-        yield return new WaitForSeconds(finalReloadTime);
-
-        ammo.Reload();
-        IsReloading = false;
-
-        Debug.Log("Перезаряжено");
+        yield return null;
     }
+
+    ReloadProgress = 1f;
+
+    ammo.Reload();
+
+    IsReloading = false;
+    ReloadProgress = 0f;
+}
 }
