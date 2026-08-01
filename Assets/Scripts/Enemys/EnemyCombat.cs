@@ -7,6 +7,15 @@ public class EnemyCombat : MonoBehaviour
     [SerializeField] private float damage = 20f;
     [SerializeField] private float attackRange = 2.3f;
     [SerializeField] private float attackRadius = 0.65f;
+    [Header("Combo")]
+[SerializeField, Min(1)]
+private int comboHitCount = 1;
+
+[SerializeField, Min(0f)]
+private float comboWindupTime = 0.2f;
+
+[SerializeField, Min(0f)]
+private float timeBetweenHits = 0.15f;
 
     [Header("Timing")]
     [SerializeField] private float windupTime = 0.35f;
@@ -77,28 +86,44 @@ private Material enemyMaterial;
 {
     isAttacking = true;
 
-    SetWarningVisual(true);
-
-    yield return new WaitForSeconds(windupTime);
-
-    SetWarningVisual(false);
-
-    if (brain == null ||
-        brain.CurrentState != EnemyBrain.EnemyState.Attack)
+    for (int hitIndex = 0;
+         hitIndex < comboHitCount;
+         hitIndex++)
     {
-        isAttacking = false;
-        yield break;
-    }
+        SetWarningVisual(true);
 
-    if (CanHitTarget())
-    {
-        if (movement != null)
-{
-    movement.AddImpulse(
-        transform.forward * attackLungeForce
-    );
-}
-        PerformHit();
+        float currentWindup = hitIndex == 0
+            ? windupTime
+            : comboWindupTime;
+
+        yield return new WaitForSeconds(currentWindup);
+
+        SetWarningVisual(false);
+
+        if (brain == null ||
+            brain.CurrentState != EnemyBrain.EnemyState.Attack)
+        {
+            break;
+        }
+
+        if (CanHitTarget())
+        {
+            if (movement != null)
+            {
+                movement.AddImpulse(
+                    transform.forward * attackLungeForce
+                );
+            }
+
+            PerformHit();
+        }
+
+        if (hitIndex < comboHitCount - 1)
+        {
+            yield return new WaitForSeconds(
+                timeBetweenHits
+            );
+        }
     }
 
     yield return new WaitForSeconds(recoveryTime);

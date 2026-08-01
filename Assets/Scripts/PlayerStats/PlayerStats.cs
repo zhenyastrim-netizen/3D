@@ -55,6 +55,12 @@ private float baseMagazineSizeBonus = 0f;
 
     [SerializeField, Min(1f)]
     private float baseCriticalDamage = 2f;
+    [Header("Mana")]
+[SerializeField, Min(1f)]
+private float baseMaxMana = 100f;
+
+[SerializeField, Min(0f)]
+private float baseManaRegeneration = 5f;
     
 
     [Header("Other")]
@@ -92,6 +98,15 @@ stats.Add(
 stats.Add(
     StatType.ManaCostMultiplier,
     new PlayerStat(baseManaCostMultiplier)
+);
+stats.Add(
+    StatType.MaxMana,
+    new PlayerStat(baseMaxMana)
+);
+
+stats.Add(
+    StatType.ManaRegeneration,
+    new PlayerStat(baseManaRegeneration)
 );
         stats.Add(
             StatType.Armor,

@@ -11,7 +11,8 @@ public enum StatType
     AttackSpeed,
     ReloadSpeed,
     MagazineSize,
-
+MaxMana,
+ManaRegeneration,
     CriticalChance,
     CriticalDamage,
 CastSpeed,

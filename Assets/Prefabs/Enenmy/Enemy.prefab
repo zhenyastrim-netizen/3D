@@ -14680,6 +14680,7 @@ GameObject:
   - component: {fileID: 6464131957926711628}
   - component: {fileID: 6310779783605952446}
   - component: {fileID: -4146214465401064326}
+  - component: {fileID: 2528159326761103075}
   m_Layer: 7
   m_Name: Enemy
   m_TagString: Enemy
@@ -14908,6 +14909,9 @@ MonoBehaviour:
   damage: 20
   attackRange: 2.3
   attackRadius: 0.65
+  comboHitCount: 1
+  comboWindupTime: 0.2
+  timeBetweenHits: 0.15
   windupTime: 0.35
   recoveryTime: 0.25
   attackCooldown: 1
@@ -14990,6 +14994,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DamageNumberSpawner
   prefab: {fileID: 6142744378474720587, guid: 05a549b14d2ab17459a99ef635dbe50e, type: 3}
   spawnPoint: {fileID: 5543432414265396485}
+--- !u!114 &2528159326761103075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7074214029239156403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 167ac41718c7dbd4e958d72cc0eebabb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyApproachDash
+  minimumDistance: 4
+  maximumDistance: 10
+  stoppingDistance: 1.8
+  windupTime: 0.25
+  dashSpeed: 24
+  maximumDuration: 0.3
+  cooldown: 2
+  brain: {fileID: 5064200613070908723}
+  movement: {fileID: 925673572063314472}
+  enemyHealth: {fileID: 4277620528545096905}
+  enemyRenderer: {fileID: 996907137935217681}
+  dashWarningColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &8357181933521371316
 GameObject:
   m_ObjectHideFlags: 0
