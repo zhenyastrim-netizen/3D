@@ -7,6 +7,8 @@ public class PlayerStats : MonoBehaviour
     [Header("Survival")]
     [SerializeField, Min(1f)]
     private float baseMaxHealth = 100f;
+    [SerializeField, Min(0f)]
+private float baseHealthRegeneration = 0f;
 
     [SerializeField, Min(0f)]
     private float baseArmor = 0f;
@@ -20,6 +22,12 @@ public class PlayerStats : MonoBehaviour
     [Header("Spirit")]
 [SerializeField, Min(0f)]
 private float baseSpiritPower = 1f;
+[Header("Magic")]
+[SerializeField, Min(0f)]
+private float baseCastSpeed = 1f;
+
+[SerializeField, Min(0f)]
+private float baseManaCostMultiplier = 1f;
 
     [Header("Damage")]
     
@@ -72,7 +80,19 @@ private float baseMagazineSizeBonus = 0f;
             StatType.MaxHealth,
             new PlayerStat(baseMaxHealth)
         );
+        stats.Add(
+    StatType.HealthRegeneration,
+    new PlayerStat(baseHealthRegeneration)
+);
+stats.Add(
+    StatType.CastSpeed,
+    new PlayerStat(baseCastSpeed)
+);
 
+stats.Add(
+    StatType.ManaCostMultiplier,
+    new PlayerStat(baseManaCostMultiplier)
+);
         stats.Add(
             StatType.Armor,
             new PlayerStat(baseArmor)

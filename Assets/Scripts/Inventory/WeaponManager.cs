@@ -15,6 +15,8 @@ public class WeaponManager : MonoBehaviour
     private GameObject currentWeaponObject;
     private WeaponData currentWeaponData;
     private WeaponInstance currentWeaponInstance;
+    [SerializeField]
+private PlayerDamageCalculator damageCalculator;
 
     private int equippedSlotIndex = -1;
 
@@ -37,6 +39,11 @@ public class WeaponManager : MonoBehaviour
 
         if (playerCamera == null)
             playerCamera = Camera.main;
+            if (damageCalculator == null)
+{
+    damageCalculator =
+        FindFirstObjectByType<PlayerDamageCalculator>();
+}
     }
 
     private void Start()
@@ -193,6 +200,20 @@ public class WeaponManager : MonoBehaviour
     cameraRecoil,
     currentWeaponData
 );
+MeleeWeapon melee =
+    currentWeaponObject
+        .GetComponentInChildren<MeleeWeapon>();
+
+if (melee != null)
+{
+    melee.Initialize(
+        playerCamera,
+        playerStats,
+        damageCalculator,
+        cameraRecoil,
+        currentWeaponData
+    );
+}
         }
 
         ApplyWeaponModifiers();

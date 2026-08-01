@@ -8,6 +8,15 @@ public class WeaponData : ItemData
     [SerializeField] private float fireRate = 5f;
     [SerializeField] private int magazineSize = 12;
     [SerializeField] private float reloadTime = 1.5f;
+    [Header("Melee weapon")]
+[SerializeField, Min(0.1f)]
+private float meleeRange = 3f;
+
+[SerializeField, Min(0.05f)]
+private float meleeHitRadius = 0.6f;
+
+[SerializeField, Min(0.01f)]
+private float meleeAttacksPerSecond = 2f;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject weaponPrefab;
@@ -45,6 +54,9 @@ public int BurstSize => burstSize;
 public float BurstDelay => burstDelay;
 public int PenetrationCount => penetrationCount;
 public int RicochetCount => ricochetCount;
+public float MeleeRange => meleeRange;
+public float MeleeHitRadius => meleeHitRadius;
+public float MeleeAttacksPerSecond => meleeAttacksPerSecond;
 
     public float Damage => damage;
     public float FireRate => fireRate;

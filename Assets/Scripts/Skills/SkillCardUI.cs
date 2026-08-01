@@ -75,12 +75,11 @@ public class SkillCardUI : MonoBehaviour
     }
 
     private void HandleSkillRankChanged(
-        SkillData changedSkill,
-        int newRank)
-    {
-        if (changedSkill == skill)
-            Refresh();
-    }
+    SkillData changedSkill,
+    int newRank)
+{
+    Refresh();
+}
 
     public void Refresh()
     {
@@ -108,19 +107,27 @@ public class SkillCardUI : MonoBehaviour
             rankText.text = $"{currentRank} / {skill.MaxRank}";
 
         bool isMaxRank = currentRank >= skill.MaxRank;
+        bool requirementsMet =
+    skillTree != null &&
+    skillTree.MeetsRequirements(skill);
 
         if (costText != null)
-        {
-            costText.text = isMaxRank
-                ? "Куплено"
-                : $"Цена: {skill.Cost}";
-        }
-
-        if (purchaseButton != null)
-        {
-            purchaseButton.interactable =
-                skillTree != null &&
-                skillTree.CanPurchase(skill);
-        }
+{
+    if (isMaxRank)
+    {
+        costText.text = "Куплено";
+    }
+    else if (!requirementsMet &&
+             skill.RequiredSkill != null)
+    {
+        costText.text =
+            $"Требуется: {skill.RequiredSkill.SkillName} " +
+            $"ранг {skill.RequiredSkillRank}";
+    }
+    else
+    {
+        costText.text = $"Цена: {skill.Cost}";
+    }
+}
     }
 }

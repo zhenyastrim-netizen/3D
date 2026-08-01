@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3387a7c7851898f419b50148dfe74f69, type: 3}
+  m_Name: QutirEyes
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  skillName: "\u041C\u0438\u043B\u044B\u0435 \u0433\u043B\u0430\u0437\u043A\u0438"
+  description: "\u0423\u0432\u0435\u043B\u0438\u0447\u0438\u0432\u0430\u0435\u0442
+    \u043C\u0430\u043A\u0441 \u0445\u043F \u043D\u0430 0.5% \u0437\u0430 \u0440\u0430\u043D\u0433\n\u0423\u0432\u0435\u043B\u0438\u0447\u0438\u0432\u0430\u0435\u0442
+    \u0445\u043F \u0440\u0435\u0433\u0435\u043D \u043D\u0430 0.5\u0445\u043F/\u0441\u0435\u043A 
+    \u0437\u0430 \u0440\u0430\u043D\u0433"
+  icon: {fileID: 0}
+  requiredSkill: {fileID: 11400000, guid: ed35b2d509e8fc64aaad31d930361e9b, type: 2}
+  requiredSkillRank: 1
+  cost: 1
+  maxRank: 4
+  statEffect: {fileID: 11400000, guid: 8a6640ec7987dfa46ad94ddf935cd1c6, type: 2}

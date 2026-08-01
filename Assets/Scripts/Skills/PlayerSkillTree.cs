@@ -16,6 +16,18 @@ public class PlayerSkillTree : MonoBehaviour
         new Dictionary<SkillData, List<StatEffectInstance>>();
 
     public event Action<SkillData, int> OnSkillRankChanged;
+    
+    public bool MeetsRequirements(SkillData skill)
+{
+    if (skill == null)
+        return false;
+
+    if (skill.RequiredSkill == null)
+        return true;
+
+    return GetRank(skill.RequiredSkill) >=
+           skill.RequiredSkillRank;
+}
 
     private void Awake()
     {
@@ -34,45 +46,56 @@ public class PlayerSkillTree : MonoBehaviour
     }
 
     public bool CanPurchase(SkillData skill)
-    {
-        if (skill == null || skill.StatEffect == null)
-            return false;
+{
+    if (skill == null)
+        return false;
 
-        int currentRank = GetRank(skill);
+    int currentRank = GetRank(skill);
 
-        return currentRank < skill.MaxRank &&
-               experience.CanSpendSkillPoints(skill.Cost);
-    }
-
+    return currentRank < skill.MaxRank &&
+           MeetsRequirements(skill) &&
+           experience.CanSpendSkillPoints(skill.Cost);
+}
+public bool HasSkill(SkillData skill)
+{
+    return GetRank(skill) > 0;
+}
     public bool TryPurchase(SkillData skill)
     {
         if (!CanPurchase(skill))
             return false;
 
-        StatEffectInstance effect =
-            skill.StatEffect.Apply(playerStats);
+        StatEffectInstance effect = null;
 
-        if (effect == null)
-            return false;
+if (skill.StatEffect != null)
+{
+    effect = skill.StatEffect.Apply(playerStats);
 
-        if (!experience.TrySpendSkillPoints(skill.Cost))
-        {
-            effect.Remove();
-            return false;
-        }
+    if (effect == null)
+        return false;
+}
+
+if (!experience.TrySpendSkillPoints(skill.Cost))
+{
+    effect?.Remove();
+    return false;
+}
 
         int newRank = GetRank(skill) + 1;
         skillRanks[skill] = newRank;
 
-        if (!effects.TryGetValue(
-                skill,
-                out List<StatEffectInstance> skillEffects))
-        {
-            skillEffects = new List<StatEffectInstance>();
-            effects.Add(skill, skillEffects);
-        }
+        if (effect != null)
+{
+    if (!effects.TryGetValue(
+            skill,
+            out List<StatEffectInstance> skillEffects))
+    {
+        skillEffects = new List<StatEffectInstance>();
+        effects.Add(skill, skillEffects);
+    }
 
-        skillEffects.Add(effect);
+    skillEffects.Add(effect);
+}
 
         OnSkillRankChanged?.Invoke(skill, newRank);
 

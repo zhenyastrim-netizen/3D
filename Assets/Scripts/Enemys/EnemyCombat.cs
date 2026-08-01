@@ -152,6 +152,16 @@ private Material enemyMaterial;
 
     if (damageable == null)
         continue;
+        PlayerParry playerParry =
+    hits[i].GetComponentInParent<PlayerParry>();
+
+if (playerParry != null &&
+    playerParry.TryParry(gameObject))
+{
+    Debug.Log("Враг был парирован");
+
+    return;
+}
 float finalDamage =
     damage * statusDamageMultiplier;
     DamagePart[] damageParts =
@@ -161,6 +171,7 @@ float finalDamage =
         finalDamage
     )
 };
+
 
     DamageInfo damageInfo = new DamageInfo(
         damageParts,

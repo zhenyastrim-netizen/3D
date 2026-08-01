@@ -14,11 +14,13 @@ public enum StatType
 
     CriticalChance,
     CriticalDamage,
-
+CastSpeed,
+ManaCostMultiplier,
     Armor,
     Luck,
 
     HealingPower,
     SpiritualDefense,
     SpiritPower,
+    HealthRegeneration,
 }

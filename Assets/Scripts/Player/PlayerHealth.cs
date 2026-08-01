@@ -34,6 +34,19 @@ public event Action OnHealthGateTriggered;
     {
         playerStats.OnStatChanged += HandleStatChanged;
     }
+    private void Update()
+{
+    if (IsDead || currentHealth >= maxHealth)
+        return;
+
+    float regeneration =
+        playerStats.GetValue(StatType.HealthRegeneration);
+
+    if (regeneration <= 0f)
+        return;
+
+    Heal(regeneration * Time.deltaTime);
+}
 
     private void Start()
     {

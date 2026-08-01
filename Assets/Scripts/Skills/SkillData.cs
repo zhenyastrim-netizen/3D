@@ -13,6 +13,11 @@ public class SkillData : ScriptableObject
     [SerializeField] private string description;
 
     [SerializeField] private Sprite icon;
+    [Header("Requirements")]
+[SerializeField] private SkillData requiredSkill;
+
+[SerializeField, Min(1)]
+private int requiredSkillRank = 1;
 
     [Header("Purchase")]
     [SerializeField, Min(1)] private int cost = 1;
@@ -27,4 +32,6 @@ public class SkillData : ScriptableObject
     public int Cost => cost;
     public int MaxRank => maxRank;
     public StatEffect StatEffect => statEffect;
+    public SkillData RequiredSkill => requiredSkill;
+public int RequiredSkillRank => requiredSkillRank;
 }

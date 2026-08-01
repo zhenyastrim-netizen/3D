@@ -38,6 +38,34 @@ public class MeleeWeapon : MonoBehaviour
                 GetComponentInParent<PlayerDamageCalculator>();
         }
     }
+    public void Initialize(
+    Camera camera,
+    PlayerStats stats,
+    PlayerDamageCalculator calculator,
+    CameraRecoil recoil,
+    WeaponData weaponData)
+{
+    if (camera != null)
+        playerCamera = camera;
+
+    if (stats != null)
+        playerStats = stats;
+
+    if (calculator != null)
+        damageCalculator = calculator;
+
+    if (recoil != null)
+        cameraRecoil = recoil;
+
+    if (weaponData == null)
+        return;
+
+    damage = weaponData.Damage;
+    range = weaponData.MeleeRange;
+    hitRadius = weaponData.MeleeHitRadius;
+    attacksPerSecond =
+        weaponData.MeleeAttacksPerSecond;
+}
 
     private void OnEnable()
     {
