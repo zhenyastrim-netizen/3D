@@ -160,8 +160,9 @@ public void SetStatusSpeedMultiplier(float multiplier)
     private void ApplyGravity()
 {
     bool isGrounded =
-        groundCheck != null &&
-        groundCheck.IsGrounded;
+    controller.isGrounded ||
+    (groundCheck != null &&
+     groundCheck.IsGrounded);
 
     if (isGrounded && verticalVelocity < 0f)
     {

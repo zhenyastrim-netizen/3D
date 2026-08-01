@@ -218,8 +218,10 @@ else
     if (motor != null)
     {
         Vector3 preservedVelocity =
-            motor.MomentumVelocity *
-            wallMomentumRetention;
+    Vector3.ProjectOnPlane(
+        motor.MomentumVelocity,
+        lastWallNormal
+    ) * wallMomentumRetention;
 
         Vector3 lookDirection =
             transform.forward;

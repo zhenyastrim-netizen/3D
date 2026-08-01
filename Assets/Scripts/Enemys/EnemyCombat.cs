@@ -16,6 +16,10 @@ private float comboWindupTime = 0.2f;
 
 [SerializeField, Min(0f)]
 private float timeBetweenHits = 0.15f;
+[SerializeField] private float[] comboDamageMultipliers =
+{
+    1f
+};
 
     [Header("Timing")]
     [SerializeField] private float windupTime = 0.35f;
@@ -115,7 +119,9 @@ private Material enemyMaterial;
                 );
             }
 
-            PerformHit();
+            PerformHit(
+    GetComboDamageMultiplier(hitIndex)
+);
         }
 
         if (hitIndex < comboHitCount - 1)
@@ -139,7 +145,20 @@ private Material enemyMaterial;
     enemyMaterial.color =
         warning ? warningColor : normalColor;
 }
+private float GetComboDamageMultiplier(
+    int hitIndex)
+{
+    if (comboDamageMultipliers == null ||
+        hitIndex >= comboDamageMultipliers.Length)
+    {
+        return 1f;
+    }
 
+    return Mathf.Max(
+        0f,
+        comboDamageMultipliers[hitIndex]
+    );
+}
     private bool CanHitTarget()
     {
         if (brain == null || brain.Target == null)
@@ -157,7 +176,8 @@ private Material enemyMaterial;
                attackRange * attackRange;
     }
 
-    private void PerformHit()
+    private void PerformHit(
+    float comboDamageMultiplier = 1f)
     {
         Vector3 center = attackPoint != null
             ? attackPoint.position
@@ -188,7 +208,9 @@ if (playerParry != null &&
     return;
 }
 float finalDamage =
-    damage * statusDamageMultiplier;
+    damage *
+    statusDamageMultiplier *
+    comboDamageMultiplier;
     DamagePart[] damageParts =
 {
     new DamagePart(
