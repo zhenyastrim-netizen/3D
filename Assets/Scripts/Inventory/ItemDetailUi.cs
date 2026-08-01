@@ -34,42 +34,62 @@ public class ItemDetailsUI : MonoBehaviour
         ItemData item = inventoryItem?.Item;
         bool hasItem = item != null;
 
-        contentRoot.SetActive(hasItem);
-        emptyState.SetActive(!hasItem);
+        if (contentRoot != null)
+            contentRoot.SetActive(hasItem);
+
+        if (emptyState != null)
+            emptyState.SetActive(!hasItem);
 
         if (!hasItem)
             return;
 
-        icon.sprite = item.icon;
-        icon.enabled = item.icon != null;
+        if (icon != null)
+        {
+            icon.sprite = item.icon;
+            icon.enabled = item.icon != null;
+        }
 
-        itemNameText.text = item.itemName;
-        itemTypeText.text = item.itemType.ToString();
-        descriptionText.text = item.description;
+        if (itemNameText != null)
+            itemNameText.text = item.itemName;
+
+        if (itemTypeText != null)
+            itemTypeText.text = GetItemTypeText(item.itemType);
+
+        if (descriptionText != null)
+            descriptionText.text = item.description;
 
         WeaponInstance weapon =
             inventoryItem.WeaponInstance;
 
         bool isWeapon = weapon != null;
 
-        rarityText.gameObject.SetActive(isWeapon);
-        alignmentText.gameObject.SetActive(isWeapon);
+        if (rarityText != null)
+            rarityText.gameObject.SetActive(isWeapon);
+
+        if (alignmentText != null)
+            alignmentText.gameObject.SetActive(isWeapon);
 
         if (isWeapon)
         {
-            rarityText.text =
-                GetRarityText(weapon.Rarity);
+            if (rarityText != null)
+            {
+                rarityText.text =
+                    GetRarityText(weapon.Rarity);
+            }
 
-            alignmentText.text =
-                GetAlignmentText(weapon.Alignment);
+            if (alignmentText != null)
+            {
+                alignmentText.text =
+                    GetAlignmentText(weapon.Alignment);
+            }
 
-            statsText.text =
-                BuildWeaponStats(weapon);
+            if (statsText != null)
+                statsText.text = BuildWeaponStats(weapon);
         }
         else
         {
-            statsText.text =
-                BuildItemStats(item);
+            if (statsText != null)
+                statsText.text = BuildItemStats(item);
         }
     }
 
@@ -110,15 +130,107 @@ public class ItemDetailsUI : MonoBehaviour
 
         StringBuilder builder = new StringBuilder();
 
+        bool hasStats = false;
+
         foreach (StatEffect effect in item.effects)
         {
             if (effect == null)
                 continue;
 
-            builder.AppendLine(effect.EffectName);
+            if (!string.IsNullOrWhiteSpace(effect.EffectName))
+                builder.AppendLine($"<b>{effect.EffectName}</b>");
+
+            if (effect.Modifications == null)
+                continue;
+
+            foreach (StatEffectEntry entry in effect.Modifications)
+            {
+                if (entry == null)
+                    continue;
+
+                builder.AppendLine(
+                    $"{GetStatName(entry.statType)}: " +
+                    FormatModifier(entry)
+                );
+
+                hasStats = true;
+            }
         }
 
-        return builder.ToString();
+        return hasStats
+            ? builder.ToString().TrimEnd()
+            : "Нет дополнительных свойств";
+    }
+
+    private string FormatModifier(StatEffectEntry entry)
+    {
+        if (entry.modifierType == StatModifierType.Percent)
+            return $"{entry.value * 100f:+0.#;-0.#;0}%";
+
+        if (entry.statType == StatType.CriticalChance)
+            return $"{entry.value * 100f:+0.#;-0.#;0} п.п.";
+
+        return $"{entry.value:+0.##;-0.##;0}";
+    }
+
+    private string GetItemTypeText(ItemType itemType)
+    {
+        switch (itemType)
+        {
+            case ItemType.Weapon:
+                return "Оружие";
+            case ItemType.Consumable:
+                return "Расходуемый предмет";
+            case ItemType.HealingFlask:
+                return "Лечебная фляга";
+            case ItemType.Passive:
+                return "Пассивный предмет";
+            case ItemType.PathEffect:
+                return "Эффект пути";
+            case ItemType.Quest:
+                return "Квестовый предмет";
+            default:
+                return itemType.ToString();
+        }
+    }
+
+    private string GetStatName(StatType statType)
+    {
+        switch (statType)
+        {
+            case StatType.MaxHealth:
+                return "Максимальное здоровье";
+            case StatType.MoveSpeed:
+                return "Скорость движения";
+            case StatType.MeleeDamage:
+                return "Урон ближнего боя";
+            case StatType.RangedDamage:
+                return "Урон оружия";
+            case StatType.MagicDamage:
+                return "Магический урон";
+            case StatType.AttackSpeed:
+                return "Скорость атаки";
+            case StatType.ReloadSpeed:
+                return "Скорость перезарядки";
+            case StatType.MagazineSize:
+                return "Размер магазина";
+            case StatType.CriticalChance:
+                return "Шанс критического удара";
+            case StatType.CriticalDamage:
+                return "Критический урон";
+            case StatType.Armor:
+                return "Броня";
+            case StatType.Luck:
+                return "Удача";
+            case StatType.HealingPower:
+                return "Сила лечения";
+            case StatType.SpiritualDefense:
+                return "Духовная защита";
+            case StatType.SpiritPower:
+                return "Сила духа";
+            default:
+                return statType.ToString();
+        }
     }
 
     private string GetRarityText(ItemRarity rarity)

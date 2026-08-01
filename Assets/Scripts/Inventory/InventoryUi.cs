@@ -13,8 +13,17 @@ public class InventoryUI : MonoBehaviour
     {
         CreateSlots();
 
+        if (inventory == null)
+            return;
+
         inventory.OnInventoryChanged += RefreshAll;
         RefreshAll();
+
+        InventoryScrollView scrollView =
+            GetComponent<InventoryScrollView>();
+
+        if (scrollView != null)
+            scrollView.RefreshLayout();
     }
 
     private void OnDestroy()
@@ -25,6 +34,18 @@ public class InventoryUI : MonoBehaviour
 
     private void CreateSlots()
     {
+        if (inventory == null ||
+            slotPrefab == null ||
+            slotParent == null)
+        {
+            Debug.LogError(
+                "InventoryUI is not fully configured.",
+                this
+            );
+
+            return;
+        }
+
         slotViews = new InventorySlotUI[inventory.Slots.Length];
 
         for (int i = 0; i < inventory.Slots.Length; i++)
