@@ -48,6 +48,23 @@ public class PlayerExperience : MonoBehaviour
 
         OnExperienceChanged?.Invoke();
     }
+    public bool CanSpendSkillPoints(int amount = 1)
+{
+    return amount > 0 && skillPoints >= amount;
+}
+
+public bool TrySpendSkillPoints(int amount = 1)
+{
+    if (!CanSpendSkillPoints(amount))
+        return false;
+
+    skillPoints -= amount;
+    OnSkillPointsChanged?.Invoke(skillPoints);
+
+    Debug.Log($"Потрачено очков навыков: {amount}. Осталось: {skillPoints}");
+
+    return true;
+}
 
     private void LevelUp()
     {
