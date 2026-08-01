@@ -18,6 +18,6 @@ MonoBehaviour:
   - statType: 0
     modifierType: 1
     value: 0.05
-  - statType: 15
+  - statType: 19
     modifierType: 0
     value: 0.5
