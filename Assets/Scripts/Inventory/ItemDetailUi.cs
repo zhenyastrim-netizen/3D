@@ -46,8 +46,7 @@ public class ItemDetailsUI : MonoBehaviour
 
         // Фон всегда находится на корневом объекте карточки и поэтому
         // автоматически растягивается вместе с ее RectTransform.
-        if (ownBackground == null)
-            ownBackground = gameObject.AddComponent<Image>();
+        
 
         // Старые сцены могли ссылаться на отдельный квадрат вместо фона.
         if (assignedBackground != null &&
@@ -462,10 +461,16 @@ public class ItemDetailsUI : MonoBehaviour
                     ? $"{value * 100f:+0.#;-0.#}%"
                     : $"{value:+0.##;-0.##}";
 
-            builder.AppendLine(
-                $"{affix.Definition.AffixName}: " +
-                valueText
-            );
+            string statName =
+    string.IsNullOrWhiteSpace(
+        affix.Definition.AffixName
+    )
+        ? GetStatName(affix.StatType)
+        : affix.Definition.AffixName;
+
+builder.AppendLine(
+    $"{statName}: {valueText}"
+);
         }
     }
     else

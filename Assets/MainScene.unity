@@ -1983,7 +1983,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -2, y: -4}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!43 &225826760
@@ -2700,6 +2700,10 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   playerLook: {fileID: 423475945}
+  experienceUI: {fileID: 0}
+  healthUI: {fileID: 0}
+  ammoUI: {fileID: 0}
+  crosshairUI: {fileID: 0}
   pauseGame: 1
 --- !u!114 &343185047
 MonoBehaviour:
@@ -3041,7 +3045,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -145.82227, w: -50.761215}
+  m_margin: {x: 0, y: -48.002575, z: 0.97296906, w: 7.840082}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -3997,7 +4001,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: -51.961678, z: 0, w: 42.98251}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -5859,7 +5863,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.18490559, g: 0.034538954, b: 0.75686276, a: 1}
+  m_Color: {r: 0.5273459, g: 0.41611242, b: 0.9547169, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5905,6 +5909,11 @@ MonoBehaviour:
   descriptionText: {fileID: 1424521289}
   costText: {fileID: 1560895796}
   rankText: {fileID: 1302634819}
+  configureLayoutAutomatically: 1
+  cardSize: {x: 300, y: 210}
+  availableColor: {r: 0.50845623, g: 0.043137264, b: 0.54901963, a: 1}
+  lockedColor: {r: 0.42745098, g: 0.039215684, b: 0.39069104, a: 1}
+  purchasedColor: {r: 0.83917844, g: 0.088679194, b: 1, a: 1}
 --- !u!114 &708350825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7427,7 +7436,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: -47.862434, z: 0, w: 45.501038}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -7641,7 +7650,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -302, y: 344}
+  m_AnchoredPosition: {x: 139, y: 12}
   m_SizeDelta: {x: 360, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &890617493
@@ -7714,7 +7723,7 @@ MonoBehaviour:
     m_Top: 14
     m_Bottom: 14
   m_ChildAlignment: 0
-  m_Spacing: 8
+  m_Spacing: 36
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
@@ -7772,7 +7781,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.06600924, g: 0.10339361, b: 0.2754717, a: 1}
+  m_Color: {r: 0.06354573, g: 0.16489446, b: 0.6603774, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -8659,7 +8668,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: -19.037613, z: -64.21742, w: -46.00389}
+  m_margin: {x: 0, y: 4.0580444, z: 1.2012787, w: 1.2548485}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -8689,10 +8698,10 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: 160
+  m_PreferredHeight: 120
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
-  m_LayoutPriority: 1
+  m_LayoutPriority: 0
 --- !u!1 &1018062130
 GameObject:
   m_ObjectHideFlags: 0
@@ -11276,7 +11285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.18490559, g: 0.034538954, b: 0.75686276, a: 1}
+  m_Color: {r: 0.5305705, g: 0.4339266, b: 0.90188676, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -11322,6 +11331,11 @@ MonoBehaviour:
   descriptionText: {fileID: 186568052}
   costText: {fileID: 90801878}
   rankText: {fileID: 1472879196}
+  configureLayoutAutomatically: 1
+  cardSize: {x: 300, y: 210}
+  availableColor: {r: 0.50980395, g: 0.043137256, b: 0.54901963, a: 1}
+  lockedColor: {r: 0.42745098, g: 0.039215688, b: 0.39215687, a: 1}
+  purchasedColor: {r: 0.8392157, g: 0.09019608, b: 1, a: 1}
 --- !u!114 &1192572648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11529,8 +11543,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1220470445}
   - component: {fileID: 1220470448}
-  - component: {fileID: 1220470447}
   - component: {fileID: 1220470446}
+  - component: {fileID: 1220470449}
   m_Layer: 5
   m_Name: ItemDetail
   m_TagString: Untagged
@@ -11547,17 +11561,17 @@ RectTransform:
   m_GameObject: {fileID: 1220470444}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 198796815}
   - {fileID: 890617492}
-  m_Father: {fileID: 2108350555}
+  m_Father: {fileID: 1346844687}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 415, y: 9}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 681, y: -49}
+  m_SizeDelta: {x: 800, y: 1000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1220470446
 MonoBehaviour:
@@ -11580,12 +11594,24 @@ MonoBehaviour:
   alignmentText: {fileID: 1423593892}
   descriptionText: {fileID: 400817714}
   statsText: {fileID: 1008930331}
-  cardBackground: {fileID: 1209839304}
-  commonBackground: {r: 0.09019608, g: 0.09803922, b: 0.12156863, a: 0.9607843}
+  cardBackground: {fileID: 1220470449}
+  commonBackground: {r: 0.2830189, g: 0.21092917, b: 0.21092917, a: 0.9607843}
   rareBackground: {r: 0.07058824, g: 0.13725491, b: 0.22745098, a: 0.9607843}
   legendaryBackground: {r: 0.21960784, g: 0.13725491, b: 0.05882353, a: 0.9607843}
   uniqueBackground: {r: 0.16470589, g: 0.08235294, b: 0.21960784, a: 0.9607843}
---- !u!114 &1220470447
+  configureLayoutAutomatically: 0
+  cardSize: {x: 680, y: 580}
+  cardPadding: 24
+  showItemIcon: 1
+--- !u!222 &1220470448
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220470444}
+  m_CullTransparentMesh: 1
+--- !u!114 &1220470449
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -11598,8 +11624,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5773585, g: 0.18192236, b: 0.18192236, a: 0}
-  m_RaycastTarget: 1
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -11615,14 +11641,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!222 &1220470448
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1220470444}
-  m_CullTransparentMesh: 1
 --- !u!1 &1221729921
 GameObject:
   m_ObjectHideFlags: 0
@@ -13198,6 +13216,7 @@ RectTransform:
   m_Children:
   - {fileID: 1209839303}
   - {fileID: 1868845755}
+  - {fileID: 1220470445}
   m_Father: {fileID: 2108350555}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -13981,6 +14000,7 @@ Transform:
   - {fileID: 361010145}
   - {fileID: 996666754}
   - {fileID: 1335490271}
+  - {fileID: 2010932311}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1440691767
@@ -17404,6 +17424,11 @@ MonoBehaviour:
   descriptionText: {fileID: 48790023}
   costText: {fileID: 1221729923}
   rankText: {fileID: 1358753641}
+  configureLayoutAutomatically: 1
+  cardSize: {x: 300, y: 210}
+  availableColor: {r: 0.50980395, g: 0.043137256, b: 0.54901963, a: 1}
+  lockedColor: {r: 0.42745098, g: 0.039215688, b: 0.39215687, a: 1}
+  purchasedColor: {r: 0.8392157, g: 0.09019608, b: 1, a: 1}
 --- !u!114 &1839602903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17461,7 +17486,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.18490559, g: 0.034538954, b: 0.75686276, a: 1}
+  m_Color: {r: 0.503931, g: 0.4121395, b: 0.85660374, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -18132,7 +18157,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1435520063}
     m_Modifications:
     - target: {fileID: 4602879803506048861, guid: ac7452c7219cbc34e8e61b71639b758c, type: 3}
       propertyPath: movement
@@ -18140,15 +18165,15 @@ PrefabInstance:
       objectReference: {fileID: 1776107155}
     - target: {fileID: 4847547021638595765, guid: ac7452c7219cbc34e8e61b71639b758c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 34.6
+      value: 39.36834
       objectReference: {fileID: 0}
     - target: {fileID: 4847547021638595765, guid: ac7452c7219cbc34e8e61b71639b758c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.4
+      value: -0.3338
       objectReference: {fileID: 0}
     - target: {fileID: 4847547021638595765, guid: ac7452c7219cbc34e8e61b71639b758c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 39.1
+      value: 36.307697
       objectReference: {fileID: 0}
     - target: {fileID: 4847547021638595765, guid: ac7452c7219cbc34e8e61b71639b758c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -18156,15 +18181,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4847547021638595765, guid: ac7452c7219cbc34e8e61b71639b758c, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4847547021638595765, guid: ac7452c7219cbc34e8e61b71639b758c, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4847547021638595765, guid: ac7452c7219cbc34e8e61b71639b758c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4847547021638595765, guid: ac7452c7219cbc34e8e61b71639b758c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -18535,6 +18560,11 @@ RectTransform:
   m_AnchoredPosition: {x: 54, y: -2}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!4 &2010932311 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4847547021638595765, guid: ac7452c7219cbc34e8e61b71639b758c, type: 3}
+  m_PrefabInstance: {fileID: 1900628944}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2025416220
 GameObject:
   m_ObjectHideFlags: 0
@@ -20414,7 +20444,6 @@ RectTransform:
   - {fileID: 1346844687}
   - {fileID: 1579107402}
   - {fileID: 1540228260}
-  - {fileID: 1220470445}
   m_Father: {fileID: 1405243744}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -20436,7 +20465,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -21112,6 +21141,5 @@ SceneRoots:
   - {fileID: 423475944}
   - {fileID: 1080000324}
   - {fileID: 1435520063}
-  - {fileID: 1900628944}
   - {fileID: 711082289}
   - {fileID: 2043055610}
