@@ -14655,6 +14655,7 @@ GameObject:
   - component: {fileID: 6310779783605952446}
   - component: {fileID: -4146214465401064326}
   - component: {fileID: 2528159326761103075}
+  - component: {fileID: 7941094117742783655}
   m_Layer: 7
   m_Name: PoliceMeeler
   m_TagString: Enemy
@@ -14994,6 +14995,23 @@ MonoBehaviour:
   enemyHealth: {fileID: 4277620528545096905}
   enemyRenderer: {fileID: 996907137935217681}
   dashWarningColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!114 &7941094117742783655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7074214029239156403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7cd14057c727e541ae46923c7cd4f74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExplorationOnlyObject
+  collectAutomatically: 1
+  behaviours: []
+  colliders: []
+  renderers: []
+  rigidbodies: []
 --- !u!1 &8357181933521371316
 GameObject:
   m_ObjectHideFlags: 0

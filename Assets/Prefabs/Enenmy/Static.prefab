@@ -14656,6 +14656,7 @@ GameObject:
   - component: {fileID: -4146214465401064326}
   - component: {fileID: 2528159326761103075}
   - component: {fileID: 6728487337750025455}
+  - component: {fileID: 3047587928557530892}
   m_Layer: 7
   m_Name: Static
   m_TagString: Enemy
@@ -15027,6 +15028,23 @@ MonoBehaviour:
   enemyHealth: {fileID: 4277620528545096905}
   movement: {fileID: 925673572063314472}
   meleeCombat: {fileID: 4602879803506048861}
+--- !u!114 &3047587928557530892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7074214029239156403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7cd14057c727e541ae46923c7cd4f74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExplorationOnlyObject
+  collectAutomatically: 1
+  behaviours: []
+  colliders: []
+  renderers: []
+  rigidbodies: []
 --- !u!1 &8357181933521371316
 GameObject:
   m_ObjectHideFlags: 0

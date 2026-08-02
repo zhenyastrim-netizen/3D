@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System;
 [CreateAssetMenu(
     fileName = "New Skill",
     menuName = "Skills/Skill"
@@ -25,6 +25,7 @@ private int requiredSkillRank = 1;
 
     [Header("Effect")]
     [SerializeField] private StatEffect statEffect;
+    [SerializeField] private SkillEffect skillEffect;
 
     public string SkillName => skillName;
     public string Description => description;
@@ -32,6 +33,7 @@ private int requiredSkillRank = 1;
     public int Cost => cost;
     public int MaxRank => maxRank;
     public StatEffect StatEffect => statEffect;
+    public SkillEffect SkillEffect => skillEffect;
     public SkillData RequiredSkill => requiredSkill;
 public int RequiredSkillRank => requiredSkillRank;
 }

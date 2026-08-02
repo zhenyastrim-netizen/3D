@@ -19491,6 +19491,7 @@ GameObject:
   - component: {fileID: 2304853242857609002}
   - component: {fileID: -3440372025272314438}
   - component: {fileID: 512534682732603180}
+  - component: {fileID: 1463309766398249067}
   m_Layer: 7
   m_Name: PoliceShooter
   m_TagString: Enemy
@@ -19855,6 +19856,23 @@ MonoBehaviour:
   rangedCombat: {fileID: 2304853242857609002}
   dropOnDashPrefab: {fileID: 0}
   dropHeightOffset: 0.05
+--- !u!114 &1463309766398249067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8906400433936931407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7cd14057c727e541ae46923c7cd4f74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExplorationOnlyObject
+  collectAutomatically: 1
+  behaviours: []
+  colliders: []
+  renderers: []
+  rigidbodies: []
 --- !u!1 &9205663719575589245
 GameObject:
   m_ObjectHideFlags: 0
