@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   itemName: Zoom To Doom
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: ae0334545aaed9d43baed03caf70f78c, type: 3}
   itemType: 0
   worldPrefab: {fileID: 5697852019763116967, guid: 5fbaa2102a5ffe84cb6f2e6dfb03df15, type: 3}
   stackable: 0

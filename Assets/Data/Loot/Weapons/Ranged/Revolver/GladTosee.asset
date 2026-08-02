@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   itemName: 
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 9508c8dab2a33ad4bac7979be90c7b89, type: 3}
   itemType: 0
   worldPrefab: {fileID: 5697852019763116967, guid: b6014b024cefe564580b058b70029ae6, type: 3}
   stackable: 0
