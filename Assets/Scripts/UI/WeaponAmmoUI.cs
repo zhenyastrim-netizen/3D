@@ -28,6 +28,12 @@ public class WeaponAmmoUI : MonoBehaviour
         UnsubscribeFromAmmo();
     }
 
+    public void SetVisible(bool visible)
+    {
+        if (ammoText != null)
+            ammoText.gameObject.SetActive(visible);
+    }
+
     private void HandleWeaponChanged(GameObject weaponObject)
     {
         UnsubscribeFromAmmo();

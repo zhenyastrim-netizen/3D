@@ -34,6 +34,18 @@ public class PlayerExperienceUI : MonoBehaviour
         Refresh();
     }
 
+    public void SetVisible(bool visible)
+    {
+        if (experienceSlider != null)
+            experienceSlider.gameObject.SetActive(visible);
+
+        if (experienceText != null)
+            experienceText.gameObject.SetActive(visible);
+
+        if (levelText != null)
+            levelText.gameObject.SetActive(visible);
+    }
+
     private void Refresh()
     {
         experienceSlider.maxValue =

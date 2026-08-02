@@ -35,26 +35,35 @@ public class ItemDetailsUI : MonoBehaviour
 
     [Header("Layout")]
     [SerializeField] private bool configureLayoutAutomatically = true;
-    [SerializeField] private Vector2 cardSize = new Vector2(480f, 460f);
+    [SerializeField] private Vector2 cardSize = new Vector2(680f, 580f);
     [SerializeField, Min(0f)] private float cardPadding = 24f;
+    [SerializeField] private bool showItemIcon = false;
 
     private void Awake()
     {
+        Image assignedBackground = cardBackground;
         Image ownBackground = GetComponent<Image>();
 
-        // Старые сцены могли ссылаться на случайный Image вне карточки.
-        if (ownBackground != null &&
-            (cardBackground == null ||
-             !cardBackground.transform.IsChildOf(transform)))
+        // Фон всегда находится на корневом объекте карточки и поэтому
+        // автоматически растягивается вместе с ее RectTransform.
+        
+
+        // Старые сцены могли ссылаться на отдельный квадрат вместо фона.
+        if (assignedBackground != null &&
+            assignedBackground != ownBackground &&
+            !assignedBackground.transform.IsChildOf(transform))
         {
-            cardBackground = ownBackground;
+            assignedBackground.gameObject.SetActive(false);
         }
+
+        cardBackground = ownBackground;
 
         if (configureLayoutAutomatically)
             ConfigureLayout();
 
         if (cardBackground != null)
         {
+            cardBackground.enabled = true;
             cardBackground.raycastTarget = false;
             SetRarityBackground(ItemRarity.Common);
         }
@@ -87,7 +96,12 @@ public class ItemDetailsUI : MonoBehaviour
         if (icon != null)
         {
             icon.sprite = item.icon;
-            icon.enabled = item.icon != null;
+
+            bool shouldShowIcon =
+                showItemIcon && item.icon != null;
+
+            icon.enabled = shouldShowIcon;
+            icon.gameObject.SetActive(shouldShowIcon);
         }
 
         if (itemNameText != null)
@@ -145,24 +159,33 @@ public class ItemDetailsUI : MonoBehaviour
         if (cardBackground == null)
             return;
 
+        Color rarityColor;
+
         switch (rarity)
         {
             case ItemRarity.Rare:
                 cardBackground.color = rareBackground;
+                rarityColor = new Color32(73, 165, 255, 255);
                 break;
 
             case ItemRarity.Legendary:
                 cardBackground.color = legendaryBackground;
+                rarityColor = new Color32(255, 166, 61, 255);
                 break;
 
             case ItemRarity.Unique:
                 cardBackground.color = uniqueBackground;
+                rarityColor = new Color32(202, 112, 255, 255);
                 break;
 
             default:
                 cardBackground.color = commonBackground;
+                rarityColor = new Color32(190, 196, 208, 255);
                 break;
         }
+
+        if (rarityText != null)
+            rarityText.color = rarityColor;
     }
 
     private void ConfigureLayout()
@@ -216,10 +239,15 @@ public class ItemDetailsUI : MonoBehaviour
 
         ConfigureIcon(icon);
 
-        SetTopStretch(itemNameText, 0f, 40f, 0f, 112f);
-        SetTopStretch(itemTypeText, 46f, 26f, 0f, 112f);
+        if (icon != null)
+            icon.gameObject.SetActive(showItemIcon && icon.sprite != null);
+
+        float iconSpace = showItemIcon ? 112f : 0f;
+
+        SetTopStretch(itemNameText, 0f, 40f, 0f, iconSpace);
+        SetTopStretch(itemTypeText, 46f, 26f, 0f, iconSpace);
         SetTopStretch(descriptionText, 92f, 70f, 0f, 0f);
-        SetTopStretch(statsText, 178f, 150f, 0f, 0f);
+        SetVerticalStretch(statsText, 178f, 72f, 0f, 0f);
 
         SetBottomLeft(rarityText, 30f, 210f, 25f);
         SetBottomLeft(alignmentText, 0f, 210f, 25f);
@@ -251,6 +279,14 @@ public class ItemDetailsUI : MonoBehaviour
             new Color32(225, 228, 235, 255),
             TextAlignmentOptions.TopLeft
         );
+
+        if (statsText != null)
+        {
+            statsText.enableAutoSizing = true;
+            statsText.fontSizeMin = 11f;
+            statsText.fontSizeMax = 16f;
+            statsText.overflowMode = TextOverflowModes.Overflow;
+        }
 
         ConfigureText(
             rarityText,
@@ -340,6 +376,25 @@ public class ItemDetailsUI : MonoBehaviour
         rect.sizeDelta = new Vector2(width, height);
     }
 
+    private static void SetVerticalStretch(
+        TMP_Text text,
+        float top,
+        float bottom,
+        float left,
+        float right)
+    {
+        if (text == null)
+            return;
+
+        RectTransform rect = text.rectTransform;
+        rect.localScale = Vector3.one;
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.offsetMin = new Vector2(left, bottom);
+        rect.offsetMax = new Vector2(-right, -top);
+    }
+
     private string BuildWeaponStats(
     WeaponInstance weapon)
 {
@@ -406,10 +461,16 @@ public class ItemDetailsUI : MonoBehaviour
                     ? $"{value * 100f:+0.#;-0.#}%"
                     : $"{value:+0.##;-0.##}";
 
-            builder.AppendLine(
-                $"{affix.Definition.AffixName}: " +
-                valueText
-            );
+            string statName =
+    string.IsNullOrWhiteSpace(
+        affix.Definition.AffixName
+    )
+        ? GetStatName(affix.StatType)
+        : affix.Definition.AffixName;
+
+builder.AppendLine(
+    $"{statName}: {valueText}"
+);
         }
     }
     else
