@@ -16,5 +16,5 @@ MonoBehaviour:
   description: 
   modifications:
   - statType: 4
-    modifierType: 0
-    value: 0
+    modifierType: 1
+    value: 0.1

@@ -6,7 +6,9 @@ public class PlayerInventories : MonoBehaviour
     [SerializeField] private Inventory passiveInventory;
     [SerializeField] private Inventory pathEffectInventory;
     [SerializeField] private Inventory questInventory;
+[SerializeField] private Inventory passiveEquipment;
 
+public Inventory PassiveEquipment => passiveEquipment;
     public Inventory Main => mainInventory;
     public Inventory Passive => passiveInventory;
     public Inventory PathEffects => pathEffectInventory;
@@ -30,6 +32,8 @@ case ItemType.Quest:
 
 default:
     return mainInventory;
+    
     }
+    
 }
 }

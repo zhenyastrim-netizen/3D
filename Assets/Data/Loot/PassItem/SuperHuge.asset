@@ -14,14 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: 
   description: 
-  icon: {fileID: 0}
-  itemType: 0
-  worldPrefab: {fileID: 0}
+  icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  itemType: 3
+  worldPrefab: {fileID: 919132149155446097, guid: 559c9e3dcd3309846973f391b06f6829, type: 3}
   stackable: 0
   maxStack: 1
   effectDuration: 10
   maxCharges: 3
-  passiveCanStack: 1
+  passiveCanStack: 0
   pathEffectType: 0
   questItemId: 
-  effects: []
+  effects:
+  - {fileID: 11400000, guid: 57ce031e762ea8f468fd4df191a911df, type: 2}
+  - {fileID: 11400000, guid: 57ce031e762ea8f468fd4df191a911df, type: 2}

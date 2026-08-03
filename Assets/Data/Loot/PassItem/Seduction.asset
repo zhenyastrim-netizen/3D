@@ -12,16 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2deb6bdf27c6b9e48bf57d7eefd64c9a, type: 3}
   m_Name: Seduction
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: 
+  itemName: Seduction
   description: 
-  icon: {fileID: 0}
-  itemType: 0
-  worldPrefab: {fileID: 0}
+  icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  itemType: 3
+  worldPrefab: {fileID: 919132149155446097, guid: 559c9e3dcd3309846973f391b06f6829, type: 3}
   stackable: 0
   maxStack: 1
   effectDuration: 10
   maxCharges: 3
-  passiveCanStack: 1
+  passiveCanStack: 0
   pathEffectType: 0
   questItemId: 
-  effects: []
+  effects:
+  - {fileID: 11400000, guid: 240c4ec8585be454098501b8ee0f8ab6, type: 2}
+  - {fileID: 11400000, guid: 37349a3993a195f44bef499aacd5bfba, type: 2}
