@@ -145,9 +145,10 @@ public void OnPointerExit(PointerEventData eventData)
     }
 
     public void OnDrag(PointerEventData eventData)
-    {
-        // Перетаскиваемая иконка двигается через InventoryDragManager.
-    }
+{
+    if (InventoryDragManager.Instance != null)
+        InventoryDragManager.Instance.MoveDrag(eventData.position);
+}
 
     public void OnEndDrag(PointerEventData eventData)
     {
