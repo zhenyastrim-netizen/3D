@@ -6,6 +6,9 @@ public class Inventory : MonoBehaviour
     [Header("Settings")]
     [SerializeField, Min(1)]
     private int slotCount = 24;
+    [SerializeField]
+[Tooltip("Запрещает хранить несколько одинаковых предметов")]
+private bool disallowDuplicateItems;
 
     [Tooltip("Какие типы предметов разрешено класть в этот инвентарь")]
     [SerializeField]
@@ -78,7 +81,11 @@ public bool AddWeapon(WeaponInstance weapon)
 
             return false;
         }
-
+        if (!CanAddUniqueItem(item))
+{
+    Debug.Log("Такой предмет уже находится в этом инвентаре.");
+    return false;
+}
         int remaining = amount;
 
         // Сначала заполняем существующие стаки.
@@ -129,7 +136,24 @@ public bool AddWeapon(WeaponInstance weapon)
 
         return remaining <= 0;
     }
+public bool ContainsItem(ItemData item)
+{
+    if (item == null)
+        return false;
 
+    foreach (InventorySlot slot in Slots)
+    {
+        if (!slot.IsEmpty && slot.Item.Item == item)
+            return true;
+    }
+
+    return false;
+}
+
+private bool CanAddUniqueItem(ItemData item)
+{
+    return !disallowDuplicateItems || !ContainsItem(item);
+}
     public bool MoveItem(int fromIndex, int toIndex)
     {
         if (!IsValidIndex(fromIndex) || !IsValidIndex(toIndex))
@@ -206,7 +230,11 @@ public bool AddWeapon(WeaponInstance weapon)
     // Проверяем, принимает ли целевой инвентарь этот тип предмета.
     if (!targetInventory.CanAcceptItem(draggedItemData))
         return false;
-
+if (!targetInventory.CanAddUniqueItem(draggedItemData))
+{
+    Debug.Log("Такая пассивка уже экипирована.");
+    return false;
+}
     // Целевой слот пустой.
     if (targetSlot.IsEmpty)
     {

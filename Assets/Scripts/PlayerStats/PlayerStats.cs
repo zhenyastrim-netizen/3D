@@ -38,6 +38,7 @@ private float baseMagicDamage = 1f;
 [SerializeField, Min(0f)]
 private float baseSpiritualDefense = 0f;
 
+
     
 
     [Header("Combat speed")]
