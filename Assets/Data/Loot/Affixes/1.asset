@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: 1
   m_EditorClassIdentifier: Assembly-CSharp::WeaponAffixPool
   affixes:
-  - {fileID: 11400000, guid: 968d66a8744336b4da46005b0b4ec23e, type: 2}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 2df3385f65fe99542824743b47fd48e5, type: 2}
-  - {fileID: 11400000, guid: cd687d368a8cfc5459ad2430cbb37750, type: 2}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 0c0e742856070464ca94591d25cf4131, type: 2}
   - {fileID: 11400000, guid: d7090ecf38df61d4d895718e5f1a537e, type: 2}
   - {fileID: 11400000, guid: 521afa4bf7a9f844c962c22c09612cab, type: 2}

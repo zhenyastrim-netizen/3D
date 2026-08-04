@@ -4892,7 +4892,7 @@ Transform:
   m_GameObject: {fileID: 1091847954155246595}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.051, y: -0.983, z: 0.031}
+  m_LocalPosition: {x: -0.011, y: -1.027, z: 0.031}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14761,7 +14761,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -14791,7 +14791,7 @@ CharacterController:
   m_StepOffset: 0.15
   m_SkinWidth: 0.05
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5064200613070908723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14823,12 +14823,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0182660126bff79498d634b8be6400fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHealth: 300
-  kineticDefense: 5
-  spiritualDefense: 5
+  maxHealth: 750
+  kineticDefense: 39
+  spiritualDefense: 10
   destroyOnDeath: 1
   destroyDelay: 0
-  experienceReward: 100
+  experienceReward: 157
 --- !u!114 &925673572063314472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14841,7 +14841,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 375bdf3b9ed21c240a15256e32b80f87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  moveSpeed: 5
+  moveSpeed: 8
   acceleration: 18
   deceleration: 24
   rotationSpeed: 12
@@ -14866,7 +14866,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GroundCheck
   checkPoint: {fileID: 8343324128225688590}
-  checkRadius: 0.25
+  checkRadius: 0.5
   groundMask:
     serializedVersion: 2
     m_Bits: 8
@@ -14882,7 +14882,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fb387cb4b27134998bf752262e1378, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  damage: 20
+  automaticControl: 1
+  damage: 40
   attackRange: 3
   attackRadius: 0.65
   comboHitCount: 3
@@ -14906,8 +14907,8 @@ MonoBehaviour:
   enemyRenderer: {fileID: 996907137935217681}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   warningColor: {r: 1, g: 0, b: 0, a: 1}
-  attackLungeForce: 4
-  movement: {fileID: 0}
+  attackLungeForce: 6
+  movement: {fileID: 925673572063314472}
 --- !u!114 &6464131957926711628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14986,8 +14987,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 167ac41718c7dbd4e958d72cc0eebabb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyApproachDash
-  minimumDistance: 4
-  maximumDistance: 10
+  automaticControl: 1
+  minimumDistance: 8
+  maximumDistance: 14
   stoppingDistance: 1.8
   windupTime: 0.25
   dashSpeed: 24
@@ -15010,18 +15012,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f08f30ae24b412b4da20dc2e5c398a50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyLeapSlam
+  automaticControl: 1
   minimumDistance: 6
-  maximumDistance: 14
+  maximumDistance: 18
   cooldown: 4
   windupTime: 0.6
   leapDuration: 0.65
   leapHeight: 4
   landingDistance: 1.5
-  damage: 40
+  damage: 50
   damageRadius: 3
   targetMask:
     serializedVersion: 2
     m_Bits: 576
+  landingObjectPrefab: {fileID: 0}
+  landingObjectHeightOffset: 0.15
   knockbackForce: 20
   upwardForce: 6
   brain: {fileID: 5064200613070908723}

@@ -5014,7 +5014,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7010164edfdbc1d46829c3869aab6214, type: 3}
       propertyPath: m_Name
-      value: bow_A
+      value: Revolver
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5094,8 +5094,8 @@ MonoBehaviour:
   range: 100
   hitMask:
     serializedVersion: 2
-    m_Bits: 4294967295
-  drawShotRay: 1
+    m_Bits: 3775
+  drawShotRay: 0
 --- !u!114 &1830883144792430366
 MonoBehaviour:
   m_ObjectHideFlags: 0

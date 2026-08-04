@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.InputSystem;
 public class WeaponManager : MonoBehaviour
 {
     [Header("References")]
@@ -8,6 +9,18 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] private Transform weaponHolder;
     [SerializeField] private PlayerStats playerStats;
     public event Action<GameObject> OnWeaponChanged;
+
+    [Header("Drop")]
+    [SerializeField] private InputAction dropAction =
+        new InputAction(
+            "Drop Weapon",
+            InputActionType.Button,
+            "<Keyboard>/g"
+        );
+    [SerializeField] private WorldWeaponDrop worldWeaponDropPrefab;
+    [SerializeField] private Transform dropPoint;
+    [SerializeField, Min(0.5f)] private float dropDistance = 1.5f;
+    [SerializeField, Min(0f)] private float dropForce = 3f;
 
     [SerializeField] private Camera playerCamera;
     [SerializeField] private CameraRecoil cameraRecoil;
@@ -61,6 +74,25 @@ private PlayerDamageCalculator damageCalculator;
         }
 
         Invoke(nameof(EquipCurrentSlot), 0f);
+    }
+
+    private void OnEnable()
+    {
+        dropAction?.Enable();
+    }
+
+    private void OnDisable()
+    {
+        dropAction?.Disable();
+    }
+
+    private void Update()
+    {
+        if (dropAction != null &&
+            dropAction.WasPressedThisFrame())
+        {
+            DropEquippedWeapon();
+        }
     }
 
     private void OnDestroy()
@@ -218,6 +250,12 @@ if (melee != null)
 
         ApplyWeaponModifiers();
 
+        WeaponAmmo ammo = currentWeaponObject
+            .GetComponentInChildren<WeaponAmmo>();
+
+        if (ammo != null)
+            ammo.Initialize(currentWeaponInstance);
+
         Debug.Log(
             $"Экипировано: {currentWeaponData.itemName} | " +
             $"{weapon.Rarity} | {weapon.Alignment} | " +
@@ -264,6 +302,14 @@ if (melee != null)
 
     private void UnequipWeapon()
     {
+        if (currentWeaponObject != null)
+        {
+            WeaponAmmo ammo = currentWeaponObject
+                .GetComponentInChildren<WeaponAmmo>();
+
+            ammo?.DetachInstance();
+        }
+
         RemoveWeaponModifiers();
 
         if (currentWeaponObject != null)
@@ -276,5 +322,51 @@ if (melee != null)
         currentWeaponData = null;
         equippedSlotIndex = -1;
         OnWeaponChanged?.Invoke(null);
+    }
+
+    public bool DropEquippedWeapon()
+    {
+        if (inventory == null ||
+            currentWeaponInstance == null ||
+            equippedSlotIndex < 0 ||
+            worldWeaponDropPrefab == null)
+        {
+            return false;
+        }
+
+        Vector3 forward = playerCamera != null
+            ? playerCamera.transform.forward
+            : transform.forward;
+
+        Vector3 spawnPosition = dropPoint != null
+            ? dropPoint.position
+            : transform.position +
+              forward * dropDistance +
+              Vector3.up * 0.5f;
+
+        WorldWeaponDrop drop = Instantiate(
+            worldWeaponDropPrefab,
+            spawnPosition,
+            Quaternion.identity
+        );
+
+        WeaponAmmo ammo = currentWeaponObject != null
+            ? currentWeaponObject.GetComponentInChildren<WeaponAmmo>()
+            : null;
+
+        ammo?.DetachInstance();
+        drop.Initialize(currentWeaponInstance);
+
+        Rigidbody body = drop.GetComponent<Rigidbody>();
+
+        if (body != null && dropForce > 0f)
+        {
+            body.AddForce(
+                (forward + Vector3.up * 0.25f).normalized * dropForce,
+                ForceMode.Impulse
+            );
+        }
+
+        return inventory.RemoveItem(equippedSlotIndex);
     }
 }

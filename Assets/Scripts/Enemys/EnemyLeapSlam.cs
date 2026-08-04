@@ -4,6 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class EnemyLeapSlam : MonoBehaviour
 {
+    [Header("Control")]
+    [SerializeField] private bool automaticControl = true;
+
     [Header("Activation")]
     [SerializeField] private float minimumDistance = 6f;
     [SerializeField] private float maximumDistance = 14f;
@@ -19,6 +22,10 @@ public class EnemyLeapSlam : MonoBehaviour
     [SerializeField] private float damage = 40f;
     [SerializeField] private float damageRadius = 3f;
     [SerializeField] private LayerMask targetMask;
+
+    [Header("Landing Object")]
+    [SerializeField] private GameObject landingObjectPrefab;
+    [SerializeField] private float landingObjectHeightOffset = 0.15f;
 
     [Header("Knockback")]
     [SerializeField] private float knockbackForce = 20f;
@@ -36,6 +43,10 @@ public class EnemyLeapSlam : MonoBehaviour
     private bool movementWasEnabled;
     private bool combatWasEnabled;
     private float nextLeapTime;
+    private bool spawnLandingObject;
+
+    public bool IsLeaping => isLeaping;
+    public bool IsReady => !isLeaping && Time.time >= nextLeapTime;
 
     private void Awake()
     {
@@ -56,6 +67,9 @@ public class EnemyLeapSlam : MonoBehaviour
 
     private void Update()
     {
+        if (!automaticControl)
+            return;
+
         if (isLeaping || Time.time < nextLeapTime)
             return;
 
@@ -73,8 +87,30 @@ public class EnemyLeapSlam : MonoBehaviour
         if (distance >= minimumDistance &&
             distance <= maximumDistance)
         {
-            StartCoroutine(LeapRoutine());
+            TryStartLeap();
         }
+    }
+
+    public void SetAutomaticControl(bool value)
+    {
+        automaticControl = value;
+    }
+
+    public void SetLandingObjectEnabled(bool value)
+    {
+        spawnLandingObject = value;
+    }
+
+    public bool TryStartLeap()
+    {
+        if (!IsReady || brain == null || brain.Target == null)
+            return false;
+
+        if (enemyHealth != null && enemyHealth.IsDead)
+            return false;
+
+        StartCoroutine(LeapRoutine());
+        return true;
     }
 
     private IEnumerator LeapRoutine()
@@ -168,7 +204,20 @@ public class EnemyLeapSlam : MonoBehaviour
         }
 
         PerformLandingHit();
+        SpawnLandingObject();
         FinishLeap();
+    }
+
+    private void SpawnLandingObject()
+    {
+        if (!spawnLandingObject || landingObjectPrefab == null)
+            return;
+
+        Instantiate(
+            landingObjectPrefab,
+            transform.position + Vector3.up * landingObjectHeightOffset,
+            Quaternion.identity
+        );
     }
 
     private void PerformLandingHit()

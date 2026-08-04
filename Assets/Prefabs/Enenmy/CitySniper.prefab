@@ -19596,7 +19596,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -19626,7 +19626,7 @@ CharacterController:
   m_StepOffset: 0.15
   m_SkinWidth: 0.05
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8947139639112366027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19640,10 +19640,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBrain
   currentState: 2
-  detectionRange: 15
-  loseTargetRange: 25
-  attackRange: 15
-  attackExitRange: 14
+  detectionRange: 20
+  loseTargetRange: 30
+  attackRange: 20
+  attackExitRange: 22
   target: {fileID: 0}
   enemyHealth: {fileID: 8463957514591749054}
 --- !u!114 &8463957514591749054
@@ -19658,12 +19658,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0182660126bff79498d634b8be6400fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHealth: 100
-  kineticDefense: 0
-  spiritualDefense: 0
+  maxHealth: 300
+  kineticDefense: 5
+  spiritualDefense: 20
   destroyOnDeath: 1
   destroyDelay: 0
-  experienceReward: 25
+  experienceReward: 107
 --- !u!114 &5962236665816489627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19676,7 +19676,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 375bdf3b9ed21c240a15256e32b80f87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  moveSpeed: 5
+  moveSpeed: 10
   acceleration: 18
   deceleration: 24
   rotationSpeed: 12
@@ -19717,6 +19717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fb387cb4b27134998bf752262e1378, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
+  automaticControl: 1
   damage: 20
   attackRange: 2.3
   attackRadius: 0.65
@@ -19809,12 +19810,15 @@ MonoBehaviour:
   firePoint: {fileID: 5019290734800901927}
   damageParts:
   - damageType: 0
-    damage: 15
+    damage: 0
     buildup: 0
-  projectileSpeed: 25
+  - damageType: 0
+    damage: 50
+    buildup: 0
+  projectileSpeed: 50
   projectileLifetime: 6
-  windupTime: 0.4
-  attackCooldown: 1.5
+  windupTime: 1
+  attackCooldown: 3
   targetHeight: 1
   muzzleFlash: {fileID: 0}
   brain: {fileID: 8947139639112366027}

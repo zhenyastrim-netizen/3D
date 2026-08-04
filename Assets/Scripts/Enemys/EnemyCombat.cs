@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class EnemyCombat : MonoBehaviour
 {
+    [Header("Control")]
+    [SerializeField] private bool automaticControl = true;
+
     [Header("Attack")]
     [SerializeField] private float damage = 20f;
     [SerializeField] private float attackRange = 2.3f;
@@ -49,6 +52,7 @@ private Material enemyMaterial;
     private float nextAttackTime;
 
     public bool IsAttacking => isAttacking;
+    public bool IsReady => !isAttacking && Time.time >= nextAttackTime;
 
     private void Awake()
     {
@@ -68,6 +72,9 @@ private Material enemyMaterial;
 
     private void Update()
     {
+        if (!automaticControl)
+            return;
+
         if (brain == null)
             return;
 
@@ -83,15 +90,36 @@ private Material enemyMaterial;
         if (Time.time < nextAttackTime)
             return;
 
-        StartCoroutine(AttackRoutine());
+        TryStartAttack();
     }
 
-    private IEnumerator AttackRoutine()
+    public void SetAutomaticControl(bool value)
+    {
+        automaticControl = value;
+    }
+
+    public bool TryStartAttack(int hitCountOverride = -1)
+    {
+        if (!IsReady || brain == null || brain.Target == null)
+            return false;
+
+        if (enemyHealth != null && enemyHealth.IsDead)
+            return false;
+
+        int hits = hitCountOverride > 0
+            ? hitCountOverride
+            : comboHitCount;
+
+        StartCoroutine(AttackRoutine(hits));
+        return true;
+    }
+
+    private IEnumerator AttackRoutine(int hits)
 {
     isAttacking = true;
 
     for (int hitIndex = 0;
-         hitIndex < comboHitCount;
+         hitIndex < hits;
          hitIndex++)
     {
         SetWarningVisual(true);
@@ -104,8 +132,10 @@ private Material enemyMaterial;
 
         SetWarningVisual(false);
 
-        if (brain == null ||
-            brain.CurrentState != EnemyBrain.EnemyState.Attack)
+        if (brain == null || brain.Target == null ||
+            (enemyHealth != null && enemyHealth.IsDead) ||
+            (automaticControl &&
+             brain.CurrentState != EnemyBrain.EnemyState.Attack))
         {
             break;
         }
@@ -124,7 +154,7 @@ private Material enemyMaterial;
 );
         }
 
-        if (hitIndex < comboHitCount - 1)
+        if (hitIndex < hits - 1)
         {
             yield return new WaitForSeconds(
                 timeBetweenHits

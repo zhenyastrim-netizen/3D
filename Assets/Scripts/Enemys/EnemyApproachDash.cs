@@ -4,6 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class EnemyApproachDash : MonoBehaviour
 {
+    [Header("Control")]
+    [SerializeField] private bool automaticControl = true;
+
     [Header("Distance")]
     [SerializeField] private float minimumDistance = 4f;
     [SerializeField] private float maximumDistance = 10f;
@@ -33,6 +36,9 @@ public class EnemyApproachDash : MonoBehaviour
     private bool movementWasEnabled;
     private float nextDashTime;
 
+    public bool IsDashing => isDashing;
+    public bool IsReady => !isDashing && Time.time >= nextDashTime;
+
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -55,6 +61,9 @@ public class EnemyApproachDash : MonoBehaviour
 
     private void Update()
     {
+        if (!automaticControl)
+            return;
+
         if (isDashing || Time.time < nextDashTime)
             return;
 
@@ -73,8 +82,25 @@ public class EnemyApproachDash : MonoBehaviour
         if (distance >= minimumDistance &&
             distance <= maximumDistance)
         {
-            StartCoroutine(DashRoutine());
+            TryStartDash();
         }
+    }
+
+    public void SetAutomaticControl(bool value)
+    {
+        automaticControl = value;
+    }
+
+    public bool TryStartDash()
+    {
+        if (!IsReady || brain == null || brain.Target == null)
+            return false;
+
+        if (enemyHealth != null && enemyHealth.IsDead)
+            return false;
+
+        StartCoroutine(DashRoutine());
+        return true;
     }
 
     private IEnumerator DashRoutine()
@@ -180,7 +206,10 @@ public class EnemyApproachDash : MonoBehaviour
     private void OnDisable()
     {
         StopAllCoroutines();
-        SetWarning(false);
-        isDashing = false;
+
+        if (isDashing)
+            FinishDash();
+        else
+            SetWarning(false);
     }
 }

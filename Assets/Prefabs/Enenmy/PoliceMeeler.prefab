@@ -14760,7 +14760,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -14790,7 +14790,7 @@ CharacterController:
   m_StepOffset: 0.15
   m_SkinWidth: 0.05
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5064200613070908723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14881,7 +14881,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21fb387cb4b27134998bf752262e1378, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  damage: 20
+  automaticControl: 1
+  damage: 35
   attackRange: 2.3
   attackRadius: 0.65
   comboHitCount: 1
@@ -14983,6 +14984,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 167ac41718c7dbd4e958d72cc0eebabb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyApproachDash
+  automaticControl: 1
   minimumDistance: 4
   maximumDistance: 10
   stoppingDistance: 1.8
