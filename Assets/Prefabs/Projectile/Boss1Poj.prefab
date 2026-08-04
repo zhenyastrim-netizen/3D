@@ -141,6 +141,7 @@ GameObject:
   - component: {fileID: 5480391405606577390}
   - component: {fileID: 7255074609284892749}
   - component: {fileID: 3982873398704193427}
+  - component: {fileID: -3135003795562592191}
   m_Layer: 11
   m_Name: Boss1Poj
   m_TagString: Untagged
@@ -281,3 +282,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bcdc7df9ddefdc4395336889070ba37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyProjectile
+--- !u!114 &-3135003795562592191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8241331113987034066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffddcddd5b1de7740a778f5d568dfe32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectileAwareness

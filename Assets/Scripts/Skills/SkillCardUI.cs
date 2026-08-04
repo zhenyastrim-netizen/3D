@@ -1,4 +1,5 @@
 using TMPro;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -138,12 +139,9 @@ public class SkillCardUI : MonoBehaviour
             {
                 costText.text = "Куплено";
             }
-            else if (!requirementsMet &&
-                     skill.RequiredSkill != null)
+            else if (!requirementsMet && skill.HasRequirements)
             {
-                costText.text =
-                    $"Требуется: {skill.RequiredSkill.SkillName} " +
-                    $"ранг {skill.RequiredSkillRank}";
+                costText.text = GetRequirementsText();
             }
             else
             {
@@ -171,6 +169,47 @@ public class SkillCardUI : MonoBehaviour
                     ? availableColor
                     : lockedColor;
         }
+    }
+
+    private string GetRequirementsText()
+    {
+        if (skill.Requirements != null && skill.Requirements.Count > 0)
+        {
+            StringBuilder text = new StringBuilder(
+                skill.RequirementMode == SkillRequirementMode.Any
+                    ? "Требуется любой: "
+                    : "Требуются все: "
+            );
+
+            bool hasPrevious = false;
+
+            foreach (SkillRequirement requirement in skill.Requirements)
+            {
+                if (requirement == null || requirement.Skill == null)
+                    continue;
+
+                if (hasPrevious)
+                    text.Append(", ");
+
+                text.Append(requirement.Skill.SkillName);
+
+                if (requirement.RequiredRank > 1)
+                    text.Append($" ({requirement.RequiredRank} ранг)");
+
+                hasPrevious = true;
+            }
+
+            if (hasPrevious)
+                return text.ToString();
+        }
+
+        if (skill.RequiredSkill != null)
+        {
+            return $"Требуется: {skill.RequiredSkill.SkillName} " +
+                   $"ранг {skill.RequiredSkillRank}";
+        }
+
+        return $"Цена: {skill.Cost}";
     }
 
     private void ConfigureLayout()

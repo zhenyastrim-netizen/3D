@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3387a7c7851898f419b50148dfe74f69, type: 3}
+  m_Name: MagicHand
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  skillName: "\u0412\u043E\u043B\u0448\u0435\u043D\u0430\u044F \u0440\u0443\u043A\u0430"
+  description: "\u0423\u0432\u0435\u043B\u0438\u0447\u0438\u0432\u0430\u0435\u0442
+    \u043C\u0430\u0433. \u0443\u0440\u043E\u043D \u043D\u0430 2% \u0437\u0430 \u0443\u0440\u043E\u0432\u0435\u043D\u044C
+    \u0443\u043C\u0435\u043D\u0438\u044F\n\u0421\u043E\u043A\u0440\u0430\u0449\u0430\u0435\u0442
+    \u0432\u0440\u0435\u043C\u044F \u043A\u0430\u0441\u0442\u0430 \u043D\u0430 1%
+    \u0437\u0430 \u0443\u0440\u043E\u0432\u0435\u043D\u044C \u0443\u043C\u0435\u043D\u0438\u044F "
+  icon: {fileID: 0}
+  requiredSkill: {fileID: 0}
+  requiredSkillRank: 1
+  cost: 1
+  maxRank: 5
+  statEffect: {fileID: 11400000, guid: 4895879f742a50f4b8c5d37960b2b01f, type: 2}
+  skillEffect: {fileID: 0}

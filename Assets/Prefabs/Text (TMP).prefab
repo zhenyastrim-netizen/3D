@@ -197,7 +197,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DamageNumberUI
   damageText: {fileID: 7699159195554845800}
   lifetime: 1
-  moveSpeed: 1.5
+  horizontalSpeed: 1.7
+  upwardSpeed: 2.2
+  gravity: 3.5
+  randomSpawnOffset: 2
 --- !u!114 &3193212623149719049
 MonoBehaviour:
   m_ObjectHideFlags: 0

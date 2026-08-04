@@ -10,8 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ffa2b2f86ca59d44a75dc1373a86e73, type: 3}
-  m_Name: QutieEyes
+  m_Name: CritIlands
   m_EditorClassIdentifier: Assembly-CSharp::StatEffect
-  effectName: 
+  effectName: "\u041A\u0440\u0435\u043F\u043A\u043E\u0435 \u0442\u0435\u043B\u043E"
   description: 
-  modifications: []
+  modifications:
+  - statType: 10
+    modifierType: 1
+    value: 0.02
+  - statType: 11
+    modifierType: 1
+    value: 0.01

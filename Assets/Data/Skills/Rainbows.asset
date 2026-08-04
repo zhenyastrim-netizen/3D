@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3387a7c7851898f419b50148dfe74f69, type: 3}
+  m_Name: Rainbows
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  skillName: "\u0420\u0430\u0434\u0443\u0436\u043A\u0430"
+  description: 
+  icon: {fileID: 0}
+  requiredSkill: {fileID: 11400000, guid: 6870dab729c8b1a419db98fe8d45f40d, type: 2}
+  requiredSkillRank: 1
+  cost: 1
+  maxRank: 5
+  statEffect: {fileID: 11400000, guid: 462b36533c9b14e4ca5fcc6f014f8d92, type: 2}
+  skillEffect: {fileID: 0}

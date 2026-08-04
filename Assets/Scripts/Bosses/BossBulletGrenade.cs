@@ -100,7 +100,7 @@ projectile.Initialize(
     bulletLifetime,
     CopyDamageParts(),
     source
-);Destroy(gameObject, 0.25f);
+);
         }
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(PlayerExperience))]
 [RequireComponent(typeof(PlayerStats))]
+[RequireComponent(typeof(PlayerCombatEvents))]
 public class PlayerSkillTree : MonoBehaviour
 {
     private PlayerExperience experience;
@@ -16,18 +17,47 @@ public class PlayerSkillTree : MonoBehaviour
         new Dictionary<SkillData, List<StatEffectInstance>>();
 
     public event Action<SkillData, int> OnSkillRankChanged;
-    
+
     public bool MeetsRequirements(SkillData skill)
-{
-    if (skill == null)
-        return false;
+    {
+        if (skill == null)
+            return false;
 
-    if (skill.RequiredSkill == null)
-        return true;
+        bool hasNewRequirements = false;
+        bool anyRequirementMet = false;
 
-    return GetRank(skill.RequiredSkill) >=
-           skill.RequiredSkillRank;
-}
+        if (skill.Requirements != null)
+        {
+            foreach (SkillRequirement requirement in skill.Requirements)
+            {
+                if (requirement == null || requirement.Skill == null)
+                    continue;
+
+                hasNewRequirements = true;
+                bool isMet = GetRank(requirement.Skill) >=
+                             requirement.RequiredRank;
+
+                if (skill.RequirementMode == SkillRequirementMode.All && !isMet)
+                    return false;
+
+                if (isMet)
+                    anyRequirementMet = true;
+            }
+        }
+
+        if (hasNewRequirements)
+        {
+            return skill.RequirementMode == SkillRequirementMode.All ||
+                   anyRequirementMet;
+        }
+
+        // Поддержка зависимостей, настроенных до появления списка.
+        if (skill.RequiredSkill == null)
+            return true;
+
+        return GetRank(skill.RequiredSkill) >=
+               skill.RequiredSkillRank;
+    }
 
     private void Awake()
     {
@@ -65,6 +95,8 @@ public bool HasSkill(SkillData skill)
         if (!CanPurchase(skill))
             return false;
 
+        int newRank = GetRank(skill) + 1;
+
         StatEffectInstance effect = null;
 
 if (skill.StatEffect != null)
@@ -81,8 +113,10 @@ if (!experience.TrySpendSkillPoints(skill.Cost))
     return false;
 }
 
-        int newRank = GetRank(skill) + 1;
         skillRanks[skill] = newRank;
+
+        if (skill.SkillEffect != null)
+            skill.SkillEffect.Apply(gameObject, newRank);
 
         if (effect != null)
 {

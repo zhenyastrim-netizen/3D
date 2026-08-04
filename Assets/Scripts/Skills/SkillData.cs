@@ -1,5 +1,5 @@
 using UnityEngine;
-using System;
+
 [CreateAssetMenu(
     fileName = "New Skill",
     menuName = "Skills/Skill"
