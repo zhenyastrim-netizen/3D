@@ -14,6 +14,9 @@ private float baseHealthRegeneration = 0f;
     private float baseArmor = 0f;
 
     [SerializeField, Min(0f)]
+    private float baseDamageTakenMultiplier = 1f;
+
+    [SerializeField, Min(0f)]
     private float baseHealingPower = 1f;
 
     [Header("Movement")]
@@ -37,7 +40,6 @@ private float baseRangedDamage = 1f;
 private float baseMagicDamage = 1f;
 [SerializeField, Min(0f)]
 private float baseSpiritualDefense = 0f;
-
 
     
 
@@ -86,6 +88,10 @@ private float baseManaRegeneration = 5f;
         stats.Add(
             StatType.MaxHealth,
             new PlayerStat(baseMaxHealth)
+        );
+        stats.Add(
+            StatType.DamageTakenMultiplier,
+            new PlayerStat(baseDamageTakenMultiplier)
         );
         stats.Add(
     StatType.HealthRegeneration,

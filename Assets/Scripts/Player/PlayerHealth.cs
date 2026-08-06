@@ -5,6 +5,7 @@ using System.Collections;
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
     private PlayerStats playerStats;
+    private PlayerCombatEvents combatEvents;
     
 
     private float currentHealth;
@@ -28,6 +29,7 @@ public event Action OnHealthGateTriggered;
     private void Awake()
     {
         playerStats = GetComponent<PlayerStats>();
+        combatEvents = GetComponent<PlayerCombatEvents>();
     }
 
     private void OnEnable()
@@ -92,6 +94,10 @@ public event Action OnHealthGateTriggered;
         finalDamage += CalculateDamage(part);
     }
 
+    finalDamage *= playerStats.GetValue(
+        StatType.DamageTakenMultiplier
+    );
+
     if (finalDamage <= 0f)
         return;
 
@@ -110,6 +116,7 @@ public event Action OnHealthGateTriggered;
 
     if (canTriggerHealthGate)
     {
+        float damageTaken = Mathf.Max(0f, currentHealth - 1f);
         currentHealth = 1f;
         healthGateAvailable = false;
 
@@ -121,10 +128,13 @@ public event Action OnHealthGateTriggered;
         );
 
         OnDamaged?.Invoke(finalDamage);
+        GetCombatEvents()?.ReportDamageTaken(damageTaken);
         OnHealthGateTriggered?.Invoke();
 
         return;
     }
+
+    float healthBeforeDamage = currentHealth;
 
     currentHealth = Mathf.Max(
         currentHealth - finalDamage,
@@ -137,6 +147,9 @@ public event Action OnHealthGateTriggered;
     );
 
     OnDamaged?.Invoke(finalDamage);
+    GetCombatEvents()?.ReportDamageTaken(
+        healthBeforeDamage - currentHealth
+    );
 
     if (IsDead)
         Die();
@@ -187,6 +200,14 @@ private float ApplyDefense(
     defense = Mathf.Max(0f, defense);
 
     return damage * (100f / (100f + defense));
+}
+
+private PlayerCombatEvents GetCombatEvents()
+{
+    if (combatEvents == null)
+        combatEvents = GetComponent<PlayerCombatEvents>();
+
+    return combatEvents;
 }
 
 

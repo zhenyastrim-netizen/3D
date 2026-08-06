@@ -315,7 +315,7 @@ GameObject:
   - component: {fileID: 5272484517756426450}
   - component: {fileID: 1890336629242146074}
   - component: {fileID: 1106047835995896148}
-  - component: {fileID: 6195170447520220906}
+  - component: {fileID: 3333245948544034460}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -831,6 +831,7 @@ MonoBehaviour:
   baseMaxHealth: 267
   baseHealthRegeneration: 0
   baseArmor: 5
+  baseDamageTakenMultiplier: 1
   baseHealingPower: 1
   baseMoveSpeed: 8
   baseSpiritPower: 1
@@ -1023,7 +1024,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFlashStatus
   playerStats: {fileID: 6542013363441487351}
---- !u!114 &6195170447520220906
+--- !u!114 &3333245948544034460
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1032,7 +1033,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2181775435426757710}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21c4eb50293a28a4ca17fbb1783d344b, type: 3}
+  m_Script: {fileID: 11500000, guid: 6f79b5736bc80594f96f135c4355758e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombatEvents
 --- !u!1 &3103060110187204989
@@ -1130,27 +1131,7 @@ MonoBehaviour:
   hotbarController: {fileID: 8125152250286160781}
   weaponHolder: {fileID: 7933025025188238752}
   playerStats: {fileID: 6542013363441487351}
-  dropAction:
-    m_Name: Drop Weapon
-    m_Type: 1
-    m_ExpectedControlType: 
-    m_Id: ba0584cf-d03e-4d26-8bb7-e2070f454ad3
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: a921ffe7-827f-4e1a-b296-1cf9f16292e0
-      m_Path: <Keyboard>/g
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Drop Weapon
-      m_Flags: 0
-    m_Flags: 0
-  worldWeaponDropPrefab: {fileID: 2751001575145795756, guid: ccb1b5ad443b6054884708b171a9afb8, type: 3}
-  dropPoint: {fileID: 2568722023843921889}
-  dropDistance: 1.5
-  dropForce: 3
+  playerParry: {fileID: 0}
   playerCamera: {fileID: 8589747704841320657}
   cameraRecoil: {fileID: 8802588652966439016}
   damageCalculator: {fileID: 3867508538187707313}
@@ -1231,6 +1212,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2721391528373875071}
   - {fileID: 4529464954302243222}
   - {fileID: 5803623519932844851}
   m_Father: {fileID: 1752972935688537426}
@@ -1315,7 +1297,10 @@ MonoBehaviour:
   playerCamera: {fileID: 8589747704841320657}
   playerStats: {fileID: 6542013363441487351}
   damageCalculator: {fileID: 3867508538187707313}
-  damage: 35
+  damageParts:
+  - damageType: 0
+    damage: 35
+    buildup: 0
   range: 3
   hitRadius: 0.6
   attacksPerSecond: 2
@@ -1538,6 +1523,37 @@ MonoBehaviour:
   recoilSpeed: 25
   maxVerticalRecoil: 12
   maxHorizontalRecoil: 5
+--- !u!1 &6969433169516503727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2721391528373875071}
+  m_Layer: 6
+  m_Name: YoyoHAnd
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2721391528373875071
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6969433169516503727}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.17, y: 0.02, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5168417596748543011}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7108390336786355722
 GameObject:
   m_ObjectHideFlags: 0

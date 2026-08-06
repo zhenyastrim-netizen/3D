@@ -1,6 +1,7 @@
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class ItemDetailsUI : MonoBehaviour
@@ -30,7 +31,8 @@ public class ItemDetailsUI : MonoBehaviour
     [SerializeField] private Color legendaryBackground =
         new Color32(56, 35, 15, 245);
 
-    [SerializeField] private Color uniqueBackground =
+    [FormerlySerializedAs("uniqueBackground")]
+    [SerializeField] private Color epicBackground =
         new Color32(42, 21, 56, 245);
 
     [Header("Layout")]
@@ -168,14 +170,14 @@ public class ItemDetailsUI : MonoBehaviour
                 rarityColor = new Color32(73, 165, 255, 255);
                 break;
 
+            case ItemRarity.Epic:
+                cardBackground.color = epicBackground;
+                rarityColor = new Color32(202, 112, 255, 255);
+                break;
+
             case ItemRarity.Legendary:
                 cardBackground.color = legendaryBackground;
                 rarityColor = new Color32(255, 166, 61, 255);
-                break;
-
-            case ItemRarity.Unique:
-                cardBackground.color = uniqueBackground;
-                rarityColor = new Color32(202, 112, 255, 255);
                 break;
 
             default:
@@ -444,6 +446,25 @@ public class ItemDetailsUI : MonoBehaviour
             break;
     }
 
+    if (weapon.Rarity == ItemRarity.Legendary &&
+        (!string.IsNullOrWhiteSpace(data.LegendaryPropertyName) ||
+         !string.IsNullOrWhiteSpace(data.LegendaryPropertyDescription)))
+    {
+        builder.AppendLine();
+        builder.AppendLine(
+            "<color=#FFAA3D><b>Легендарное свойство</b></color>"
+        );
+
+        if (!string.IsNullOrWhiteSpace(data.LegendaryPropertyName))
+            builder.AppendLine(data.LegendaryPropertyName);
+
+        if (!string.IsNullOrWhiteSpace(
+                data.LegendaryPropertyDescription))
+        {
+            builder.AppendLine(data.LegendaryPropertyDescription);
+        }
+    }
+
     if (weapon.Affixes.Count > 0)
     {
         builder.AppendLine();
@@ -604,11 +625,11 @@ builder.AppendLine(
             case ItemRarity.Rare:
                 return "<color=#4D9EFF>Редкое</color>";
 
+            case ItemRarity.Epic:
+                return "<color=#D45CFF>Эпическое</color>";
+
             case ItemRarity.Legendary:
                 return "<color=#FF9D32>Легендарное</color>";
-
-            case ItemRarity.Unique:
-                return "<color=#D45CFF>Уникальное</color>";
 
             default:
                 return "<color=#B8B8B8>Обычное</color>";

@@ -1,9 +1,13 @@
 using System.Collections;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class WeaponReload : MonoBehaviour
 {
+    public event Action OnReloadStarted;
+    public event Action OnReloadCompleted;
+
     [Header("Input")]
     [SerializeField] private InputAction reloadAction;
 
@@ -51,10 +55,11 @@ public class WeaponReload : MonoBehaviour
         StartCoroutine(ReloadRoutine());
     }
 
-    private IEnumerator ReloadRoutine()
+private IEnumerator ReloadRoutine()
 {
     IsReloading = true;
     ReloadProgress = 0f;
+    OnReloadStarted?.Invoke();
 
     float reloadSpeed = playerStats != null
         ? playerStats.GetValue(StatType.ReloadSpeed)
@@ -81,6 +86,7 @@ public class WeaponReload : MonoBehaviour
     ReloadProgress = 1f;
 
     ammo.Reload();
+    OnReloadCompleted?.Invoke();
 
     IsReloading = false;
     ReloadProgress = 0f;

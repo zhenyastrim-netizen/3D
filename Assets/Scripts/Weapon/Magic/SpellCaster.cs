@@ -14,6 +14,7 @@ public class SpellCaster : MonoBehaviour
     private PlayerMana playerMana;
     private PlayerStats playerStats;
     private PlayerDamageCalculator damageCalculator;
+    private MagicSkillRuntime magicSkills;
     private Camera playerCamera;
 
     private bool isCasting;
@@ -25,6 +26,7 @@ public class SpellCaster : MonoBehaviour
         playerStats = GetComponentInParent<PlayerStats>();
         damageCalculator =
             GetComponentInParent<PlayerDamageCalculator>();
+        magicSkills = GetComponentInParent<MagicSkillRuntime>();
 
         playerCamera = Camera.main;
 
@@ -68,11 +70,18 @@ public class SpellCaster : MonoBehaviour
         float finalManaCost =
             spell.ManaCost * manaMultiplier;
 
+        MagicSkillRuntime runtime = GetMagicSkills();
+
+        if (runtime != null && runtime.IsNextCastFree())
+            finalManaCost = 0f;
+
         if (!playerMana.TrySpendMana(finalManaCost))
         {
             Debug.Log("Недостаточно маны");
             return;
         }
+
+        runtime?.NotifySpellCast();
 
         StartCoroutine(CastRoutine());
     }
@@ -89,7 +98,13 @@ public class SpellCaster : MonoBehaviour
         float finalCastTime =
             spell.CastTime / castSpeed;
 
-        yield return new WaitForSeconds(finalCastTime);
+        MagicSkillRuntime runtime = GetMagicSkills();
+
+        if (runtime != null && runtime.HasGoodFromEvilBuff)
+            finalCastTime = 0f;
+
+        if (finalCastTime > 0f)
+            yield return new WaitForSeconds(finalCastTime);
 
         CastProjectile();
 
@@ -132,5 +147,13 @@ public class SpellCaster : MonoBehaviour
             damageInfo,
             playerMana.gameObject
         );
+    }
+
+    private MagicSkillRuntime GetMagicSkills()
+    {
+        if (magicSkills == null)
+            magicSkills = GetComponentInParent<MagicSkillRuntime>();
+
+        return magicSkills;
     }
 }

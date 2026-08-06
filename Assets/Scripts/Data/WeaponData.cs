@@ -3,8 +3,29 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Inventory/Weapon")]
 public class WeaponData : ItemData
 {
+    [Header("Legendary")]
+    [SerializeField] private bool isLegendary;
+    [SerializeField] private string legendaryPropertyName;
+
+    [TextArea]
+    [SerializeField] private string legendaryPropertyDescription;
+
     [Header("Combat")]
+    [Tooltip(
+        "Каждый элемент наносит свой урон и накопление. " +
+        "Можно добавить несколько типов урона одной атаке."
+    )]
+    [SerializeField] private DamagePart[] damageParts =
+        new DamagePart[0];
+
+    // Старые поля оставлены для уже созданных WeaponData.
+    // Они используются только пока список Damage Parts пуст.
+    [HideInInspector]
     [SerializeField] private float damage = 10f;
+
+    [HideInInspector]
+    [SerializeField] private DamageType damageType = DamageType.Kinetic;
+
     [SerializeField] private float fireRate = 5f;
     [SerializeField] private int magazineSize = 12;
     [SerializeField] private float reloadTime = 1.5f;
@@ -24,6 +45,10 @@ private float meleeAttacksPerSecond = 2f;
 [SerializeField] private WeaponType weaponType;
 
 public WeaponType WeaponType => weaponType;
+public bool IsLegendary => isLegendary;
+public string LegendaryPropertyName => legendaryPropertyName;
+public string LegendaryPropertyDescription =>
+    legendaryPropertyDescription;
 [Header("Ranged weapon")]
 [SerializeField] private RangedWeaponType rangedWeaponType;
 [SerializeField] private WeaponFireMode fireMode;
@@ -58,7 +83,54 @@ public float MeleeRange => meleeRange;
 public float MeleeHitRadius => meleeHitRadius;
 public float MeleeAttacksPerSecond => meleeAttacksPerSecond;
 
-    public float Damage => damage;
+    public float Damage
+    {
+        get
+        {
+            if (damageParts == null || damageParts.Length == 0)
+                return Mathf.Max(0f, damage);
+
+            float totalDamage = 0f;
+
+            foreach (DamagePart part in damageParts)
+                totalDamage += Mathf.Max(0f, part.damage);
+
+            return totalDamage;
+        }
+    }
+
+    public DamageType DamageType =>
+        damageParts != null && damageParts.Length > 0
+            ? damageParts[0].damageType
+            : damageType;
+
+    public DamagePart[] GetDamageParts()
+    {
+        if (damageParts == null || damageParts.Length == 0)
+        {
+            return new[]
+            {
+                new DamagePart(
+                    damageType,
+                    Mathf.Max(0f, damage)
+                )
+            };
+        }
+
+        DamagePart[] result =
+            new DamagePart[damageParts.Length];
+
+        for (int i = 0; i < damageParts.Length; i++)
+        {
+            DamagePart part = damageParts[i];
+            part.damage = Mathf.Max(0f, part.damage);
+            part.buildup = Mathf.Max(0f, part.buildup);
+            result[i] = part;
+        }
+
+        return result;
+    }
+
     public float FireRate => fireRate;
     public int MagazineSize => magazineSize;
     public float ReloadTime => reloadTime;

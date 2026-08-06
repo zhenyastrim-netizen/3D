@@ -16,7 +16,9 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   requiredSkill: {fileID: 11400000, guid: 5dc16dc83bac6754eba3b5bf5ea463a2, type: 2}
-  requiredSkillRank: 4
+  requirements: []
+  requirementMode: 0
+  requiredSkillRank: 5
   cost: 1
   maxRank: 1
   statEffect: {fileID: 0}

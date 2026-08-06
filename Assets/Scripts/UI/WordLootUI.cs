@@ -83,6 +83,30 @@ private Camera playerCamera;
             );
         }
 
+        if (instance.Rarity == ItemRarity.Legendary &&
+            (!string.IsNullOrWhiteSpace(
+                 weapon.LegendaryPropertyName) ||
+             !string.IsNullOrWhiteSpace(
+                 weapon.LegendaryPropertyDescription)))
+        {
+            stats.AppendLine();
+            stats.AppendLine("Легендарное свойство:");
+
+            if (!string.IsNullOrWhiteSpace(
+                    weapon.LegendaryPropertyName))
+            {
+                stats.AppendLine(weapon.LegendaryPropertyName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(
+                    weapon.LegendaryPropertyDescription))
+            {
+                stats.AppendLine(
+                    weapon.LegendaryPropertyDescription
+                );
+            }
+        }
+
         statsText.text = stats.ToString();
         descriptionText.text = weapon.description;
         pickupText.text = "E — подобрать";
@@ -253,8 +277,8 @@ if (alignmentText != null)
         return rarity switch
         {
             ItemRarity.Rare => "Редкое",
+            ItemRarity.Epic => "Эпическое",
             ItemRarity.Legendary => "Легендарное",
-            ItemRarity.Unique => "Уникальное",
             _ => "Обычное"
         };
     }
@@ -276,11 +300,11 @@ if (alignmentText != null)
             ItemRarity.Rare =>
                 new Color(0.2f, 0.5f, 1f),
 
+            ItemRarity.Epic =>
+                new Color(0.75f, 0.2f, 1f),
+
             ItemRarity.Legendary =>
                 new Color(1f, 0.45f, 0.05f),
-
-            ItemRarity.Unique =>
-                new Color(0.75f, 0.2f, 1f),
 
             _ => Color.white
         };

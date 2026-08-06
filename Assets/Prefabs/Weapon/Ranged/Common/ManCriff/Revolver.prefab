@@ -5091,7 +5091,7 @@ MonoBehaviour:
     damage: 25
     buildup: 30
   fireRate: 8
-  range: 100
+  range: 75
   hitMask:
     serializedVersion: 2
     m_Bits: 3775

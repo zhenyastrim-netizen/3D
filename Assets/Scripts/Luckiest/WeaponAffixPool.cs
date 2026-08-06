@@ -13,7 +13,8 @@ public class WeaponAffixPool : ScriptableObject
     public WeaponAffixDefinition Roll(
         WeaponData weapon,
         bool negative,
-        HashSet<WeaponAffixDefinition> excluded)
+        HashSet<WeaponAffixDefinition> excluded,
+        HashSet<StatType> excludedStatTypes)
     {
         List<WeaponAffixDefinition> available =
             new List<WeaponAffixDefinition>();
@@ -27,6 +28,12 @@ public class WeaponAffixPool : ScriptableObject
 
             if (excluded != null &&
                 excluded.Contains(affix))
+            {
+                continue;
+            }
+
+            if (excludedStatTypes != null &&
+                excludedStatTypes.Contains(affix.StatType))
             {
                 continue;
             }

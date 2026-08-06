@@ -12,7 +12,10 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private PlayerDamageCalculator damageCalculator;
 
     [Header("Attack")]
-    [SerializeField] private float damage = 35f;
+    [SerializeField] private DamagePart[] damageParts =
+    {
+        new DamagePart(DamageType.Kinetic, 35f)
+    };
     [SerializeField] private float range = 3f;
     [SerializeField] private float hitRadius = 0.6f;
     [SerializeField] private float attacksPerSecond = 2f;
@@ -60,7 +63,7 @@ public class MeleeWeapon : MonoBehaviour
     if (weaponData == null)
         return;
 
-    damage = weaponData.Damage;
+    damageParts = weaponData.GetDamageParts();
     range = weaponData.MeleeRange;
     hitRadius = weaponData.MeleeHitRadius;
     attacksPerSecond =
@@ -118,14 +121,9 @@ public class MeleeWeapon : MonoBehaviour
 
             if (damageable != null)
             {
-                DamagePart[] parts =
-{
-    new DamagePart(DamageType.Kinetic, damage)
-};
-
 DamageInfo damageInfo =
     damageCalculator.CreateDamage(
-        parts,
+        damageParts,
         AttackType.Melee,
         gameObject
     );

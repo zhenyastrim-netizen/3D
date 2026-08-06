@@ -15,8 +15,14 @@ MonoBehaviour:
   skillName: "\u041A\u0440\u0438\u0442\u043E\u0432\u0441\u043A\u0438\u0435 \u043E\u0441\u0442\u0440\u043E\u0432\u0430"
   description: 
   icon: {fileID: 0}
-  requiredSkill: {fileID: 11400000, guid: ed35b2d509e8fc64aaad31d930361e9b, type: 2}
-  requiredSkillRank: 1
+  requiredSkill: {fileID: 0}
+  requirements:
+  - skill: {fileID: 11400000, guid: ed35b2d509e8fc64aaad31d930361e9b, type: 2}
+    requiredRank: 0
+  - skill: {fileID: 11400000, guid: 84a5186283d0f444dae64adbe2b8f5ec, type: 2}
+    requiredRank: 0
+  requirementMode: 0
+  requiredSkillRank: 5
   cost: 1
   maxRank: 5
   statEffect: {fileID: 11400000, guid: 69f9f1278a6cf4443a1ecc1253f537d7, type: 2}

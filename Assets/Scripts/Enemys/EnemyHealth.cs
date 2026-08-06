@@ -13,6 +13,7 @@ private float kineticDefense;
 [SerializeField, Min(0f)]
 private float spiritualDefense;
 public event Action<float, DamageType, bool, bool> OnDamageReceived;
+public event Action<EnemyHealth> OnDied;
 
     [Header("Death")]
     [SerializeField] private bool destroyOnDeath = true;
@@ -51,11 +52,25 @@ private GameObject lastDamageSource;
 
     float finalDamage = 0f;
 
-    foreach (DamagePart part in damageInfo.Parts)
+foreach (DamagePart part in damageInfo.Parts)
 {
     float partDamage = CalculateDamage(part);
 
     finalDamage += partDamage;
+
+    statusController?.ApplyBuildup(
+        part,
+        damageInfo.Source
+    );
+
+    if (part.damageType == DamageType.Lightning &&
+        !damageInfo.IsSecondary)
+    {
+        lightningChain?.TriggerChain(
+            part,
+            damageInfo
+        );
+    }
 
     if (partDamage > 0f)
     {
@@ -71,9 +86,31 @@ private GameObject lastDamageSource;
     if (finalDamage <= 0f)
         return;
 
+    float healthBeforeHit = currentHealth;
+
     currentHealth = Mathf.Max(
         currentHealth - finalDamage,
         0f
+    );
+
+    float damageDealt = healthBeforeHit - currentHealth;
+    bool killedByHit = currentHealth <= 0f;
+
+    PlayerCombatEvents combatEvents = damageInfo.Source != null
+        ? damageInfo.Source.GetComponentInParent<PlayerCombatEvents>()
+        : null;
+
+    combatEvents?.ReportEnemyHit(
+        new CombatHitInfo(
+            gameObject,
+            damageDealt,
+            damageInfo.AttackType,
+            damageInfo.IsCritical,
+            damageInfo.IsSecondary,
+            killedByHit,
+            damageInfo.Source,
+            damageInfo.Parts
+        )
     );
 
     Debug.Log(
@@ -93,7 +130,7 @@ private float CalculateDamage(DamagePart part)
         case DamageType.Kinetic:
             return ApplyDefense(
                 part.damage,
-                kineticDefense
+                kineticDefense * kineticDefenseMultiplier
             );
 
         case DamageType.Spiritual:
@@ -102,9 +139,9 @@ private float CalculateDamage(DamagePart part)
         case DamageType.Frost:
         case DamageType.Decay:
             return ApplyDefense(
-    part.damage,
-    kineticDefense * kineticDefenseMultiplier
-);
+                part.damage,
+                spiritualDefense
+            );
 
         case DamageType.Holy:
         case DamageType.Cursed:
@@ -147,6 +184,8 @@ private float ApplyDefense(
             return;
 
         isDead = true;
+
+        OnDied?.Invoke(this);
 
         Debug.Log($"{gameObject.name} умер");
 

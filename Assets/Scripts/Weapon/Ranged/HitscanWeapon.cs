@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
-
+using System;
 using System.Collections.Generic;
 public class HitscanWeapon : MonoBehaviour
 {
+    public event Action<HitscanProjectileResult> OnProjectileResolved;
+    public event Func<HitscanProjectileRequest, bool> OnProjectileRequested;
+
     [Header("Input")]
     [SerializeField] private InputAction fireAction;
 
@@ -49,7 +52,10 @@ private bool isBursting;
     weaponData = newWeaponData;
 
     if (weaponData != null)
+    {
         fireRate = weaponData.FireRate;
+        damageParts = weaponData.GetDamageParts();
+    }
 }
 
     private void Awake()
@@ -188,7 +194,7 @@ private void FireProjectile()
     );
 
     Vector2 spread =
-        Random.insideUnitCircle *
+        UnityEngine.Random.insideUnitCircle *
         weaponData.SpreadAngle;
 
     Quaternion spreadRotation =
@@ -201,6 +207,21 @@ private void FireProjectile()
     Vector3 direction =
         spreadRotation * aimRay.direction;
 
+    Vector3 projectileStart = muzzlePoint != null
+        ? muzzlePoint.position
+        : aimRay.origin;
+
+    HitscanProjectileRequest projectileRequest =
+        new HitscanProjectileRequest(
+            projectileStart,
+            direction,
+            range,
+            damageParts
+        );
+
+    if (TryHandleProjectileRequest(projectileRequest))
+        return;
+
     Ray shotRay = new Ray(
         aimRay.origin,
         direction
@@ -212,6 +233,10 @@ private void FireProjectile()
 }
 
     Vector3 endPoint;
+    Vector3 surfaceNormal = -shotRay.direction;
+    Transform hitTransform = null;
+    IDamageable hitDamageable = null;
+    bool hitSomething = false;
 
     if (Physics.Raycast(
             shotRay,
@@ -220,7 +245,10 @@ private void FireProjectile()
             hitMask,
             QueryTriggerInteraction.Ignore))
     {
+        hitSomething = true;
         endPoint = hit.point;
+        surfaceNormal = hit.normal;
+        hitTransform = hit.collider.transform;
 
         IDamageable damageable =
             hit.collider
@@ -228,6 +256,7 @@ private void FireProjectile()
 
         if (damageable != null)
         {
+            hitDamageable = damageable;
             DamageInfo damageInfo =
                 damageCalculator.CreateDamage(
                     damageParts,
@@ -280,6 +309,18 @@ private void FireProjectile()
         );
     }
 
+    OnProjectileResolved?.Invoke(
+        new HitscanProjectileResult(
+            endPoint,
+            surfaceNormal,
+            shotRay.direction,
+            hitTransform,
+            hitDamageable,
+            hitSomething,
+            damageParts
+        )
+    );
+
     if (drawShotRay)
     {
         Debug.DrawRay(
@@ -289,6 +330,29 @@ private void FireProjectile()
             1f
         );
     }
+}
+private bool TryHandleProjectileRequest(
+    HitscanProjectileRequest request)
+{
+    if (OnProjectileRequested == null)
+        return false;
+
+    Delegate[] handlers =
+        OnProjectileRequested.GetInvocationList();
+
+    foreach (Delegate handler in handlers)
+    {
+        Func<HitscanProjectileRequest, bool> projectileHandler =
+            handler as Func<HitscanProjectileRequest, bool>;
+
+        if (projectileHandler != null &&
+            projectileHandler.Invoke(request))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 private void FireRicochets(
     Vector3 startPoint,
@@ -335,11 +399,12 @@ private void FireRicochets(
                 damageMultiplier
             );
 
-        DamageInfo damageInfo =
+            DamageInfo damageInfo =
             damageCalculator.CreateDamage(
                 ricochetParts,
                 AttackType.Ranged,
-                gameObject
+                gameObject,
+                true
             );
 
         damageable.TakeDamage(damageInfo);
@@ -435,6 +500,11 @@ private void FirePenetratingProjectile(
         shotRay.origin +
         shotRay.direction * range;
 
+    Vector3 surfaceNormal = -shotRay.direction;
+    Transform hitTransform = null;
+    IDamageable hitDamageable = null;
+    bool hitSomething = false;
+
     int penetrationsRemaining =
         weaponData.PenetrationCount;
 
@@ -443,7 +513,10 @@ private void FirePenetratingProjectile(
 
     foreach (RaycastHit hit in hits)
     {
+        hitSomething = true;
         endPoint = hit.point;
+        surfaceNormal = hit.normal;
+        hitTransform = hit.collider.transform;
 
         IDamageable damageable =
             hit.collider
@@ -456,6 +529,8 @@ private void FirePenetratingProjectile(
             SpawnImpact(hit);
             break;
         }
+
+        hitDamageable = damageable;
 
         // Не наносим урон несколько раз,
         // если у врага несколько коллайдеров.
@@ -485,6 +560,18 @@ private void FirePenetratingProjectile(
         : shotRay.origin,
     endPoint
 );
+
+    OnProjectileResolved?.Invoke(
+        new HitscanProjectileResult(
+            endPoint,
+            surfaceNormal,
+            shotRay.direction,
+            hitTransform,
+            hitDamageable,
+            hitSomething,
+            damageParts
+        )
+    );
 
     if (drawShotRay)
     {

@@ -24,4 +24,5 @@ ManaCostMultiplier,
     SpiritualDefense,
     SpiritPower,
     HealthRegeneration,
+    DamageTakenMultiplier,
 }

@@ -8,6 +8,8 @@ public readonly struct CombatHitInfo
     public bool IsCritical { get; }
     public bool IsSecondary { get; }
     public bool KilledTarget { get; }
+    public GameObject Source { get; }
+    public DamagePart[] DamageParts { get; }
 
     public CombatHitInfo(
         GameObject target,
@@ -15,7 +17,9 @@ public readonly struct CombatHitInfo
         AttackType attackType,
         bool isCritical,
         bool isSecondary,
-        bool killedTarget)
+        bool killedTarget,
+        GameObject source = null,
+        DamagePart[] damageParts = null)
     {
         Target = target;
         DamageDealt = damageDealt;
@@ -23,5 +27,9 @@ public readonly struct CombatHitInfo
         IsCritical = isCritical;
         IsSecondary = isSecondary;
         KilledTarget = killedTarget;
+        Source = source;
+        DamageParts = damageParts != null
+            ? (DamagePart[])damageParts.Clone()
+            : new DamagePart[0];
     }
 }

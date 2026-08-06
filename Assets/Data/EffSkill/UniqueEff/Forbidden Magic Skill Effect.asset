@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9979b834f2f907944b6f914ecf132c67, type: 3}
+  m_Name: Forbidden Magic Skill Effect
+  m_EditorClassIdentifier: Assembly-CSharp::ForbiddenMagicSkillEffect
+  magicDamageBonus: 0.5
+  castSpeedBonus: 0.5
+  manaCostIncrease: 0.5
+  fruitChance: 0.1
+  stacksToSummon: 10
+  damageTakenPerStack: 0.05
+  ghostPrefab: {fileID: 0}
+  ghostMoveSpeed: 5
+  ghostDamage: 10
+  ghostAttackInterval: 1
+  ghostAttackRange: 1.5
+  buffDuration: 5
+  buffMagicDamageBonus: 0.5
+  buffStatusDurationBonus: 0.5

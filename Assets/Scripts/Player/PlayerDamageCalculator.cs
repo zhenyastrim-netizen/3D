@@ -5,21 +5,34 @@ public class PlayerDamageCalculator : MonoBehaviour
 {
     private PlayerStats playerStats;
     private PlayerHumanity playerHumanity;
+    private ElementalSkillRuntime elementalSkills;
+    private MagicSkillRuntime magicSkills;
+    private ShootingSkillRuntime shootingSkills;
 
     private void Awake()
     {
         playerHumanity =
     GetComponent<PlayerHumanity>();
         playerStats = GetComponent<PlayerStats>();
+        elementalSkills = GetComponent<ElementalSkillRuntime>();
+        magicSkills = GetComponent<MagicSkillRuntime>();
+        shootingSkills = GetComponent<ShootingSkillRuntime>();
     }
 
     public DamageInfo CreateDamage(
         DamagePart[] baseParts,
         AttackType attackType,
-        GameObject source)
+        GameObject source,
+        bool isSecondary = false)
     {
         if (baseParts == null)
             baseParts = new DamagePart[0];
+
+        baseParts = AddElementalBulletPart(
+            baseParts,
+            attackType,
+            isSecondary
+        );
 
         float attackMultiplier =
             GetAttackMultiplier(attackType);
@@ -30,8 +43,11 @@ public class PlayerDamageCalculator : MonoBehaviour
             )
         );
 
+        bool canCrit = attackType != AttackType.Magic ||
+                       GetMagicSkills()?.CanMagicCrit == true;
+
         bool isCritical =
-            Random.value < criticalChance;
+            canCrit && Random.value < criticalChance;
 
         float criticalMultiplier = isCritical
             ? playerStats.GetValue(
@@ -41,6 +57,12 @@ public class PlayerDamageCalculator : MonoBehaviour
 
         DamagePart[] finalParts =
             new DamagePart[baseParts.Length];
+
+        float shootingHitMultiplier =
+            GetShootingHitMultiplier(
+                attackType,
+                isSecondary
+            );
 
         for (int i = 0; i < baseParts.Length; i++)
         {
@@ -54,7 +76,8 @@ public class PlayerDamageCalculator : MonoBehaviour
             part.damage *=
                 attackMultiplier *
                 typeMultiplier *
-                criticalMultiplier;
+                criticalMultiplier *
+                shootingHitMultiplier;
 
             part.buildup *= typeMultiplier;
 
@@ -65,13 +88,40 @@ public class PlayerDamageCalculator : MonoBehaviour
             finalParts,
             attackType,
             isCritical,
-            source
+            source,
+            isSecondary
         );
+    }
+
+    private MagicSkillRuntime GetMagicSkills()
+    {
+        if (magicSkills == null)
+            magicSkills = GetComponent<MagicSkillRuntime>();
+
+        return magicSkills;
+    }
+
+    private float GetShootingHitMultiplier(
+        AttackType attackType,
+        bool isSecondary)
+    {
+        if (attackType != AttackType.Ranged || isSecondary)
+            return 1f;
+
+        if (shootingSkills == null)
+            shootingSkills = GetComponent<ShootingSkillRuntime>();
+
+        return shootingSkills != null
+            ? shootingSkills.ConsumeHitMultiplier()
+            : 1f;
     }
 
     private float GetDamageTypeMultiplier(
         DamageType damageType)
     {
+        if (elementalSkills == null)
+            elementalSkills = GetComponent<ElementalSkillRuntime>();
+
         switch (damageType)
         {
             case DamageType.Holy:
@@ -88,13 +138,48 @@ case DamageType.Cursed:
             case DamageType.Lightning:
             case DamageType.Frost:
             case DamageType.Decay:
-                return playerStats.GetValue(
+                float spiritMultiplier = playerStats.GetValue(
                     StatType.SpiritPower
                 );
+
+                float elementalMultiplier = elementalSkills != null
+                    ? elementalSkills.GetDamageMultiplier(damageType)
+                    : 1f;
+
+                return spiritMultiplier * elementalMultiplier;
 
             default:
                 return 1f;
         }
+    }
+
+    private DamagePart[] AddElementalBulletPart(
+        DamagePart[] baseParts,
+        AttackType attackType,
+        bool isSecondary)
+    {
+        if (attackType != AttackType.Ranged || isSecondary)
+            return baseParts;
+
+        if (elementalSkills == null)
+            elementalSkills = GetComponent<ElementalSkillRuntime>();
+
+        if (elementalSkills == null ||
+            !elementalSkills.TryCreateElementalBulletPart(
+                baseParts,
+                out DamagePart elementalPart))
+        {
+            return baseParts;
+        }
+
+        DamagePart[] result =
+            new DamagePart[baseParts.Length + 1];
+
+        for (int i = 0; i < baseParts.Length; i++)
+            result[i] = baseParts[i];
+
+        result[result.Length - 1] = elementalPart;
+        return result;
     }
 
     private float GetAttackMultiplier(

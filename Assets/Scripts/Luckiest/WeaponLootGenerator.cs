@@ -26,7 +26,11 @@ public class WeaponLootGenerator : MonoBehaviour
     public WeaponInstance GenerateRandom(
         WeaponData weaponData)
     {
-        ItemRarity rarity = RollRarity();
+        ItemRarity rarity =
+            weaponData != null && weaponData.IsLegendary
+                ? ItemRarity.Legendary
+                : RollRarity();
+
         ItemAlignment alignment = RollAlignment();
 
         return Generate(
@@ -36,14 +40,21 @@ public class WeaponLootGenerator : MonoBehaviour
         );
     }
 
-    public WeaponInstance GenerateUnique(
+    public WeaponInstance GenerateLegendary(
         WeaponData weaponData)
     {
         return Generate(
             weaponData,
-            ItemRarity.Unique,
+            ItemRarity.Legendary,
             RollAlignment()
         );
+    }
+
+    // Оставлено для совместимости со старыми сундуками и скриптами.
+    public WeaponInstance GenerateUnique(
+        WeaponData weaponData)
+    {
+        return GenerateLegendary(weaponData);
     }
 
     private WeaponInstance Generate(
@@ -60,6 +71,9 @@ public class WeaponLootGenerator : MonoBehaviour
         HashSet<WeaponAffixDefinition> used =
             new HashSet<WeaponAffixDefinition>();
 
+        HashSet<StatType> usedStats =
+            new HashSet<StatType>();
+
         int normalAffixCount =
             GetRarityAffixCount(rarity);
 
@@ -67,36 +81,9 @@ public class WeaponLootGenerator : MonoBehaviour
             instance,
             normalAffixCount,
             false,
-            used
+            used,
+            usedStats
         );
-
-        switch (alignment)
-        {
-            case ItemAlignment.Sanctified:
-                AddAffixes(
-                    instance,
-                    Random.Range(1, 6),
-                    false,
-                    used
-                );
-                break;
-
-            case ItemAlignment.Cursed:
-                AddAffixes(
-                    instance,
-                    Random.Range(1, 4),
-                    false,
-                    used
-                );
-
-                AddAffixes(
-                    instance,
-                    Random.Range(1, 4),
-                    true,
-                    used
-                );
-                break;
-        }
 
         return instance;
     }
@@ -105,7 +92,8 @@ public class WeaponLootGenerator : MonoBehaviour
         WeaponInstance instance,
         int count,
         bool negative,
-        HashSet<WeaponAffixDefinition> used)
+        HashSet<WeaponAffixDefinition> used,
+        HashSet<StatType> usedStats)
     {
         for (int i = 0; i < count; i++)
         {
@@ -113,7 +101,8 @@ public class WeaponLootGenerator : MonoBehaviour
                 affixPool.Roll(
                     instance.BaseData,
                     negative,
-                    used
+                    used,
+                    usedStats
                 );
 
             if (definition == null)
@@ -124,6 +113,7 @@ public class WeaponLootGenerator : MonoBehaviour
 
             instance.AddAffix(affix);
             used.Add(definition);
+            usedStats.Add(definition.StatType);
         }
     }
 
@@ -138,11 +128,11 @@ public class WeaponLootGenerator : MonoBehaviour
             case ItemRarity.Rare:
                 return Random.Range(1, 3);
 
-            case ItemRarity.Legendary:
+            case ItemRarity.Epic:
                 return Random.Range(3, 6);
 
-            case ItemRarity.Unique:
-                return Random.Range(1, 6);
+            case ItemRarity.Legendary:
+                return Random.Range(3, 6);
 
             default:
                 return 0;
@@ -158,7 +148,7 @@ public class WeaponLootGenerator : MonoBehaviour
         float normalizedLuck =
             luck / (luck + 100f);
 
-        float legendaryChance = Mathf.Lerp(
+        float epicChance = Mathf.Lerp(
             0.03f,
             0.15f,
             normalizedLuck
@@ -172,10 +162,10 @@ public class WeaponLootGenerator : MonoBehaviour
 
         float roll = Random.value;
 
-        if (roll < legendaryChance)
-            return ItemRarity.Legendary;
+        if (roll < epicChance)
+            return ItemRarity.Epic;
 
-        if (roll < legendaryChance + rareChance)
+        if (roll < epicChance + rareChance)
             return ItemRarity.Rare;
 
         return ItemRarity.Common;

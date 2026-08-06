@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerParry : MonoBehaviour
 {
+    public event Action<GameObject> OnParrySucceeded;
+
     [Header("References")]
     [SerializeField] private WeaponManager weaponManager;
 
@@ -81,7 +84,13 @@ public class PlayerParry : MonoBehaviour
 
         IsParrying = false;
 
-        Debug.Log($"Атака парирована: {attacker.name}");
+        string attackerName = attacker != null
+            ? attacker.name
+            : "неизвестный источник";
+
+        Debug.Log($"Атака парирована: {attackerName}");
+
+        OnParrySucceeded?.Invoke(attacker);
 
         return true;
     }

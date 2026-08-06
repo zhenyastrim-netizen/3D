@@ -119,8 +119,8 @@ private float pickupAvailableTime;
             showBeam = true;
             break;
 
-        case ItemRarity.Legendary:
-            color = new Color(1f, 0.4f, 0.03f);
+        case ItemRarity.Epic:
+            color = new Color(0.7f, 0.1f, 1f);
             beamHeight = 4f;
             beamWidth = 0.1f;
             particleRate = 25f;
@@ -129,8 +129,8 @@ private float pickupAvailableTime;
             showBeam = true;
             break;
 
-        case ItemRarity.Unique:
-            color = new Color(0.7f, 0.1f, 1f);
+        case ItemRarity.Legendary:
+            color = new Color(1f, 0.4f, 0.03f);
             beamHeight = 5f;
             beamWidth = 0.14f;
             particleRate = 40f;
@@ -178,11 +178,11 @@ private float pickupAvailableTime;
             case ItemRarity.Rare:
                 return new Color(0.2f, 0.5f, 1f);
 
+            case ItemRarity.Epic:
+                return new Color(0.75f, 0.2f, 1f);
+
             case ItemRarity.Legendary:
                 return new Color(1f, 0.45f, 0.05f);
-
-            case ItemRarity.Unique:
-                return new Color(0.75f, 0.2f, 1f);
 
             default:
                 return new Color(0.75f, 0.75f, 0.75f);
@@ -331,11 +331,11 @@ private void UpdateLabel(Color color)
             case ItemRarity.Rare:
                 return "Редкое";
 
+            case ItemRarity.Epic:
+                return "Эпическое";
+
             case ItemRarity.Legendary:
                 return "Легендарное";
-
-            case ItemRarity.Unique:
-                return "Уникальное";
 
             default:
                 return "Обычное";
